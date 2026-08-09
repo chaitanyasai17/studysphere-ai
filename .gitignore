@@ -1,0 +1,42 @@
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Dependency directories
+node_modules/
+frontend/node_modules/
+
+# Build outputs
+dist/
+frontend/dist/
+build/
+
+# Python cache & virtualenvs
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Local databases and user uploads
+backend/logs/
+uploads/
+backend/uploads/
+db_store.json
+*.log
+
+# IDE & system metadata
+.vscode/
+.idea/
+.DS_Store
+
+# Development workspace system directories
+.gemini/
+brain/
+scratch/
+walkthrough.md
+implementation_plan.md
+task.md
+deployment_guide.md
+production_readiness_report.md
+final_production_audit.md
