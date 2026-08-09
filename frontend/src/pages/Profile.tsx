@@ -266,7 +266,7 @@ export const Profile: React.FC = () => {
             <div className="relative w-28 h-28 rounded-full border-2 border-indigo-500/20 overflow-hidden bg-indigo-500/5 flex items-center justify-center font-bold text-3xl text-indigo-500 shadow-md">
               {profile.avatar ? (
                 profile.avatar.startsWith("/") || profile.avatar.startsWith("http") ? (
-                  <img src={profile.avatar.startsWith("/") ? `${api.defaults.baseURL || "http://localhost:5000"}${profile.avatar}` : profile.avatar} alt="avatar" className="w-full h-full object-cover" />
+                  <img src={profile.avatar.startsWith("/") ? `${api.defaults.baseURL}${profile.avatar}` : profile.avatar} alt="avatar" className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-5xl select-none animate-float-robot">{profile.avatar}</span>
                 )

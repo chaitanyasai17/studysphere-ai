@@ -458,7 +458,7 @@ export const Dashboard: React.FC = () => {
           <div className="w-12 h-12 rounded-full border-2 border-indigo-500 bg-indigo-500/15 overflow-hidden flex-shrink-0 flex items-center justify-center font-bold text-lg text-indigo-600 dark:text-indigo-400 select-none">
             {user?.avatar ? (
               user.avatar.startsWith("/") || user.avatar.startsWith("http") ? (
-                <img src={user.avatar.startsWith("http") ? user.avatar : `${api.defaults.baseURL || "http://localhost:5000"}${user.avatar}`} alt="avatar" className="w-full h-full object-cover" />
+                <img src={user.avatar.startsWith("http") ? user.avatar : `${api.defaults.baseURL}${user.avatar}`} alt="avatar" className="w-full h-full object-cover" />
               ) : (
                 <span className="text-2xl animate-float-robot">{user.avatar}</span>
               )

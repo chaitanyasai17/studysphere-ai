@@ -351,7 +351,7 @@ export const PDFModule: React.FC = () => {
     setPdfDoc(null);
     try {
       const pdfjsLib = await loadPdfLibrary() as any;
-      const baseUrl = api.defaults.baseURL || "http://localhost:5000";
+      const baseUrl = api.defaults.baseURL;
       const pdfUrl = `${baseUrl}/uploads/${fileBasename}`;
       
       const loadingTask = pdfjsLib.getDocument(pdfUrl);
@@ -846,7 +846,7 @@ export const PDFModule: React.FC = () => {
   const handleDownload = () => {
     if (!activePdf) return;
     const link = document.createElement("a");
-    link.href = `${api.defaults.baseURL || "http://localhost:5000"}/uploads/${activePdf.file_path.split(/[\\/]/).pop()}`;
+    link.href = `${api.defaults.baseURL}/uploads/${activePdf.file_path.split(/[\\/]/).pop()}`;
     link.download = activePdf.filename;
     link.click();
   };
