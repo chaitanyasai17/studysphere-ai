@@ -46,7 +46,7 @@ class Config:
     
     # Upload folder
     if os.getenv("VERCEL") == "1":
-        UPLOAD_FOLDER = "/tmp"
+        UPLOAD_FOLDER = "/tmp/uploads"
     else:
         UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "uploads")
     ALLOWED_EXTENSIONS = {"pdf"}
