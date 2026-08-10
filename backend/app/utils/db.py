@@ -252,15 +252,24 @@ class MockCollection:
         docs = self._get_data()
         return sum(1 for doc in docs if self._matches(doc, query))
 
+class DatabaseConnectionError(Exception):
+    """Custom exception raised when MongoDB connection fails in production."""
+    pass
+
 class DatabaseManager:
     """Manages connection to MongoDB Atlas, falling back to local file DB."""
     def __init__(self):
         self.client = None
         self.db = None
         self.is_mock = False
+        self.memory_store = {}
+        self.connection_error = None
         
         # Local mock database path
-        os.makedirs(Config.LOG_DIR, exist_ok=True)
+        try:
+            os.makedirs(Config.LOG_DIR, exist_ok=True)
+        except Exception:
+            pass
         self.mock_file_path = os.path.join(Config.LOG_DIR, "db_store.json")
         
         # Try to connect to MongoDB Atlas
@@ -269,7 +278,10 @@ class DatabaseManager:
                 self.client = MongoClient(Config.MONGODB_URI, serverSelectionTimeoutMS=3000)
                 # Verify connection
                 self.client.admin.command('ping')
-                self.db = self.client.get_default_database()
+                try:
+                    self.db = self.client.get_default_database()
+                except (ConfigurationError, Exception):
+                    self.db = self.client["studysphere"]
                 logger.info("Successfully connected to MongoDB Atlas.")
                 # Create production indexes for query speedups
                 try:
@@ -280,29 +292,47 @@ class DatabaseManager:
                 except Exception as index_err:
                     logger.warning(f"Failed to create production collection indexes: {index_err}")
             except (ConnectionFailure, ConfigurationError, Exception) as e:
-                logger.warning(f"MongoDB connection failed: {e}. Falling back to Local JSON Database.")
-                self.is_mock = True
+                if os.getenv("VERCEL") == "1":
+                    logger.critical(f"MongoDB connection failed on Vercel: {e}")
+                    self.connection_error = f"Database connection failed: {e}. Please verify your MongoDB network access whitelisting (allow IP address 0.0.0.0/0 on your cluster)."
+                else:
+                    logger.warning(f"MongoDB connection failed: {e}. Falling back to Local JSON Database.")
+                    self.is_mock = True
         else:
-            logger.info("No MONGODB_URI set in .env. Falling back to Local JSON Database.")
-            self.is_mock = True
+            if os.getenv("VERCEL") == "1":
+                logger.critical("No MONGODB_URI set on Vercel.")
+                self.connection_error = "Database configuration error: MONGODB_URI environment variable is missing on Vercel."
+            else:
+                logger.info("No MONGODB_URI set in .env. Falling back to Local JSON Database.")
+                self.is_mock = True
 
     def _load_data(self):
+        if not hasattr(self, "memory_store"):
+            self.memory_store = {}
+        if self.memory_store:
+            return self.memory_store
+            
         if not os.path.exists(self.mock_file_path):
             return {}
         try:
             with open(self.mock_file_path, "r") as f:
-                return json.load(f)
+                data = json.load(f)
+                self.memory_store = data
+                return data
         except Exception:
             return {}
 
     def _write_data(self, data):
+        self.memory_store = data
         try:
             with open(self.mock_file_path, "w") as f:
                 json.dump(data, f, cls=JSONEncoder, indent=2)
         except Exception as e:
-            logger.error(f"Failed to write mock db data: {e}")
+            logger.error(f"Failed to write mock db data: {e}. Keeping in memory store.")
 
     def get_collection(self, name):
+        if self.connection_error:
+            raise DatabaseConnectionError(self.connection_error)
         if self.is_mock:
             return MockCollection(self, name)
         return CollectionWrapper(self.db[name])

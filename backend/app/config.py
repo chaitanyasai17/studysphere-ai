@@ -45,8 +45,14 @@ class Config:
     GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-flash-lite-latest")
     
     # Upload folder
-    UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "uploads")
+    if os.getenv("VERCEL") == "1":
+        UPLOAD_FOLDER = "/tmp"
+    else:
+        UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "uploads")
     ALLOWED_EXTENSIONS = {"pdf"}
     
     # Logs folder
-    LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs")
+    if os.getenv("VERCEL") == "1":
+        LOG_DIR = "/tmp"
+    else:
+        LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs")

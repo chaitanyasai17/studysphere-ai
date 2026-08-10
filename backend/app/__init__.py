@@ -31,8 +31,15 @@ def create_app():
     CORS(app, resources={r"/*": {"origins": "*"}})
     
     # Create upload/logs directories if they do not exist
-    os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
-    os.makedirs(app.config["LOG_DIR"], exist_ok=True)
+    try:
+        os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+    except Exception as e:
+        app.logger.warning(f"Could not create upload directory: {e}")
+        
+    try:
+        os.makedirs(app.config["LOG_DIR"], exist_ok=True)
+    except Exception as e:
+        app.logger.warning(f"Could not create logs directory: {e}")
     
     # Register blueprints
     from app.routes.auth import auth_bp
@@ -67,6 +74,14 @@ def create_app():
     app.register_blueprint(profile_bp)
     app.register_blueprint(cybersecurity_bp)
     
+    # Register DatabaseConnectionError handler
+    from app.utils.db import DatabaseConnectionError
+    @app.errorhandler(DatabaseConnectionError)
+    def handle_db_connection_error(e):
+        return jsonify({
+            "message": str(e)
+        }), 503
+        
     # Serve upload assets
     from flask import send_from_directory
     @app.route("/uploads/<path:filename>", methods=["GET"])
