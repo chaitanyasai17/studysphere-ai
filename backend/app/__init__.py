@@ -178,35 +178,35 @@ def create_app():
         db = get_db()
         users_col = db.get_collection("users")
         
-        admin_email = "admin@studysphere.ai"
+        admin_email = "superadmin@studysphere.ai"
         existing_admin = users_col.find_one({"email": admin_email})
         if existing_admin:
-            # Enforce admin role for the seeded administrator account
-            if existing_admin.get("role") != "admin":
-                users_col.update_one({"email": admin_email}, {"$set": {"role": "admin"}})
-                app.logger.info("Updated existing admin account role to 'admin'.")
+            # Enforce superadmin role for the seeded administrator account
+            if existing_admin.get("role") != "superadmin":
+                users_col.update_one({"email": admin_email}, {"$set": {"role": "superadmin"}})
+                app.logger.info("Updated existing admin account role to 'superadmin'.")
             
         if not existing_admin:
-            hashed_pw = bcrypt.hashpw("Admin@123".encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+            hashed_pw = bcrypt.hashpw("SuperAdmin@123".encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
             admin_user = {
                 "_id": str(ObjectId()),
                 "email": admin_email,
                 "password_hash": hashed_pw,
-                "name": "StudySphere Administrator",
-                "role": "admin",
+                "name": "StudySphere Super Administrator",
+                "role": "superadmin",
                 "is_verified": True,
                 "is_suspended": False,
                 "created_at": datetime.datetime.utcnow().isoformat()
             }
             users_col.insert_one(admin_user)
-            app.logger.info("Seeded default administrator account successfully.")
+            app.logger.info("Seeded default super administrator account successfully.")
             
         # Demote all other users to 'user' role to prevent legacy admin promotions
         users_col.update_many(
             {"email": {"$ne": admin_email}},
             {"$set": {"role": "user"}}
         )
-        app.logger.info("Enforced 'user' role for all non-admin accounts in database.")
+        app.logger.info("Enforced 'user' role for all non-superadmin accounts in database.")
     except Exception as seed_err:
         app.logger.warning(f"Could not seed default admin account: {seed_err}")
         
