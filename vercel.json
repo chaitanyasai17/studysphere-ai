@@ -1,35 +1,17 @@
 {
   "version": 2,
-  "services": {
-    "frontend": {
-      "root": "frontend/",
-      "framework": "vite",
-      "buildCommand": "npm run build",
-      "outputDirectory": "dist"
-    },
-    "backend": {
-      "root": "backend/",
-      "entrypoint": "index.py"
-    }
-  },
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": {
-        "service": "backend"
-      }
+      "source": "/api/:path*",
+      "destination": "https://studysphere-ai-zf1a.onrender.com/api/:path*"
     },
     {
-      "source": "/uploads/(.*)",
-      "destination": {
-        "service": "backend"
-      }
+      "source": "/uploads/:path*",
+      "destination": "https://studysphere-ai-zf1a.onrender.com/uploads/:path*"
     },
     {
       "source": "/(.*)",
-      "destination": {
-        "service": "frontend"
-      }
+      "destination": "/$1"
     }
   ]
 }
