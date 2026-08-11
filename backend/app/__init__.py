@@ -23,7 +23,10 @@ class CustomJSONProvider(DefaultJSONProvider):
         return super().default(obj)
 
 def create_app():
-    app = Flask(__name__, static_folder='../../frontend/dist', static_url_path='/')
+    import os
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    static_dir = os.path.abspath(os.path.join(current_dir, "..", "..", "frontend", "dist"))
+    app = Flask(__name__, static_folder=static_dir, static_url_path='/')
     app.json = CustomJSONProvider(app)
     app.config.from_object(Config)
     
