@@ -91,20 +91,10 @@ def create_app():
     # Root Status / Health API
     @app.route("/api/health", methods=["GET"])
     def health_check():
-        import os
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        static_dir = os.path.abspath(os.path.join(current_dir, "..", "..", "frontend", "dist"))
-        exists = os.path.exists(static_dir)
-        files = os.listdir(static_dir) if exists else []
-        routes = [str(rule) for rule in app.url_map.iter_rules()]
         return jsonify({
             "status": "online",
             "database": "sqlite",
-            "environment": app.config.get("ENV", "production"),
-            "static_folder": static_dir,
-            "static_folder_exists": exists,
-            "static_folder_files": files,
-            "routes": routes
+            "environment": app.config.get("ENV", "production")
         }), 200
 
     # Serve index.html for SPA root and catch-all for SPA deep routing
