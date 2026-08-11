@@ -23,10 +23,7 @@ class CustomJSONProvider(DefaultJSONProvider):
         return super().default(obj)
 
 def create_app():
-    import os
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    static_dir = os.path.abspath(os.path.join(current_dir, "..", "..", "frontend", "dist"))
-    app = Flask(__name__, static_folder=static_dir, static_url_path='/')
+    app = Flask(__name__, static_folder=None, static_url_path=None)
     app.json = CustomJSONProvider(app)
     app.config.from_object(Config)
     
@@ -95,8 +92,9 @@ def create_app():
     @app.route("/api/health", methods=["GET"])
     def health_check():
         import os
-        static_dir = app.static_folder
-        exists = os.path.exists(static_dir) if static_dir else False
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        static_dir = os.path.abspath(os.path.join(current_dir, "..", "..", "frontend", "dist"))
+        exists = os.path.exists(static_dir)
         files = os.listdir(static_dir) if exists else []
         routes = [str(rule) for rule in app.url_map.iter_rules()]
         return jsonify({
@@ -115,7 +113,20 @@ def create_app():
     def catch_all(path):
         if path.startswith("api/") or path.startswith("uploads/"):
             return jsonify({"error": "Not Found"}), 404
-        return app.send_static_file("index.html")
+            
+        import os
+        from flask import send_from_directory
+        
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        static_dir = os.path.abspath(os.path.join(current_dir, "..", "..", "frontend", "dist"))
+        
+        # If the path matches an actual static file, serve it directly
+        target_path = os.path.join(static_dir, path)
+        if path and os.path.exists(target_path) and os.path.isfile(target_path):
+            return send_from_directory(static_dir, path)
+            
+        # Otherwise, fall back to index.html for SPA routing
+        return send_from_directory(static_dir, "index.html")
         
     # Performance Profiling Hook
     import time
