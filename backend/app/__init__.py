@@ -23,7 +23,7 @@ class CustomJSONProvider(DefaultJSONProvider):
         return super().default(obj)
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder='../../frontend/dist', static_url_path='/')
     app.json = CustomJSONProvider(app)
     app.config.from_object(Config)
     
@@ -88,45 +88,22 @@ def create_app():
     def serve_uploaded_file(filename):
         return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
         
-    # Root Status API
-    @app.route("/", methods=["GET"])
-    def index():
-        from app.utils.db import get_db
-        db = get_db()
+    # Root Status / Health API
+    @app.route("/api/health", methods=["GET"])
+    def health_check():
         return jsonify({
-            "name": "StudySphere AI API Server",
-            "version": "1.0.0",
             "status": "online",
-            "environment": app.config["ENV"],
-            "database": "mock_json" if db.is_mock else "mongodb_atlas",
-            "ai_mode": "mock_sandbox" if not Config.OPENAI_API_KEY else "openai_active"
+            "database": "sqlite",
+            "environment": app.config.get("ENV", "production")
         }), 200
-        
-    # Secure DB Diagnostics API
-    @app.route("/api/db-check", methods=["GET"])
-    def db_check():
-        import re
-        uri = app.config.get("MONGODB_URI", "")
-        if not uri:
-            return jsonify({"status": "error", "message": "MONGODB_URI is empty"}), 200
-            
-        match = re.match(r"(mongodb(?:\+srv)?://)([^:]+):([^@]+)@(.+)", uri)
-        if not match:
-            return jsonify({
-                "status": "invalid_format",
-                "uri_preview": uri[:15] + "..." if len(uri) > 15 else uri,
-                "length": len(uri)
-            }), 200
-            
-        scheme, username, password, rest = match.groups()
-        return jsonify({
-            "status": "parsed",
-            "scheme": scheme,
-            "username": username,
-            "password_len": len(password),
-            "password_first_last": password[0] + "..." + password[-1] if len(password) > 2 else password,
-            "host_preview": rest[:30] + "..." if len(rest) > 30 else rest
-        }), 200
+
+    # Serve index.html for SPA root and catch-all for SPA deep routing
+    @app.route("/", defaults={"path": ""})
+    @app.route("/<path:path>")
+    def catch_all(path):
+        if path.startswith("api/") or path.startswith("uploads/"):
+            return jsonify({"error": "Not Found"}), 404
+        return app.send_static_file("index.html")
         
     # Performance Profiling Hook
     import time

@@ -1,16 +1,14 @@
 import os
 import json
 import logging
+import sqlite3
+import time
 from bson import ObjectId
 from datetime import datetime
-from pymongo import MongoClient
-from pymongo.errors import ConnectionFailure, ConfigurationError
+from flask import has_app_context, g
 from app.config import Config
 
 logger = logging.getLogger(__name__)
-
-import time
-from flask import has_app_context, g
 
 def measure_db_time(func):
     def wrapper(*args, **kwargs):
@@ -31,19 +29,43 @@ class JSONEncoder(json.JSONEncoder):
             return o.isoformat()
         return super().default(o)
 
-class MockCollection:
-    """Mock PyMongo collection using a local JSON file for persistence."""
+class DatabaseConnectionError(Exception):
+    """Custom exception raised when SQLite connection fails (fallback helper)."""
+    pass
+
+class SqliteCollection:
+    """Wrapper that emulates a PyMongo collection using SQLite JSON storage."""
     def __init__(self, db_manager, collection_name):
         self.db_manager = db_manager
         self.name = collection_name
 
-    def _get_data(self):
-        return self.db_manager._load_data().setdefault(self.name, [])
+    def _get_all(self):
+        cursor = self.db_manager.conn.cursor()
+        cursor.execute("SELECT data FROM documents WHERE collection = ?", (self.name,))
+        rows = cursor.fetchall()
+        docs = []
+        for r in rows:
+            try:
+                docs.append(json.loads(r["data"]))
+            except Exception:
+                pass
+        return docs
 
-    def _save_data(self, data):
-        all_data = self.db_manager._load_data()
-        all_data[self.name] = data
-        self.db_manager._write_data(all_data)
+    def _save_doc(self, doc):
+        doc_id = str(doc.get("_id", doc.get("id")))
+        doc_json = json.dumps(doc, cls=JSONEncoder)
+        with self.db_manager.conn:
+            self.db_manager.conn.execute(
+                "INSERT OR REPLACE INTO documents (collection, id, data) VALUES (?, ?, ?)",
+                (self.name, doc_id, doc_json)
+            )
+
+    def _delete_doc(self, doc_id):
+        with self.db_manager.conn:
+            self.db_manager.conn.execute(
+                "DELETE FROM documents WHERE collection = ? AND id = ?",
+                (self.name, str(doc_id))
+            )
 
     def _matches(self, doc, query):
         if not query:
@@ -79,7 +101,7 @@ class MockCollection:
 
     @measure_db_time
     def find(self, query=None, sort=None):
-        docs = self._get_data()
+        docs = self._get_all()
         query = query or {}
         results = [doc for doc in docs if self._matches(doc, query)]
         # Simple sorting if sort is passed (e.g., [('created_at', -1)])
@@ -90,7 +112,7 @@ class MockCollection:
 
     @measure_db_time
     def find_one(self, query=None):
-        docs = self._get_data()
+        docs = self._get_all()
         query = query or {}
         for doc in docs:
             if self._matches(doc, query):
@@ -99,21 +121,19 @@ class MockCollection:
 
     @measure_db_time
     def insert_one(self, document):
-        docs = self._get_data()
         if "_id" not in document:
             document["_id"] = str(ObjectId())
         else:
             document["_id"] = str(document["_id"])
             
-        # Convert any datetime elements to isoformat or store them as is (load handles dates)
+        # Convert any datetime elements to isoformat
         for k, v in document.items():
             if isinstance(v, datetime):
                 document[k] = v.isoformat()
             elif isinstance(v, ObjectId):
                 document[k] = str(v)
                 
-        docs.append(document)
-        self._save_data(docs)
+        self._save_doc(document)
         
         class InsertResult:
             def __init__(self, inserted_id):
@@ -122,7 +142,6 @@ class MockCollection:
 
     @measure_db_time
     def insert_many(self, documents):
-        docs = self._get_data()
         inserted_ids = []
         for document in documents:
             if "_id" not in document:
@@ -136,11 +155,9 @@ class MockCollection:
                 elif isinstance(v, ObjectId):
                     document[k] = str(v)
                     
-            docs.append(document)
+            self._save_doc(document)
             inserted_ids.append(document["_id"])
             
-        self._save_data(docs)
-        
         class InsertManyResult:
             def __init__(self, inserted_ids):
                 self.inserted_ids = inserted_ids
@@ -148,12 +165,8 @@ class MockCollection:
 
     @measure_db_time
     def update_one(self, query, update, upsert=False):
-        docs = self._get_data()
-        target_doc = None
-        for doc in docs:
-            if self._matches(doc, query):
-                target_doc = doc
-                break
+        docs = self.find(query)
+        target_doc = docs[0] if docs else None
 
         if not target_doc:
             if upsert:
@@ -195,31 +208,28 @@ class MockCollection:
             updated = True
             
         if updated:
-            self._save_data(docs)
+            self._save_doc(target_doc)
         return True
 
     @measure_db_time
     def update_many(self, query, update, upsert=False):
-        docs = self._get_data()
+        docs = self.find(query)
         updated_count = 0
         for doc in docs:
-            if self._matches(doc, query):
-                updated = False
-                if "$set" in update:
-                    for k, v in update["$set"].items():
-                        if isinstance(v, datetime):
-                            doc[k] = v.isoformat()
-                        elif isinstance(v, ObjectId):
-                            doc[k] = str(v)
-                        else:
-                            doc[k] = v
-                    updated = True
-                if updated:
-                    updated_count += 1
-                    
-        if updated_count > 0:
-            self._save_data(docs)
-            
+            updated = False
+            if "$set" in update:
+                for k, v in update["$set"].items():
+                    if isinstance(v, datetime):
+                        doc[k] = v.isoformat()
+                    elif isinstance(v, ObjectId):
+                        doc[k] = str(v)
+                    else:
+                        doc[k] = v
+                updated = True
+            if updated:
+                self._save_doc(doc)
+                updated_count += 1
+                
         class UpdateResult:
             def __init__(self, modified_count):
                 self.modified_count = modified_count
@@ -227,133 +237,66 @@ class MockCollection:
 
     @measure_db_time
     def delete_one(self, query):
-        docs = self._get_data()
-        for idx, doc in enumerate(docs):
-            if self._matches(doc, query):
-                docs.pop(idx)
-                self._save_data(docs)
-                return True
+        doc = self.find_one(query)
+        if doc:
+            self._delete_doc(doc["_id"])
+            return True
         return False
 
     @measure_db_time
     def delete_many(self, query):
-        docs = self._get_data()
-        initial_count = len(docs)
-        remaining_docs = [doc for doc in docs if not self._matches(doc, query)]
-        self._save_data(remaining_docs)
-        
+        docs = self.find(query)
+        deleted_count = 0
+        for doc in docs:
+            self._delete_doc(doc["_id"])
+            deleted_count += 1
+            
         class DeleteResult:
             def __init__(self, deleted_count):
                 self.deleted_count = deleted_count
-        return DeleteResult(initial_count - len(remaining_docs))
+        return DeleteResult(deleted_count)
 
     @measure_db_time
     def count_documents(self, query):
-        docs = self._get_data()
-        return sum(1 for doc in docs if self._matches(doc, query))
-
-class DatabaseConnectionError(Exception):
-    """Custom exception raised when MongoDB connection fails in production."""
-    pass
+        docs = self.find(query)
+        return len(docs)
 
 class DatabaseManager:
-    """Manages connection to MongoDB Atlas, falling back to local file DB."""
+    """Manages connection to SQLite database."""
     def __init__(self):
-        self.client = None
-        self.db = None
-        self.is_mock = False
-        self.memory_store = {}
-        self.connection_error = None
+        self.conn = None
+        self.is_mock = False  # Keep property for status interface fallback
         
-        # Local mock database path
+        # SQLite DB path
+        db_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "data")
         try:
-            os.makedirs(Config.LOG_DIR, exist_ok=True)
+            os.makedirs(db_dir, exist_ok=True)
         except Exception:
             pass
-        self.mock_file_path = os.path.join(Config.LOG_DIR, "db_store.json")
+        self.db_path = os.path.join(db_dir, "studysphere.db")
         
-        # Try to connect to MongoDB Atlas
-        if Config.MONGODB_URI:
-            try:
-                self.client = MongoClient(Config.MONGODB_URI, serverSelectionTimeoutMS=3000)
-                # Verify connection
-                self.client.admin.command('ping')
-                try:
-                    self.db = self.client.get_default_database()
-                except (ConfigurationError, Exception):
-                    self.db = self.client["studysphere"]
-                logger.info("Successfully connected to MongoDB Atlas.")
-                # Create production indexes for query speedups
-                try:
-                    self.db["pdf_chunks"].create_index([("pdf_id", 1)])
-                    self.db["pdf_chunks"].create_index([("chunk_id", 1)])
-                    self.db["pdf_jobs"].create_index([("pdf_id", 1)])
-                    self.db["gemini_cache"].create_index([("_id", 1)])
-                except Exception as index_err:
-                    logger.warning(f"Failed to create production collection indexes: {index_err}")
-            except (ConnectionFailure, ConfigurationError, Exception) as e:
-                if os.getenv("VERCEL") == "1":
-                    logger.critical(f"MongoDB connection failed on Vercel: {e}")
-                    self.connection_error = f"Database connection failed: {e}. Please verify your MongoDB network access whitelisting (allow IP address 0.0.0.0/0 on your cluster)."
-                else:
-                    logger.warning(f"MongoDB connection failed: {e}. Falling back to Local JSON Database.")
-                    self.is_mock = True
-        else:
-            if os.getenv("VERCEL") == "1":
-                logger.critical("No MONGODB_URI set on Vercel.")
-                self.connection_error = "Database configuration error: MONGODB_URI environment variable is missing on Vercel."
-            else:
-                logger.info("No MONGODB_URI set in .env. Falling back to Local JSON Database.")
-                self.is_mock = True
-
-    def _load_data(self):
-        if not hasattr(self, "memory_store"):
-            self.memory_store = {}
-        if self.memory_store:
-            return self.memory_store
-            
-        if not os.path.exists(self.mock_file_path):
-            return {}
         try:
-            with open(self.mock_file_path, "r") as f:
-                data = json.load(f)
-                self.memory_store = data
-                return data
-        except Exception:
-            return {}
-
-    def _write_data(self, data):
-        self.memory_store = data
-        try:
-            with open(self.mock_file_path, "w") as f:
-                json.dump(data, f, cls=JSONEncoder, indent=2)
+            self.conn = sqlite3.connect(self.db_path, check_same_thread=False)
+            self.conn.row_factory = sqlite3.Row
+            self._init_db()
+            logger.info(f"Successfully connected to SQLite database at {self.db_path}.")
         except Exception as e:
-            logger.error(f"Failed to write mock db data: {e}. Keeping in memory store.")
+            logger.critical(f"SQLite initialization failed: {e}")
+            raise DatabaseConnectionError(f"SQLite initialization failed: {e}")
+
+    def _init_db(self):
+        with self.conn:
+            self.conn.execute("""
+                CREATE TABLE IF NOT EXISTS documents (
+                    collection TEXT,
+                    id TEXT,
+                    data TEXT,
+                    PRIMARY KEY (collection, id)
+                )
+            """)
 
     def get_collection(self, name):
-        if self.connection_error:
-            raise DatabaseConnectionError(self.connection_error)
-        if self.is_mock:
-            return MockCollection(self, name)
-        return CollectionWrapper(self.db[name])
-
-class CollectionWrapper:
-    """Wrapper around a PyMongo collection to trace DB execution timing in request context."""
-    def __init__(self, collection):
-        self._collection = collection
-
-    def __getattr__(self, name):
-        attr = getattr(self._collection, name)
-        if callable(attr):
-            def wrapper(*args, **kwargs):
-                start = time.time()
-                res = attr(*args, **kwargs)
-                duration = time.time() - start
-                if has_app_context():
-                    g.db_query_time = getattr(g, "db_query_time", 0.0) + duration
-                return res
-            return wrapper
-        return attr
+        return SqliteCollection(self, name)
 
 # Global DB Instance
 db_manager = DatabaseManager()
