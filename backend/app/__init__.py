@@ -98,13 +98,15 @@ def create_app():
         static_dir = app.static_folder
         exists = os.path.exists(static_dir) if static_dir else False
         files = os.listdir(static_dir) if exists else []
+        routes = [str(rule) for rule in app.url_map.iter_rules()]
         return jsonify({
             "status": "online",
             "database": "sqlite",
             "environment": app.config.get("ENV", "production"),
             "static_folder": static_dir,
             "static_folder_exists": exists,
-            "static_folder_files": files
+            "static_folder_files": files,
+            "routes": routes
         }), 200
 
     # Serve index.html for SPA root and catch-all for SPA deep routing
