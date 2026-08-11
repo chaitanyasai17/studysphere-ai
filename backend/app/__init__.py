@@ -102,6 +102,32 @@ def create_app():
             "ai_mode": "mock_sandbox" if not Config.OPENAI_API_KEY else "openai_active"
         }), 200
         
+    # Secure DB Diagnostics API
+    @app.route("/api/db-check", methods=["GET"])
+    def db_check():
+        import re
+        uri = app.config.get("MONGODB_URI", "")
+        if not uri:
+            return jsonify({"status": "error", "message": "MONGODB_URI is empty"}), 200
+            
+        match = re.match(r"(mongodb(?:\+srv)?://)([^:]+):([^@]+)@(.+)", uri)
+        if not match:
+            return jsonify({
+                "status": "invalid_format",
+                "uri_preview": uri[:15] + "..." if len(uri) > 15 else uri,
+                "length": len(uri)
+            }), 200
+            
+        scheme, username, password, rest = match.groups()
+        return jsonify({
+            "status": "parsed",
+            "scheme": scheme,
+            "username": username,
+            "password_len": len(password),
+            "password_first_last": password[0] + "..." + password[-1] if len(password) > 2 else password,
+            "host_preview": rest[:30] + "..." if len(rest) > 30 else rest
+        }), 200
+        
     # Performance Profiling Hook
     import time
     from flask import g, request
