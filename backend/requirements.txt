@@ -9,3 +9,4 @@ pypdf==4.2.0
 werkzeug==3.0.3
 google-generativeai==0.8.6
 gunicorn
+psutil
