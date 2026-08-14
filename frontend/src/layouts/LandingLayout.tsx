@@ -8,7 +8,7 @@ export const LandingLayout: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const navLinks = [
     { label: "Features", href: "#features" },
-    { label: "Timeline", href: "#timeline" },
+    { label: "Timeline", href: "#arena" },
     { label: "Why Us", href: "#why-choose" },
     { label: "FAQ", href: "#faq" }
   ];
