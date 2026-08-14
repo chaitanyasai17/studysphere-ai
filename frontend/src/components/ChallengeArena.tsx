@@ -89,7 +89,7 @@ export const ChallengeArena: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  // 5. XP System State
+  // Shared XP System State
   const [xp, setXp] = useState(7400);
   const [playerLevel, setPlayerLevel] = useState(12);
   const [streakDays, setStreakDays] = useState(3);
@@ -132,7 +132,7 @@ export const ChallengeArena: React.FC = () => {
   const [cyberOption, setCyberOption] = useState<number | null>(null);
   const [cyberCompleted, setCyberCompleted] = useState(false);
 
-  // 3. Badges State
+  // Badges State
   const [badges, setBadges] = useState<BadgeItem[]>([
     { id: "first", name: "First Steps", icon: "🏆", unlocked: true },
     { id: "streak", name: "7 Day Streak", icon: "🔥", unlocked: false },
@@ -141,7 +141,7 @@ export const ChallengeArena: React.FC = () => {
     { id: "cyber", name: "Cyber Defender", icon: "🔐", unlocked: false }
   ]);
 
-  // 5. Leaderboard State
+  // Leaderboard State (High Contrast Text)
   const [leaderboard, setLeaderboard] = useState<LeaderboardUser[]>([
     { rank: 1, name: "Alex", xp: 12450 },
     { rank: 2, name: "Priya", xp: 10820 },
@@ -158,6 +158,17 @@ export const ChallengeArena: React.FC = () => {
         .map((u, idx) => ({ ...u, rank: idx + 1 }))
     );
   }, [xp]);
+
+  // Escape key listener to close modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setActiveModal(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const triggerConfetti = () => {
     setShowConfetti(true);
@@ -227,7 +238,7 @@ export const ChallengeArena: React.FC = () => {
     setShowAuthGate(false);
   };
 
-  // 3. Mini Code Compiler Real Execution Handler
+  // 3. Mini Code Compiler Handler
   const handleRunCodeCompiler = async () => {
     if (codeRunning) return;
     setCodeRunning(true);
@@ -269,14 +280,12 @@ export const ChallengeArena: React.FC = () => {
         });
       }
     } catch (err: any) {
-      // Robust client-side fallback if offline/local dev server
       setCodeRunning(false);
 
       let mockSuccess = true;
       let mockOut = "StudySphere";
       let mockErr = "";
 
-      // Check for syntax error simulation (e.g. unclosed paren)
       if (userCode.includes("print(") && userCode.split("(").length !== userCode.split(")").length) {
         mockSuccess = false;
         mockOut = "";
@@ -299,8 +308,8 @@ export const ChallengeArena: React.FC = () => {
   // 4. Cyber Mission Handler
   const handleCyberOptionSelect = (idx: number) => {
     setCyberOption(idx);
-    if (idx === 2) {
-      // Option C Correct
+    if (idx === 1) {
+      // Option B Correct (Investigate traffic logs)
       setCyberCompleted(true);
       if (!completedChallenges.cyber) {
         addXP(300);
@@ -335,11 +344,11 @@ export const ChallengeArena: React.FC = () => {
 
   return (
     <section id="arena" className="max-w-[1440px] mx-auto px-6 space-y-12 select-none relative">
-      {/* Background Ambient Lighting */}
+      {/* Background Ambient Lighting (pointer-events-none prevents click blocking) */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85vw] max-w-[950px] h-[500px] bg-gradient-to-r from-purple-600/15 via-indigo-500/15 to-sky-500/15 blur-[130px] rounded-full pointer-events-none z-0 animate-pulse-slow" />
-      <div className="absolute inset-0 bg-[radial-gradient(#8b5cf6_1px,transparent_1px)] [background-size:32px_32px] opacity-[0.03] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(#8b5cf6_1px,transparent_1px)] [background-size:32px_32px] opacity-[0.03] pointer-events-none z-0" />
 
-      {/* Confetti Animation Effect */}
+      {/* Confetti Particle Effect */}
       {showConfetti && (
         <div className="fixed inset-0 pointer-events-none z-[10000] overflow-hidden flex items-center justify-center">
           {[...Array(35)].map((_, i) => (
@@ -376,7 +385,7 @@ export const ChallengeArena: React.FC = () => {
         <h2 className="text-2xl sm:text-4xl lg:text-[40px] font-bold tracking-tight text-white leading-tight">
           StudySphere Challenge Arena
         </h2>
-        <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-medium">
+        <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-medium">
           Learn, solve challenges, earn XP, and level up your skills.
         </p>
       </motion.div>
@@ -414,7 +423,7 @@ export const ChallengeArena: React.FC = () => {
                     Demo Mode
                   </span>
                 </div>
-                <p className="text-xs text-slate-300 font-medium">Mastering Data Structures &amp; AI Systems</p>
+                <p className="text-xs text-slate-200 font-medium">Mastering Data Structures &amp; AI Systems</p>
               </div>
             </div>
 
@@ -428,7 +437,7 @@ export const ChallengeArena: React.FC = () => {
           {/* XP Progress Bar */}
           <div className="space-y-2">
             <div className="flex justify-between items-center text-xs font-mono">
-              <span className="text-slate-300 font-medium">Current Progress</span>
+              <span className="text-slate-200 font-medium">Current Progress</span>
               <span className="text-purple-300 font-bold">
                 {xp.toLocaleString()} / {maxLevelXP.toLocaleString()} XP
               </span>
@@ -442,7 +451,7 @@ export const ChallengeArena: React.FC = () => {
             </div>
           </div>
 
-          {/* 3. ACHIEVEMENT BADGES ROW */}
+          {/* Achievement Badges Row */}
           <div className="pt-3 border-t border-slate-800 space-y-2">
             <span className="text-[10px] font-mono text-slate-300 uppercase tracking-wider block text-center sm:text-left font-bold">
               Achievement Badges
@@ -465,7 +474,7 @@ export const ChallengeArena: React.FC = () => {
           </div>
         </motion.div>
 
-        {/* 5. COMPACT LEADERBOARD (4 Columns) */}
+        {/* 5. HIGH-CONTRAST LEADERBOARD (4 Columns) */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -478,58 +487,68 @@ export const ChallengeArena: React.FC = () => {
               <Trophy className="w-4 h-4 text-amber-400" />
               <span>Leaderboard</span>
             </h4>
-            <span className="text-[10px] font-mono text-slate-300 font-bold">Weekly Top</span>
+            <span className="text-xs font-mono text-slate-200 font-bold">Weekly Top</span>
           </div>
 
           <div className="space-y-2">
             {leaderboard.map((u) => (
               <div
                 key={u.name}
-                className={`p-2.5 rounded-xl border text-xs font-bold flex items-center justify-between transition-all ${
+                className={`p-3 rounded-2xl border text-sm font-bold flex items-center justify-between transition-all ${
                   u.isUser
-                    ? "bg-purple-500/25 border-purple-400 text-white shadow-lg shadow-purple-500/20 ring-1 ring-purple-400/30"
-                    : "bg-[#0E0F1A] border-slate-800 text-slate-200"
+                    ? "bg-purple-500/25 border-purple-400 text-white shadow-lg shadow-purple-500/20 ring-1 ring-purple-400/40"
+                    : "bg-[#161828] border-slate-750 text-slate-100"
                 }`}
               >
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-3">
                   <span
-                    className={`w-5 h-5 rounded-full text-[10px] font-mono font-bold flex items-center justify-center ${
+                    className={`w-6 h-6 rounded-full text-xs font-mono font-extrabold flex items-center justify-center ${
                       u.rank === 1
-                        ? "bg-amber-400 text-slate-950"
+                        ? "bg-amber-400 text-slate-950 font-bold"
                         : u.rank === 2
-                        ? "bg-slate-300 text-slate-950"
+                        ? "bg-slate-200 text-slate-950 font-bold"
                         : u.rank === 3
-                        ? "bg-amber-700 text-white"
-                        : "bg-slate-800 text-slate-300"
+                        ? "bg-amber-600 text-white font-bold"
+                        : "bg-slate-800 text-slate-200"
                     }`}
                   >
                     {u.rank}
                   </span>
-                  <span>{u.name}</span>
+                  <span className="text-white font-bold text-sm sm:text-base">{u.name}</span>
                 </div>
-                <span className="font-mono text-amber-300 text-[11px] font-bold">
+                <span className="font-mono text-amber-300 text-xs sm:text-sm font-extrabold">
                   {u.xp.toLocaleString()} XP
                 </span>
               </div>
             ))}
           </div>
 
-          <div className="pt-2 text-[10px] font-mono text-slate-400 text-center font-semibold">
+          <div className="pt-2 text-xs font-mono text-slate-300 text-center font-semibold">
             Earn XP to climb the arena rankings!
           </div>
         </motion.div>
       </div>
 
-      {/* 2. DAILY CHALLENGES (3 Interactive Cards) */}
+      {/* 2. DAILY CHALLENGES (3 Fully Clickable Cards) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10 max-w-5xl mx-auto">
-        {/* Challenge 1: AI Quick Quiz */}
+        {/* Challenge 1: AI Quick Quiz (Entire Card Clickable) */}
         <motion.div
+          tabIndex={0}
+          role="button"
+          aria-label="Open AI Quick Quiz Challenge"
+          onClick={() => openModal("quiz")}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              openModal("quiz");
+            }
+          }}
           initial={{ opacity: 0, y: 25 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.5, delay: 0.1 }}
           whileHover={{ y: -8, scale: 1.02 }}
-          className="p-6 sm:p-7 rounded-3xl border border-slate-750 bg-[#121422] backdrop-blur-md flex flex-col justify-between group hover:border-purple-500/50 transition-all duration-300 relative overflow-hidden shadow-xl"
+          className="p-6 sm:p-7 rounded-3xl border border-slate-750 bg-[#121422] backdrop-blur-md flex flex-col justify-between group hover:border-purple-500/60 transition-all duration-300 relative overflow-hidden shadow-xl cursor-pointer active:scale-98 select-none"
         >
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -548,14 +567,17 @@ export const ChallengeArena: React.FC = () => {
                   AI Quick Quiz
                 </h3>
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed font-medium">
+              <p className="text-xs text-slate-200 leading-relaxed font-medium">
                 Answer 5 automated AI questions to test core knowledge.
               </p>
             </div>
           </div>
 
           <button
-            onClick={() => openModal("quiz")}
+            onClick={(e) => {
+              e.stopPropagation();
+              openModal("quiz");
+            }}
             disabled={completedChallenges.quiz}
             className={`mt-6 w-full py-3 rounded-xl text-xs font-bold transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-95 outline-none ${
               completedChallenges.quiz
@@ -577,14 +599,24 @@ export const ChallengeArena: React.FC = () => {
           </button>
         </motion.div>
 
-        {/* Challenge 2: Code Sprint */}
+        {/* Challenge 2: Code Sprint (Entire Card Clickable) */}
         <motion.div
+          tabIndex={0}
+          role="button"
+          aria-label="Open Code Sprint Challenge"
+          onClick={() => openModal("code")}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              openModal("code");
+            }
+          }}
           initial={{ opacity: 0, y: 25 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.5, delay: 0.2 }}
           whileHover={{ y: -8, scale: 1.02 }}
-          className="p-6 sm:p-7 rounded-3xl border border-slate-750 bg-[#121422] backdrop-blur-md flex flex-col justify-between group hover:border-sky-500/50 transition-all duration-300 relative overflow-hidden shadow-xl"
+          className="p-6 sm:p-7 rounded-3xl border border-slate-750 bg-[#121422] backdrop-blur-md flex flex-col justify-between group hover:border-sky-500/60 transition-all duration-300 relative overflow-hidden shadow-xl cursor-pointer active:scale-98 select-none"
         >
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -603,14 +635,17 @@ export const ChallengeArena: React.FC = () => {
                   Code Sprint
                 </h3>
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed font-medium">
+              <p className="text-xs text-slate-200 leading-relaxed font-medium">
                 Solve a programming challenge with live code execution.
               </p>
             </div>
           </div>
 
           <button
-            onClick={() => openModal("code")}
+            onClick={(e) => {
+              e.stopPropagation();
+              openModal("code");
+            }}
             disabled={completedChallenges.code}
             className={`mt-6 w-full py-3 rounded-xl text-xs font-bold transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-95 outline-none ${
               completedChallenges.code
@@ -632,14 +667,24 @@ export const ChallengeArena: React.FC = () => {
           </button>
         </motion.div>
 
-        {/* Challenge 3: Cyber Mission */}
+        {/* Challenge 3: Cyber Mission (Entire Card Clickable) */}
         <motion.div
+          tabIndex={0}
+          role="button"
+          aria-label="Open Cyber Mission Challenge"
+          onClick={() => openModal("cyber")}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              openModal("cyber");
+            }
+          }}
           initial={{ opacity: 0, y: 25 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.5, delay: 0.3 }}
           whileHover={{ y: -8, scale: 1.02 }}
-          className="p-6 sm:p-7 rounded-3xl border border-slate-750 bg-[#121422] backdrop-blur-md flex flex-col justify-between group hover:border-rose-500/50 transition-all duration-300 relative overflow-hidden shadow-xl"
+          className="p-6 sm:p-7 rounded-3xl border border-slate-750 bg-[#121422] backdrop-blur-md flex flex-col justify-between group hover:border-rose-500/60 transition-all duration-300 relative overflow-hidden shadow-xl cursor-pointer active:scale-98 select-none"
         >
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -658,14 +703,17 @@ export const ChallengeArena: React.FC = () => {
                   Cyber Mission
                 </h3>
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed font-medium">
+              <p className="text-xs text-slate-200 leading-relaxed font-medium">
                 Complete a cybersecurity scenario &amp; unlock Defender badge.
               </p>
             </div>
           </div>
 
           <button
-            onClick={() => openModal("cyber")}
+            onClick={(e) => {
+              e.stopPropagation();
+              openModal("cyber");
+            }}
             disabled={completedChallenges.cyber}
             className={`mt-6 w-full py-3 rounded-xl text-xs font-bold transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-95 outline-none ${
               completedChallenges.cyber
@@ -776,11 +824,17 @@ export const ChallengeArena: React.FC = () => {
         )}
       </motion.div>
 
-      {/* CHALLENGE MODAL OVERLAY */}
+      {/* CHALLENGE MODAL OVERLAY (Backdrop click closes modal, content click stops propagation) */}
       <AnimatePresence>
         {activeModal && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+          <div
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setActiveModal(null);
+            }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md"
+          >
             <motion.div
+              onClick={(e) => e.stopPropagation()}
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -879,7 +933,7 @@ export const ChallengeArena: React.FC = () => {
                       </div>
                       <div className="space-y-1">
                         <h3 className="text-xl font-bold text-white">AI Quick Quiz Completed!</h3>
-                        <p className="text-xs text-slate-300 font-medium">You unlocked +150 XP reward!</p>
+                        <p className="text-xs text-slate-200 font-medium">You unlocked +150 XP reward!</p>
                       </div>
                       <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex justify-center gap-6 font-mono text-sm">
                         <div>Score: <span className="text-emerald-400 font-bold">{quizScore} / {FIVE_QUIZ_QUESTIONS.length}</span></div>
@@ -906,13 +960,13 @@ export const ChallengeArena: React.FC = () => {
                           <Code className="w-5 h-5 text-sky-400" />
                           <span>Code Sprint Challenge</span>
                         </div>
-                        <span className="text-xs text-slate-300 font-medium">Reverse a String in Python</span>
+                        <span className="text-xs text-slate-200 font-medium">Reverse a String in Python</span>
                       </div>
 
                       {/* Language Selector Dropdown */}
                       <div className="flex items-center justify-between bg-[#080911] px-3.5 py-2 rounded-xl border border-slate-800 font-mono text-xs text-slate-200">
                         <div className="flex items-center gap-2">
-                          <span className="text-slate-400 font-bold">Language:</span>
+                          <span className="text-slate-300 font-bold">Language:</span>
                           <select
                             value={selectedLanguage}
                             onChange={(e) => setSelectedLanguage(e.target.value)}
@@ -929,7 +983,7 @@ export const ChallengeArena: React.FC = () => {
                       {/* Real Editable Monospace Code Editor with Line Numbers */}
                       <div className="rounded-2xl border border-slate-750 bg-[#070810] overflow-hidden flex font-mono text-xs text-slate-100 min-h-[160px] relative">
                         {/* Line Numbers Column */}
-                        <div className="py-3 px-3 select-none text-right text-slate-600 bg-[#05060C] border-r border-slate-850 flex flex-col font-mono text-xs">
+                        <div className="py-3 px-3 select-none text-right text-slate-500 bg-[#05060C] border-r border-slate-850 flex flex-col font-mono text-xs">
                           {userCode.split("\n").map((_, i) => (
                             <span key={i} className="leading-6">{i + 1}</span>
                           ))}
@@ -969,7 +1023,7 @@ export const ChallengeArena: React.FC = () => {
 
                       {/* OUTPUT TERMINAL SECTION */}
                       <div className="space-y-2">
-                        <div className="text-xs font-mono font-bold text-slate-300 flex items-center justify-between">
+                        <div className="text-xs font-mono font-bold text-slate-200 flex items-center justify-between">
                           <span>OUTPUT</span>
                           {codeOutputState && (
                             <span className={codeOutputState.success ? "text-emerald-400" : "text-rose-400"}>
@@ -1023,33 +1077,33 @@ export const ChallengeArena: React.FC = () => {
                 </div>
               )}
 
-              {/* 4. CYBER MISSION MODAL */}
+              {/* 4. CYBER MISSION MODAL (Network Defense Scenario) */}
               {activeModal === "cyber" && (
                 <div className="space-y-5">
                   {!showAuthGate ? (
                     <>
-                      <div className="space-y-1 border-b border-slate-800 pb-3">
+                      <div className="space-y-1.5 border-b border-slate-800 pb-3">
                         <div className="flex items-center gap-2 text-rose-400 font-bold text-sm">
                           <Shield className="w-4.5 h-4.5 text-rose-400" />
-                          <span>Cyber Mission Challenge</span>
+                          <span>Cyber Mission: Network Defense</span>
                         </div>
-                        <h4 className="text-base font-bold text-white">
-                          An employee receives a suspicious email asking them to reset their company password.
+                        <h4 className="text-base font-bold text-white leading-snug">
+                          Scenario: A server is receiving suspicious traffic from an unknown IP address.
                         </h4>
-                        <p className="text-xs text-slate-300 font-medium pt-1">
-                          Select the correct security protocol response:
+                        <p className="text-xs text-slate-200 font-medium">
+                          Choose the best first security protocol action:
                         </p>
                       </div>
 
                       <div className="space-y-2.5">
                         {[
-                          "A. Click the link and reset the password.",
-                          "B. Forward the email to friends.",
-                          "C. Verify the sender and report the phishing attempt.",
-                          "D. Ignore company security policy."
+                          "Block the IP immediately",
+                          "Investigate traffic logs",
+                          "Restart the server",
+                          "Ignore the alert"
                         ].map((opt, idx) => {
                           const isSelected = cyberOption === idx;
-                          const isCorrect = idx === 2; // Option C
+                          const isCorrect = idx === 1; // Option B
                           let btnStyle = "bg-[#1A1C2B] border-slate-700 text-white font-bold hover:border-rose-400 hover:bg-[#22253A]";
 
                           if (cyberOption !== null) {
@@ -1072,15 +1126,25 @@ export const ChallengeArena: React.FC = () => {
                         })}
                       </div>
 
-                      {cyberCompleted && (
-                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-4 rounded-2xl bg-purple-500/20 border border-purple-500/40 text-purple-200 text-xs space-y-1 font-sans">
-                          <span className="font-bold text-purple-100 text-xs block">✓ Mission Accomplished!</span>
-                          <p className="text-slate-200 text-xs font-medium">
-                            Phishing attacks trick users into handing over credentials. Always verify domain signatures and report suspicious links.
-                          </p>
-                          <span className="text-amber-300 font-mono font-bold block pt-1">
-                            +300 XP Awarded &amp; Cyber Defender Badge Unlocked 🔐
+                      {cyberOption !== null && (
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={`p-4 rounded-2xl border text-xs space-y-1.5 font-sans ${
+                          cyberOption === 1
+                            ? "bg-purple-500/20 border-purple-500/40 text-purple-200"
+                            : "bg-rose-500/20 border-rose-500/40 text-rose-200"
+                        }`}>
+                          <span className="font-bold text-white text-xs block">
+                            {cyberOption === 1 ? "✓ Correct Action!" : "✕ Incorrect Response"}
                           </span>
+                          <p className="text-slate-200 text-xs font-medium leading-relaxed">
+                            {cyberOption === 1
+                              ? "Investigating traffic logs first enables SOC analysts to differentiate between false positives, port scans, and active DDoS attacks before taking disruptive blocking measures."
+                              : "Prematurely blocking IPs or restarting servers can cause unexpected service downtime or erase crucial volatile forensic memory evidence. Always inspect traffic logs first!"}
+                          </p>
+                          {cyberOption === 1 && (
+                            <span className="text-amber-300 font-mono font-bold block pt-1">
+                              +300 XP Awarded &amp; Cyber Defender Badge Unlocked 🔐
+                            </span>
+                          )}
                         </motion.div>
                       )}
                     </>
@@ -1096,7 +1160,7 @@ export const ChallengeArena: React.FC = () => {
                   </div>
                   <div className="space-y-1">
                     <h3 className="text-base font-bold text-white">Create a free account to continue your learning journey</h3>
-                    <p className="text-xs text-slate-300 max-w-sm mx-auto">
+                    <p className="text-xs text-slate-200 max-w-sm mx-auto">
                       Save your progress, unlock advanced learning modules, and track your XP level.
                     </p>
                   </div>
