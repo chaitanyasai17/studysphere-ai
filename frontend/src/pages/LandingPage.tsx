@@ -4,6 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { WorkspaceWalkthrough } from "../components/WorkspaceWalkthrough";
 import { LearningJourney } from "../components/LearningJourney";
+import { LearningExperiences } from "../components/LearningExperiences";
 import {
   Sparkles,
   Zap,
@@ -395,7 +396,10 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 8. Learning Journey Section */}
+      {/* 8. Learning Experiences Section */}
+      <LearningExperiences />
+
+      {/* 8.5. Learning Journey Section */}
       <LearningJourney />
 
       {/* 9. FAQ Accordion Section */}
