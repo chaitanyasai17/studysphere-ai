@@ -49,8 +49,18 @@ export const LoginPage: React.FC = () => {
       addToast("Welcome back!", "Successfully authenticated.", "success");
       
       const stateFrom = (location.state as any)?.from;
-      const from = stateFrom ? (stateFrom.pathname + (stateFrom.search || "")) : "";
-      navigate(from || "/dashboard");
+      let fromPath = "";
+      if (typeof stateFrom === "string") {
+        fromPath = stateFrom;
+      } else if (stateFrom && typeof stateFrom === "object") {
+        if (stateFrom.pathname) {
+          fromPath = stateFrom.pathname + (stateFrom.search || "");
+        }
+      }
+      if (!fromPath) {
+        fromPath = searchParams.get("redirect") || searchParams.get("from") || "";
+      }
+      navigate(fromPath || "/dashboard");
     } catch (err: any) {
       console.error(err);
       setError(
@@ -191,6 +201,7 @@ export const LoginPage: React.FC = () => {
         New to StudySphere?{" "}
         <Link
           to="/register"
+          state={location.state}
           className="font-bold text-indigo-500 hover:text-indigo-650 transition-colors"
         >
           Create an account

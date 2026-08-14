@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useNotifications } from "../contexts/NotificationsContext";
 import { Mail, Check, Loader2, AlertCircle } from "lucide-react";
@@ -8,6 +8,7 @@ export const EmailVerificationPage: React.FC = () => {
   const { verifyEmail, updateUserVerification } = useAuth();
   const { addToast } = useNotifications();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
 
   const [token, setToken] = useState("");
@@ -32,7 +33,20 @@ export const EmailVerificationPage: React.FC = () => {
       setVerified(true);
       addToast("Email Verified", "Your account is active.", "success");
       updateUserVerification();
-      setTimeout(() => navigate("/dashboard"), 2000);
+
+      const stateFrom = (location.state as any)?.from;
+      let fromPath = "";
+      if (typeof stateFrom === "string") {
+        fromPath = stateFrom;
+      } else if (stateFrom && typeof stateFrom === "object") {
+        if (stateFrom.pathname) {
+          fromPath = stateFrom.pathname + (stateFrom.search || "");
+        }
+      }
+      if (!fromPath) {
+        fromPath = searchParams.get("redirect") || searchParams.get("from") || "";
+      }
+      setTimeout(() => navigate(fromPath || "/dashboard"), 2000);
     } catch (err: any) {
       setError(err.response?.data?.message || "Invalid or expired verification token.");
     } finally {

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import api from "../services/api";
 import { useNotifications } from "../contexts/NotificationsContext";
@@ -46,9 +47,22 @@ interface PlacementStats {
 
 export const ResumeAssistant: React.FC = () => {
   const { addToast } = useNotifications();
+  const [searchParams] = useSearchParams();
 
   // Active Placement Hub tab
-  const [activeTab, setActiveTab] = useState<"dashboard" | "scan" | "interview" | "roadmap">("dashboard");
+  const initialTabParam = searchParams.get("tab");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "scan" | "interview" | "roadmap">(
+    (initialTabParam === "scan" || initialTabParam === "interview" || initialTabParam === "roadmap" || initialTabParam === "dashboard")
+      ? initialTabParam
+      : "dashboard"
+  );
+
+  useEffect(() => {
+    const tabParam = searchParams.get("tab");
+    if (tabParam && ["dashboard", "scan", "interview", "roadmap"].includes(tabParam)) {
+      setActiveTab(tabParam as any);
+    }
+  }, [searchParams]);
 
   // Dashboard Stats state
   const [stats, setStats] = useState<PlacementStats | null>(null);

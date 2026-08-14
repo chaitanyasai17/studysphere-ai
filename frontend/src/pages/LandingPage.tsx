@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Sparkles,
@@ -24,6 +25,8 @@ import {
 } from "lucide-react";
 
 export const LandingPage: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [activeFAQ, setActiveFAQ] = useState<number | null>(null);
   const [demoTab, setDemoTab] = useState<"tutor" | "pdf" | "compiler" | "cyber">("tutor");
   const [statsCounters, setStatsCounters] = useState({
@@ -57,54 +60,70 @@ export const LandingPage: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
+  const handleTryFeature = (path: string) => {
+    if (isAuthenticated) {
+      navigate(path);
+    } else {
+      navigate("/login", { state: { from: path } });
+    }
+  };
+
   const features = [
     {
       title: "Interactive AI Tutor",
       desc: "Simulate private teaching circles. Get custom explanations, structured tables, and learning Style-adapted summaries.",
       icon: <MessageSquare className="w-5 h-5 text-indigo-500" />,
-      color: "from-indigo-500/10 to-purple-500/10"
+      color: "from-indigo-500/10 to-purple-500/10",
+      path: "/ai"
     },
     {
       title: "Docu-Sense PDF Learning",
       desc: "Read textbooks and index chapter outlines. Chat with document scopes to locate relevant citation pages instantly.",
       icon: <BookOpen className="w-5 h-5 text-sky-500" />,
-      color: "from-sky-500/10 to-indigo-500/10"
+      color: "from-sky-500/10 to-indigo-500/10",
+      path: "/pdf"
     },
     {
       title: "Active Flashcard Decks",
       desc: "Flip cards and test recollection thresholds. Harness spaced repetition techniques to build long-term memory milestones.",
       icon: <Zap className="w-5 h-5 text-amber-500" />,
-      color: "from-amber-500/10 to-orange-500/10"
+      color: "from-amber-500/10 to-orange-500/10",
+      path: "/flashcards"
     },
     {
       title: "Complexity Code IDE",
       desc: "Compile Python, SQL, C++, Java, and JS in a sandboxed execution terminal with Big-O runtime analyses.",
       icon: <Code className="w-5 h-5 text-emerald-500" />,
-      color: "from-emerald-500/10 to-teal-500/10"
+      color: "from-emerald-500/10 to-teal-500/10",
+      path: "/coding"
     },
     {
       title: "Stateful CLI Cyber Lab",
       desc: "Explore Layer 1-7 packets simulator, symmetric AES ciphers, and parameterized mitigations sandboxes.",
       icon: <Terminal className="w-5 h-5 text-rose-500" />,
-      color: "from-rose-500/10 to-red-500/10"
+      color: "from-rose-500/10 to-red-500/10",
+      path: "/cybersecurity"
     },
     {
       title: "SaaS Study Planner",
       desc: "Schedule study slots, organize coursework tasks, and log levels milestones on a visual tracking heatmap.",
       icon: <Calendar className="w-5 h-5 text-purple-500" />,
-      color: "from-purple-500/10 to-indigo-500/10"
+      color: "from-purple-500/10 to-indigo-500/10",
+      path: "/planner"
     },
     {
       title: "ATS Resume Analyzer",
       desc: "Upload PDF/DOCX files, run recruiter-focused keyword analyses, and copy optimized sections rewrites.",
       icon: <Briefcase className="w-5 h-5 text-cyan-500" />,
-      color: "from-cyan-500/10 to-blue-500/10"
+      color: "from-cyan-500/10 to-blue-500/10",
+      path: "/resume?tab=scan"
     },
     {
       title: "Mock Interview Recruiter",
       desc: "Practice realistic tech and HR questions. Get evaluated on technical depth and communication scores.",
       icon: <FileBadge className="w-5 h-5 text-violet-500" />,
-      color: "from-violet-500/10 to-purple-500/10"
+      color: "from-violet-500/10 to-purple-500/10",
+      path: "/resume?tab=interview"
     }
   ];
 
@@ -315,7 +334,8 @@ export const LandingPage: React.FC = () => {
               key={i}
               whileHover={{ y: -6, scale: 1.01 }}
               transition={{ duration: 0.3 }}
-              className="p-8 rounded-3xl border border-slate-200/50 dark:border-slate-800/60 bg-white dark:bg-slate-900/40 backdrop-blur-md flex flex-col justify-between group hover:border-indigo-500/20"
+              onClick={() => handleTryFeature(f.path)}
+              className="p-8 rounded-3xl border border-slate-200/50 dark:border-slate-800/60 bg-white dark:bg-slate-900/40 backdrop-blur-md flex flex-col justify-between group hover:border-indigo-500/20 cursor-pointer"
             >
               <div>
                 <div className={`w-10 h-10 rounded-2xl bg-gradient-to-br ${f.color} flex items-center justify-center mb-4 group-hover:scale-105 transition-transform`}>

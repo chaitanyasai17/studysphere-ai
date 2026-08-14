@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useNotifications } from "../contexts/NotificationsContext";
 import { User, Mail, Lock, ArrowRight, Loader2, AlertCircle } from "lucide-react";
@@ -8,6 +8,7 @@ export const RegisterPage: React.FC = () => {
   const { register } = useAuth();
   const { addToast } = useNotifications();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -34,9 +35,9 @@ export const RegisterPage: React.FC = () => {
       );
       // Auto redirect to verify-email with the token we received in response
       if (data.verification_token) {
-        navigate(`/verify-email?token=${data.verification_token}`);
+        navigate(`/verify-email?token=${data.verification_token}`, { state: location.state });
       } else {
-        navigate("/login");
+        navigate("/login", { state: location.state });
       }
     } catch (err: any) {
       console.error(err);
@@ -137,6 +138,7 @@ export const RegisterPage: React.FC = () => {
         Already have an account?{" "}
         <Link
           to="/login"
+          state={location.state}
           className="font-bold text-indigo-500 hover:text-indigo-650 transition-colors"
         >
           Sign in
