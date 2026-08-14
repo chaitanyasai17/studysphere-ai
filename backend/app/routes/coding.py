@@ -91,6 +91,89 @@ def review_code():
         "review": review_markdown
     }), 200
 
+@coding_bp.route("/execute-public", methods=["POST"])
+@coding_bp.route("/run", methods=["POST"])
+def execute_code_public():
+    data = request.get_json() or {}
+    code = data.get("code", "")
+    language = data.get("language", "python")
+    stdin = data.get("stdin", "")
+    
+    if not code.strip():
+        return jsonify({"success": False, "stdout": "", "stderr": "Code buffer cannot be empty."}), 400
+
+    dangerous_keywords = ["os.system", "subprocess", "shutil", "eval(", "exec(", "child_process", "fs.write", "fs.unlink"]
+    if any(k in code for k in dangerous_keywords):
+        return jsonify({
+            "success": False,
+            "stdout": "",
+            "stderr": "Security Exception: Execution request blocked. Dangerous system calls detected."
+        }), 400
+
+    import tempfile
+    import os
+    import subprocess
+    import time
+
+    temp_file_path = None
+    try:
+        suffix = ".py" if language in ["python", "py"] else ".js"
+        with tempfile.NamedTemporaryFile(mode="w", suffix=suffix, delete=False, encoding="utf-8") as f:
+            f.write(code)
+            temp_file_path = f.name
+
+        start_time = time.perf_counter()
+        if language in ["python", "py"]:
+            cmd = ["python", temp_file_path]
+        elif language in ["javascript", "js", "node"]:
+            cmd = ["node", temp_file_path]
+        else:
+            cmd = ["python", temp_file_path]
+
+        proc = subprocess.run(
+            cmd,
+            input=stdin if stdin else None,
+            capture_output=True,
+            text=True,
+            timeout=5.0
+        )
+        duration_ms = int((time.perf_counter() - start_time) * 1000)
+        stdout = proc.stdout
+        stderr = proc.stderr
+        success = proc.returncode == 0
+        return jsonify({
+            "success": success,
+            "stdout": stdout,
+            "output": stdout if stdout else stderr,
+            "stderr": stderr,
+            "error": stderr if not success else None,
+            "duration_ms": duration_ms
+        }), 200
+    except subprocess.TimeoutExpired:
+        return jsonify({
+            "success": False,
+            "stdout": "",
+            "output": "",
+            "stderr": "Time Limit Exceeded ❌: Code execution exceeded 5.0 seconds timeout limit.",
+            "error": "Time Limit Exceeded (5.0s)",
+            "duration_ms": 5000
+        }), 200
+    except Exception as exec_err:
+        return jsonify({
+            "success": False,
+            "stdout": "",
+            "output": "",
+            "stderr": f"Compiler Error: {exec_err}",
+            "error": str(exec_err),
+            "duration_ms": 0
+        }), 200
+    finally:
+        if temp_file_path and os.path.exists(temp_file_path):
+            try:
+                os.remove(temp_file_path)
+            except Exception:
+                pass
+
 @coding_bp.route("/execute", methods=["POST"])
 @token_required
 def execute_code():
