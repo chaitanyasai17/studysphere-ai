@@ -94,13 +94,13 @@ export const ChallengeArena: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  // Shared XP System State
+  // Central Shared XP & Progress State
   const [xp, setXp] = useState(7400);
   const [playerLevel, setPlayerLevel] = useState(12);
   const [streakDays, setStreakDays] = useState(3);
   const [showConfetti, setShowConfetti] = useState(false);
 
-  // Challenge Completion Tracking
+  // Challenge Completion Tracking (Prevents repeat XP farming)
   const [completedChallenges, setCompletedChallenges] = useState<{
     quiz?: boolean;
     code?: boolean;
@@ -140,7 +140,7 @@ export const ChallengeArena: React.FC = () => {
   const [cyberOption, setCyberOption] = useState<number | null>(null);
   const [cyberCompleted, setCyberCompleted] = useState(false);
 
-  // Badges State
+  // Badges State (Synchronized with completion state)
   const [badges, setBadges] = useState<BadgeItem[]>([
     {
       id: "first",
@@ -189,7 +189,7 @@ export const ChallengeArena: React.FC = () => {
     }
   ]);
 
-  // Leaderboard State (High Contrast Text)
+  // Leaderboard State (High Contrast Text & Dynamically synced with user XP)
   const [leaderboard, setLeaderboard] = useState<LeaderboardUser[]>([
     { rank: 1, name: "Alex", xp: 12450 },
     { rank: 2, name: "Priya", xp: 10820 },
@@ -207,7 +207,7 @@ export const ChallengeArena: React.FC = () => {
     );
   }, [xp]);
 
-  // Escape key listener to close active modals
+  // Global Escape key listener to close active modals
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -245,6 +245,9 @@ export const ChallengeArena: React.FC = () => {
       if (!completedChallenges.miniQuiz) {
         addXP(50);
         setCompletedChallenges((prev) => ({ ...prev, miniQuiz: true }));
+        setBadges((prev) =>
+          prev.map((b) => (b.id === "first" ? { ...b, unlocked: true } : b))
+        );
       }
     } else {
       setMiniQuizCorrect(false);
@@ -271,6 +274,9 @@ export const ChallengeArena: React.FC = () => {
       if (!completedChallenges.quiz) {
         addXP(150);
         setCompletedChallenges((prev) => ({ ...prev, quiz: true }));
+        setBadges((prev) =>
+          prev.map((b) => (b.id === "seeker" ? { ...b, unlocked: true } : b))
+        );
       }
 
       if (!isAuthenticated) {
@@ -287,7 +293,7 @@ export const ChallengeArena: React.FC = () => {
     setShowAuthGate(false);
   };
 
-  // 3. Mini Code Compiler Real Execution Handler
+  // 3. Mini Code Compiler Sandbox Runner
   const handleRunCodeCompiler = async () => {
     if (codeRunning || testRunning) return;
     setCodeRunning(true);
@@ -366,6 +372,9 @@ export const ChallengeArena: React.FC = () => {
       if (!completedChallenges.code) {
         addXP(250);
         setCompletedChallenges((prev) => ({ ...prev, code: true }));
+        setBadges((prev) =>
+          prev.map((b) => (b.id === "code" ? { ...b, unlocked: true } : b))
+        );
       }
 
       if (!isAuthenticated) {
@@ -415,7 +424,7 @@ export const ChallengeArena: React.FC = () => {
 
   return (
     <section id="arena" className="max-w-[1440px] mx-auto px-6 space-y-12 select-none relative">
-      {/* Background Ambient Lighting */}
+      {/* Background Ambient Lighting (pointer-events-none prevents click blocking) */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85vw] max-w-[950px] h-[500px] bg-gradient-to-r from-purple-600/15 via-indigo-500/15 to-sky-500/15 blur-[130px] rounded-full pointer-events-none z-0 animate-pulse-slow" />
       <div className="absolute inset-0 bg-[radial-gradient(#8b5cf6_1px,transparent_1px)] [background-size:32px_32px] opacity-[0.03] pointer-events-none z-0" />
 
@@ -522,7 +531,7 @@ export const ChallengeArena: React.FC = () => {
             </div>
           </div>
 
-          {/* 8. INTERACTIVE ACHIEVEMENT BADGES ROW */}
+          {/* 7. INTERACTIVE ACHIEVEMENT BADGES ROW */}
           <div className="pt-3 border-t border-slate-800 space-y-2">
             <span className="text-[10px] font-mono text-slate-300 uppercase tracking-wider block text-center sm:text-left font-bold">
               Achievement Badges (Click to inspect)
@@ -601,9 +610,9 @@ export const ChallengeArena: React.FC = () => {
         </motion.div>
       </div>
 
-      {/* 2. DAILY CHALLENGES (3 Fully Clickable Cards) */}
+      {/* 2. DAILY CHALLENGES (3 Fully Clickable Cards with Start Challenge buttons) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10 max-w-5xl mx-auto">
-        {/* Challenge 1: AI Quick Quiz (Entire Card Clickable) */}
+        {/* Challenge 1: AI Quick Quiz */}
         <motion.div
           tabIndex={0}
           role="button"
@@ -646,6 +655,7 @@ export const ChallengeArena: React.FC = () => {
           </div>
 
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               openModal("quiz");
@@ -671,7 +681,7 @@ export const ChallengeArena: React.FC = () => {
           </button>
         </motion.div>
 
-        {/* Challenge 2: Code Sprint (Entire Card Clickable) */}
+        {/* Challenge 2: Code Sprint */}
         <motion.div
           tabIndex={0}
           role="button"
@@ -714,6 +724,7 @@ export const ChallengeArena: React.FC = () => {
           </div>
 
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               openModal("code");
@@ -739,7 +750,7 @@ export const ChallengeArena: React.FC = () => {
           </button>
         </motion.div>
 
-        {/* Challenge 3: Cyber Mission (Entire Card Clickable) */}
+        {/* Challenge 3: Cyber Mission */}
         <motion.div
           tabIndex={0}
           role="button"
@@ -782,6 +793,7 @@ export const ChallengeArena: React.FC = () => {
           </div>
 
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               openModal("cyber");
@@ -808,7 +820,7 @@ export const ChallengeArena: React.FC = () => {
         </motion.div>
       </div>
 
-      {/* 4. EMBEDDED MINI QUIZ GAME */}
+      {/* EMBEDDED MINI QUIZ GAME */}
       <motion.div
         initial={{ opacity: 0, y: 25 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -855,6 +867,7 @@ export const ChallengeArena: React.FC = () => {
             return (
               <button
                 key={idx}
+                type="button"
                 disabled={completedChallenges.miniQuiz && opt.correct}
                 onClick={() => handleMiniQuizOption(idx)}
                 className={`p-3.5 rounded-2xl border text-sm font-bold transition-all cursor-pointer outline-none flex items-center justify-between ${btnStyle}`}
@@ -896,23 +909,24 @@ export const ChallengeArena: React.FC = () => {
         )}
       </motion.div>
 
-      {/* 8. ACHIEVEMENT BADGE INSPECT MODAL */}
+      {/* 7. ACHIEVEMENT BADGE INSPECT MODAL */}
       <AnimatePresence>
         {selectedBadge && (
           <div
             onClick={(e) => {
               if (e.target === e.currentTarget) setSelectedBadge(null);
             }}
-            className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md"
+            className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md pointer-events-auto"
           >
             <motion.div
               onClick={(e) => e.stopPropagation()}
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="w-full max-w-md rounded-3xl border border-slate-750 bg-[#121422] p-6 sm:p-7 shadow-2xl relative space-y-5 text-left"
+              className="w-full max-w-md rounded-3xl border border-slate-750 bg-[#121422] p-6 sm:p-7 shadow-2xl relative space-y-5 text-left pointer-events-auto cursor-default"
             >
               <button
+                type="button"
                 onClick={() => setSelectedBadge(null)}
                 className="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-900 border border-slate-750 text-slate-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
               >
@@ -953,6 +967,7 @@ export const ChallengeArena: React.FC = () => {
               </div>
 
               <button
+                type="button"
                 onClick={() => setSelectedBadge(null)}
                 className="w-full py-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
               >
@@ -963,31 +978,32 @@ export const ChallengeArena: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* CHALLENGE MODAL OVERLAY (Backdrop click closes modal, content click stops propagation) */}
+      {/* CHALLENGE MODAL OVERLAY */}
       <AnimatePresence>
         {activeModal && (
           <div
             onClick={(e) => {
               if (e.target === e.currentTarget) setActiveModal(null);
             }}
-            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md"
+            className="fixed inset-0 z-[9990] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md pointer-events-auto"
           >
             <motion.div
               onClick={(e) => e.stopPropagation()}
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="w-full max-w-xl rounded-3xl border border-slate-750 bg-[#121422] p-6 sm:p-8 shadow-2xl relative space-y-6 text-left"
+              className="w-full max-w-xl rounded-3xl border border-slate-750 bg-[#121422] p-6 sm:p-8 shadow-2xl relative space-y-6 text-left z-[9999] pointer-events-auto cursor-default select-text"
             >
               {/* Close Button */}
               <button
+                type="button"
                 onClick={() => setActiveModal(null)}
                 className="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-900 border border-slate-750 text-slate-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
 
-              {/* 2. AI QUIZ MODAL */}
+              {/* 3. AI QUIZ MODAL */}
               {activeModal === "quiz" && (
                 <div className="space-y-5">
                   {!showAuthGate && !quizFinished && (
@@ -1028,6 +1044,7 @@ export const ChallengeArena: React.FC = () => {
                           return (
                             <button
                               key={idx}
+                              type="button"
                               disabled={quizSelectedOption !== null}
                               onClick={() => handleQuizOptionClick(idx)}
                               className={`w-full p-4 rounded-2xl border text-sm font-bold flex items-center justify-between transition-all cursor-pointer outline-none ${btnStyle}`}
@@ -1054,6 +1071,7 @@ export const ChallengeArena: React.FC = () => {
                           </p>
                           <div className="pt-2 flex justify-end">
                             <button
+                              type="button"
                               onClick={handleNextQuizQuestion}
                               className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer flex items-center gap-1.5"
                             >
@@ -1079,6 +1097,7 @@ export const ChallengeArena: React.FC = () => {
                         <div>Reward: <span className="text-amber-300 font-bold">+150 XP</span></div>
                       </div>
                       <button
+                        type="button"
                         onClick={() => setActiveModal(null)}
                         className="px-6 py-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer inline-flex items-center gap-2"
                       >
@@ -1089,7 +1108,7 @@ export const ChallengeArena: React.FC = () => {
                 </div>
               )}
 
-              {/* 3. MINI CODE COMPILER MODAL */}
+              {/* 4. MINI CODE COMPILER MODAL */}
               {activeModal === "code" && (
                 <div className="space-y-4 text-left">
                   {!showAuthGate ? (
@@ -1142,6 +1161,7 @@ export const ChallengeArena: React.FC = () => {
                       {/* Run Code & Run Tests Buttons */}
                       <div className="flex justify-between items-center">
                         <button
+                          type="button"
                           disabled={codeRunning || testRunning}
                           onClick={handleRunCodeCompiler}
                           className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50"
@@ -1160,6 +1180,7 @@ export const ChallengeArena: React.FC = () => {
                         </button>
 
                         <button
+                          type="button"
                           disabled={codeRunning || testRunning || completedChallenges.code}
                           onClick={handleRunCodeTests}
                           className="px-5 py-2.5 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-sky-600/30 flex items-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50"
@@ -1245,7 +1266,7 @@ export const ChallengeArena: React.FC = () => {
                 </div>
               )}
 
-              {/* 4. CYBER MISSION MODAL (Phishing & Security Scenario) */}
+              {/* 5. CYBER MISSION MODAL */}
               {activeModal === "cyber" && (
                 <div className="space-y-5">
                   {!showAuthGate ? (
@@ -1282,6 +1303,7 @@ export const ChallengeArena: React.FC = () => {
                           return (
                             <button
                               key={idx}
+                              type="button"
                               disabled={cyberOption !== null}
                               onClick={() => handleCyberOptionSelect(idx)}
                               className={`w-full p-4 rounded-2xl border text-sm font-bold flex items-center justify-between transition-all cursor-pointer outline-none ${btnStyle}`}
