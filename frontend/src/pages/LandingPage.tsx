@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { WorkspaceWalkthrough } from "../components/WorkspaceWalkthrough";
 import { LearningJourney } from "../components/LearningJourney";
 import { LearningExperiences } from "../components/LearningExperiences";
-import { ChallengeSkills } from "../components/ChallengeSkills";
+import { ChallengeArena } from "../components/ChallengeArena";
 import {
   Sparkles,
   Zap,
@@ -442,8 +442,8 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 9.5. Challenge Your Skills Section */}
-      <ChallengeSkills />
+      {/* 9.5. StudySphere Challenge Arena Section */}
+      <ChallengeArena />
 
       {/* 10. CTA Box Section */}
       <section className="max-w-[1100px] mx-auto px-6 w-full">
