@@ -14,11 +14,9 @@ import {
   XCircle,
   ArrowRight,
   X,
-  UserCheck,
   Lock,
   RotateCcw,
   Loader2,
-  Award,
   Zap
 } from "lucide-react";
 
@@ -36,38 +34,100 @@ interface LeaderboardUser {
   isUser?: boolean;
 }
 
+interface QuizQuestion {
+  question: string;
+  options: string[];
+  correct: number;
+  explanation: string;
+}
+
+const FIVE_QUIZ_QUESTIONS: QuizQuestion[] = [
+  {
+    question: "What is the time complexity of binary search?",
+    options: ["O(n)", "O(log n)", "O(n²)", "O(1)"],
+    correct: 1,
+    explanation: "Binary search divides the search space in half at each step, giving an O(log n) time complexity."
+  },
+  {
+    question: "Which HTTP status code represents a successful resource creation?",
+    options: ["200 OK", "201 Created", "404 Not Found", "500 Server Error"],
+    correct: 1,
+    explanation: "HTTP 201 Created signifies that the request succeeded and a new resource was created."
+  },
+  {
+    question: "What does RAG stand for in modern AI architectures?",
+    options: [
+      "Rapid Algorithm Generation",
+      "Retrieval-Augmented Generation",
+      "Random Access Graph",
+      "Recursive Array Grid"
+    ],
+    correct: 1,
+    explanation: "Retrieval-Augmented Generation grounds LLM output using context retrieved from document stores."
+  },
+  {
+    question: "Which data structure operates on a First-In, First-Out (FIFO) basis?",
+    options: ["Stack", "Queue", "Heap", "Binary Tree"],
+    correct: 1,
+    explanation: "A Queue processes elements in FIFO order—the first element added is the first one processed."
+  },
+  {
+    question: "What is the main function of JWT in web authentication?",
+    options: [
+      "Database Encryption",
+      "Stateless Signed Token Exchange",
+      "CSS Minification",
+      "Load Balancing"
+    ],
+    correct: 1,
+    explanation: "JSON Web Tokens allow stateless, digitally signed transmission of verified user claims."
+  }
+];
+
 export const ChallengeArena: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  // Player State
-  const [playerXP, setPlayerXP] = useState(7250);
+  // 5. XP System State
+  const [xp, setXp] = useState(7400);
   const [playerLevel, setPlayerLevel] = useState(12);
   const [streakDays, setStreakDays] = useState(3);
   const [showConfetti, setShowConfetti] = useState(false);
 
-  // Embedded Mini Quiz State
+  // Challenge Completion Tracking
+  const [completedChallenges, setCompletedChallenges] = useState<{
+    quiz?: boolean;
+    code?: boolean;
+    cyber?: boolean;
+    miniQuiz?: boolean;
+  }>({});
+
+  // Active Modal State
+  const [activeModal, setActiveModal] = useState<"quiz" | "code" | "cyber" | null>(null);
+  const [showAuthGate, setShowAuthGate] = useState(false);
+
+  // 1. Embedded Mini Quiz State
   const [miniQuizSelected, setMiniQuizSelected] = useState<number | null>(null);
   const [miniQuizAnswered, setMiniQuizAnswered] = useState(false);
   const [miniQuizCorrect, setMiniQuizCorrect] = useState(false);
 
-  // Active Challenge Modal State
-  const [activeModal, setActiveModal] = useState<"quiz" | "code" | "cyber" | null>(null);
+  // 2. AI Quick Quiz Challenge Modal State
+  const [quizIndex, setQuizIndex] = useState(0);
+  const [quizSelectedOption, setQuizSelectedOption] = useState<number | null>(null);
+  const [quizScore, setQuizScore] = useState(0);
+  const [quizFinished, setQuizFinished] = useState(false);
 
-  // Challenge Progress States
-  const [quizQIndex, setQuizQIndex] = useState(0);
-  const [quizOption, setQuizOption] = useState<number | null>(null);
-  const [quizCompleted, setQuizCompleted] = useState(false);
-
+  // 3. Code Sprint State
+  const [userCode, setUserCode] = useState(`def reverse_string(s):\n    # Write your solution here\n    return s[::-1]`);
   const [codeRunning, setCodeRunning] = useState(false);
   const [codeCompleted, setCodeCompleted] = useState(false);
+  const [codeTerminalLogs, setCodeTerminalLogs] = useState<string[]>([]);
 
+  // 4. Cyber Mission State
   const [cyberOption, setCyberOption] = useState<number | null>(null);
   const [cyberCompleted, setCyberCompleted] = useState(false);
 
-  const [showAuthGate, setShowAuthGate] = useState(false);
-
-  // Badges State
+  // 3. Badges State
   const [badges, setBadges] = useState<BadgeItem[]>([
     { id: "first", name: "First Steps", icon: "🏆", unlocked: true },
     { id: "streak", name: "7 Day Streak", icon: "🔥", unlocked: false },
@@ -76,32 +136,31 @@ export const ChallengeArena: React.FC = () => {
     { id: "cyber", name: "Cyber Defender", icon: "🔐", unlocked: false }
   ]);
 
-  // Leaderboard State
+  // 5. Leaderboard State
   const [leaderboard, setLeaderboard] = useState<LeaderboardUser[]>([
     { rank: 1, name: "Alex", xp: 12450 },
     { rank: 2, name: "Priya", xp: 10820 },
-    { rank: 3, name: "You", xp: 7250, isUser: true },
+    { rank: 3, name: "You", xp: 7400, isUser: true },
     { rank: 4, name: "Rahul", xp: 6900 }
   ]);
 
-  // Sync leaderboard when player XP updates
+  // Sync Leaderboard with shared XP state
   useEffect(() => {
     setLeaderboard((prev) =>
       prev
-        .map((u) => (u.isUser ? { ...u, xp: playerXP } : u))
+        .map((u) => (u.isUser ? { ...u, xp: xp } : u))
         .sort((a, b) => b.xp - a.xp)
         .map((u, idx) => ({ ...u, rank: idx + 1 }))
     );
-  }, [playerXP]);
+  }, [xp]);
 
-  // Trigger temporary confetti effect
   const triggerConfetti = () => {
     setShowConfetti(true);
     setTimeout(() => setShowConfetti(false), 2500);
   };
 
   const addXP = (amount: number) => {
-    setPlayerXP((prev) => {
+    setXp((prev) => {
       const nextXP = prev + amount;
       if (nextXP >= 10000) {
         setPlayerLevel(13);
@@ -111,93 +170,140 @@ export const ChallengeArena: React.FC = () => {
     triggerConfetti();
   };
 
-  // Mini Quiz Handler
+  // 1. Embedded Mini-Quiz Handler
   const handleMiniQuizOption = (idx: number) => {
-    if (miniQuizAnswered && miniQuizCorrect) return;
-
     setMiniQuizSelected(idx);
     setMiniQuizAnswered(true);
 
     if (idx === 1) {
-      // Correct answer: O(log n)
       setMiniQuizCorrect(true);
-      addXP(50);
+      if (!completedChallenges.miniQuiz) {
+        addXP(50);
+        setCompletedChallenges((prev) => ({ ...prev, miniQuiz: true }));
+      }
     } else {
       setMiniQuizCorrect(false);
     }
   };
 
-  // Quiz Modal Handlers
-  const handleQuizOption = (idx: number) => {
-    if (quizOption !== null) return;
-    setQuizOption(idx);
+  // 2. AI Quick Quiz 5-Question Modal Handlers
+  const handleQuizOptionClick = (optionIdx: number) => {
+    if (quizSelectedOption !== null) return;
+    setQuizSelectedOption(optionIdx);
 
-    if (idx === 0) {
-      // Correct
-      addXP(150);
-      setQuizCompleted(true);
-    }
-
-    if (!isAuthenticated) {
-      setTimeout(() => setShowAuthGate(true), 1200);
+    const isCorrect = optionIdx === FIVE_QUIZ_QUESTIONS[quizIndex].correct;
+    if (isCorrect) {
+      setQuizScore((prev) => prev + 1);
     }
   };
 
-  // Code Challenge Runner
-  const handleRunCode = () => {
-    setCodeRunning(true);
-    setTimeout(() => {
-      setCodeRunning(false);
-      setCodeCompleted(true);
-      addXP(250);
+  const handleNextQuizQuestion = () => {
+    setQuizSelectedOption(null);
+    if (quizIndex + 1 < FIVE_QUIZ_QUESTIONS.length) {
+      setQuizIndex((prev) => prev + 1);
+    } else {
+      setQuizFinished(true);
+      if (!completedChallenges.quiz) {
+        addXP(150);
+        setCompletedChallenges((prev) => ({ ...prev, quiz: true }));
+      }
 
       if (!isAuthenticated) {
         setTimeout(() => setShowAuthGate(true), 1200);
       }
-    }, 1500);
+    }
   };
 
-  // Cyber Challenge Selection
-  const handleCyberOption = (idx: number) => {
-    setCyberOption(idx);
-    if (idx === 0) {
-      setCyberCompleted(true);
-      addXP(300);
-      // Unlock Cyber Defender badge
-      setBadges((prev) =>
-        prev.map((b) => (b.id === "cyber" ? { ...b, unlocked: true } : b))
-      );
-    }
+  const resetQuizModal = () => {
+    setQuizIndex(0);
+    setQuizSelectedOption(null);
+    setQuizScore(0);
+    setQuizFinished(false);
+    setShowAuthGate(false);
+  };
 
-    if (!isAuthenticated) {
-      setTimeout(() => setShowAuthGate(true), 1200);
+  // 3. Code Sprint Terminal Runner Handler
+  const handleRunCodeTests = () => {
+    if (codeRunning) return;
+    setCodeRunning(true);
+    setCodeTerminalLogs(["> Running test cases..."]);
+
+    setTimeout(() => {
+      setCodeTerminalLogs((prev) => [...prev, '> Testing input "hello" -> "olleh"...']);
+    }, 400);
+
+    setTimeout(() => {
+      setCodeTerminalLogs((prev) => [...prev, "> Test 1 passed ✓"]);
+    }, 800);
+
+    setTimeout(() => {
+      setCodeTerminalLogs((prev) => [...prev, "> Test 2 passed ✓"]);
+    }, 1200);
+
+    setTimeout(() => {
+      setCodeTerminalLogs((prev) => [...prev, "> Test 3 passed ✓", "> All tests passed!"]);
+      setCodeRunning(false);
+      setCodeCompleted(true);
+
+      if (!completedChallenges.code) {
+        addXP(250);
+        setCompletedChallenges((prev) => ({ ...prev, code: true }));
+      }
+
+      if (!isAuthenticated) {
+        setTimeout(() => setShowAuthGate(true), 1400);
+      }
+    }, 1600);
+  };
+
+  // 4. Cyber Mission Handler
+  const handleCyberOptionSelect = (idx: number) => {
+    setCyberOption(idx);
+    if (idx === 2) {
+      // Correct Option C
+      setCyberCompleted(true);
+      if (!completedChallenges.cyber) {
+        addXP(300);
+        setCompletedChallenges((prev) => ({ ...prev, cyber: true }));
+        // Unlock Cyber Defender badge
+        setBadges((prev) =>
+          prev.map((b) => (b.id === "cyber" ? { ...b, unlocked: true } : b))
+        );
+      }
+      if (!isAuthenticated) {
+        setTimeout(() => setShowAuthGate(true), 1400);
+      }
     }
   };
 
   const openModal = (type: "quiz" | "code" | "cyber") => {
     setActiveModal(type);
     setShowAuthGate(false);
-    setQuizOption(null);
-    setQuizCompleted(false);
-    setCodeRunning(false);
-    setCodeCompleted(false);
-    setCyberOption(null);
-    setCyberCompleted(false);
+    if (type === "quiz") resetQuizModal();
+    if (type === "code") {
+      setCodeRunning(false);
+      setCodeCompleted(false);
+      setCodeTerminalLogs([]);
+    }
+    if (type === "cyber") {
+      setCyberOption(null);
+      setCyberCompleted(false);
+    }
   };
 
   const maxLevelXP = 10000;
-  const xpPercentage = Math.min(100, Math.round((playerXP / maxLevelXP) * 100));
+  const progressPercentage = Math.min(100, Math.round((xp / maxLevelXP) * 100));
 
   return (
     <section id="arena" className="max-w-[1440px] mx-auto px-6 space-y-12 select-none relative">
-      {/* Background Ambient Glow */}
+      {/* Background Ambient Lighting */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85vw] max-w-[950px] h-[500px] bg-gradient-to-r from-purple-600/15 via-indigo-500/15 to-sky-500/15 blur-[130px] rounded-full pointer-events-none z-0 animate-pulse-slow" />
       <div className="absolute inset-0 bg-[radial-gradient(#8b5cf6_1px,transparent_1px)] [background-size:32px_32px] opacity-[0.03] pointer-events-none" />
 
-      {/* Particle / Confetti Burst Effect */}
+      {/* Confetti Animation Effect */}
       {showConfetti && (
         <div className="fixed inset-0 pointer-events-none z-[10000] overflow-hidden flex items-center justify-center">
-          {[...Array(30)].map((_, i) => (
+          {[...Array(35)].map((_, i) => (
             <motion.div
               key={i}
               className="absolute w-2.5 h-2.5 rounded-full"
@@ -206,9 +312,9 @@ export const ChallengeArena: React.FC = () => {
               }}
               initial={{ x: 0, y: 0, scale: 1, opacity: 1 }}
               animate={{
-                x: (Math.random() - 0.5) * 600,
-                y: (Math.random() - 0.5) * 600,
-                scale: Math.random() * 1.5 + 0.5,
+                x: (Math.random() - 0.5) * 700,
+                y: (Math.random() - 0.5) * 700,
+                scale: Math.random() * 1.6 + 0.4,
                 opacity: 0
               }}
               transition={{ duration: 1.5, ease: "easeOut" }}
@@ -231,7 +337,7 @@ export const ChallengeArena: React.FC = () => {
         <h2 className="text-2xl sm:text-4xl lg:text-[40px] font-bold tracking-tight text-white leading-tight">
           StudySphere Challenge Arena
         </h2>
-        <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+        <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-medium">
           Learn, solve challenges, earn XP, and level up your skills.
         </p>
       </motion.div>
@@ -285,13 +391,13 @@ export const ChallengeArena: React.FC = () => {
             <div className="flex justify-between items-center text-xs font-mono">
               <span className="text-slate-300 font-medium">Current Progress</span>
               <span className="text-purple-300 font-bold">
-                {playerXP.toLocaleString()} / {maxLevelXP.toLocaleString()} XP
+                {xp.toLocaleString()} / {maxLevelXP.toLocaleString()} XP
               </span>
             </div>
             <div className="w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-800 p-0.5 relative">
               <motion.div
                 className="h-full bg-gradient-to-r from-purple-500 via-indigo-500 to-sky-400 rounded-full shadow-[0_0_12px_rgba(168,85,247,0.8)]"
-                animate={{ width: `${xpPercentage}%` }}
+                animate={{ width: `${progressPercentage}%` }}
                 transition={{ duration: 0.6, ease: "easeOut" }}
               />
             </div>
@@ -403,7 +509,7 @@ export const ChallengeArena: React.FC = () => {
                   AI Quick Quiz
                 </h3>
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-slate-300 leading-relaxed font-medium">
                 Answer 5 automated AI questions to test core knowledge.
               </p>
             </div>
@@ -411,10 +517,24 @@ export const ChallengeArena: React.FC = () => {
 
           <button
             onClick={() => openModal("quiz")}
-            className="mt-6 w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-purple-600/30 flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+            disabled={completedChallenges.quiz}
+            className={`mt-6 w-full py-3 rounded-xl text-xs font-bold transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-95 outline-none ${
+              completedChallenges.quiz
+                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 cursor-default"
+                : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-purple-600/30"
+            }`}
           >
-            <span>Start Challenge</span>
-            <ArrowRight className="w-4 h-4" />
+            {completedChallenges.quiz ? (
+              <>
+                <CheckCircle className="w-4 h-4 text-emerald-400" />
+                <span>Completed ✓</span>
+              </>
+            ) : (
+              <>
+                <span>Start Challenge</span>
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
           </button>
         </motion.div>
 
@@ -444,7 +564,7 @@ export const ChallengeArena: React.FC = () => {
                   Code Sprint
                 </h3>
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-slate-300 leading-relaxed font-medium">
                 Solve a programming challenge and verify test cases.
               </p>
             </div>
@@ -452,10 +572,24 @@ export const ChallengeArena: React.FC = () => {
 
           <button
             onClick={() => openModal("code")}
-            className="mt-6 w-full py-3 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-sky-600/30 flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+            disabled={completedChallenges.code}
+            className={`mt-6 w-full py-3 rounded-xl text-xs font-bold transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-95 outline-none ${
+              completedChallenges.code
+                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 cursor-default"
+                : "bg-sky-600 hover:bg-sky-500 text-white shadow-sky-600/30"
+            }`}
           >
-            <span>Start Challenge</span>
-            <ArrowRight className="w-4 h-4" />
+            {completedChallenges.code ? (
+              <>
+                <CheckCircle className="w-4 h-4 text-emerald-400" />
+                <span>Completed ✓</span>
+              </>
+            ) : (
+              <>
+                <span>Start Challenge</span>
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
           </button>
         </motion.div>
 
@@ -485,7 +619,7 @@ export const ChallengeArena: React.FC = () => {
                   Cyber Mission
                 </h3>
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-slate-300 leading-relaxed font-medium">
                 Complete a cybersecurity scenario &amp; unlock Defender badge.
               </p>
             </div>
@@ -493,10 +627,24 @@ export const ChallengeArena: React.FC = () => {
 
           <button
             onClick={() => openModal("cyber")}
-            className="mt-6 w-full py-3 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-rose-600/30 flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+            disabled={completedChallenges.cyber}
+            className={`mt-6 w-full py-3 rounded-xl text-xs font-bold transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-95 outline-none ${
+              completedChallenges.cyber
+                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 cursor-default"
+                : "bg-rose-600 hover:bg-rose-500 text-white shadow-rose-600/30"
+            }`}
           >
-            <span>Start Challenge</span>
-            <ArrowRight className="w-4 h-4" />
+            {completedChallenges.cyber ? (
+              <>
+                <CheckCircle className="w-4 h-4 text-emerald-400" />
+                <span>Completed ✓</span>
+              </>
+            ) : (
+              <>
+                <span>Start Challenge</span>
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
           </button>
         </motion.div>
       </div>
@@ -548,6 +696,7 @@ export const ChallengeArena: React.FC = () => {
             return (
               <button
                 key={idx}
+                disabled={completedChallenges.miniQuiz && opt.correct}
                 onClick={() => handleMiniQuizOption(idx)}
                 className={`p-3.5 rounded-2xl border text-sm font-bold transition-all cursor-pointer outline-none flex items-center justify-between ${btnStyle}`}
               >
@@ -576,12 +725,12 @@ export const ChallengeArena: React.FC = () => {
           >
             <span>
               {miniQuizCorrect
-                ? "Correct! Binary Search divides input range by half each step."
-                : "Incorrect answer. Try selecting O(log n)!"}
+                ? "Correct! +50 XP — Binary search divides input range in half at each step."
+                : "Incorrect — try again!"}
             </span>
             {miniQuizCorrect && (
-              <span className="font-mono text-amber-300 bg-amber-500/25 px-2.5 py-0.5 rounded font-bold">
-                +50 XP Added!
+              <span className="font-mono text-amber-300 bg-amber-500/25 px-2.5 py-0.5 rounded font-bold flex items-center gap-1">
+                <CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> Completed ✓ (+50 XP)
               </span>
             )}
           </motion.div>
@@ -598,6 +747,7 @@ export const ChallengeArena: React.FC = () => {
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className="w-full max-w-lg rounded-3xl border border-slate-750 bg-[#121422] p-6 sm:p-8 shadow-2xl relative space-y-6 text-left"
             >
+              {/* Close Button */}
               <button
                 onClick={() => setActiveModal(null)}
                 className="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-900 border border-slate-750 text-slate-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
@@ -605,10 +755,10 @@ export const ChallengeArena: React.FC = () => {
                 <X className="w-4 h-4" />
               </button>
 
-              {/* QUIZ MODAL */}
+              {/* 2. AI QUIZ MODAL */}
               {activeModal === "quiz" && (
                 <div className="space-y-5">
-                  {!showAuthGate ? (
+                  {!showAuthGate && !quizFinished && (
                     <>
                       <div className="space-y-2 border-b border-slate-800 pb-3">
                         <div className="flex items-center justify-between">
@@ -617,30 +767,28 @@ export const ChallengeArena: React.FC = () => {
                             <span>AI Quick Quiz Challenge</span>
                           </div>
                           <span className="text-xs font-mono font-bold text-slate-200">
-                            Question 1 / 5
+                            Question {quizIndex + 1} of {FIVE_QUIZ_QUESTIONS.length}
                           </span>
                         </div>
                         <div className="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
-                          <div className="h-full bg-purple-500 w-1/5" />
+                          <motion.div
+                            className="h-full bg-purple-500"
+                            animate={{ width: `${((quizIndex + 1) / FIVE_QUIZ_QUESTIONS.length) * 100}%` }}
+                          />
                         </div>
                       </div>
 
                       <h4 className="text-base sm:text-lg font-bold text-white leading-snug">
-                        What is the primary advantage of binary search over linear search?
+                        {FIVE_QUIZ_QUESTIONS[quizIndex].question}
                       </h4>
 
                       <div className="space-y-2.5">
-                        {[
-                          "Logarithmic time complexity O(log n)",
-                          "Linear space complexity O(n)",
-                          "Operates on unsorted arrays",
-                          "Requires constant space O(1)"
-                        ].map((opt, idx) => {
-                          const isSelected = quizOption === idx;
-                          const isCorrect = idx === 0;
+                        {FIVE_QUIZ_QUESTIONS[quizIndex].options.map((opt, idx) => {
+                          const isSelected = quizSelectedOption === idx;
+                          const isCorrect = idx === FIVE_QUIZ_QUESTIONS[quizIndex].correct;
                           let btnStyle = "bg-[#1A1C2B] border-slate-700 text-white font-bold hover:border-purple-400 hover:bg-[#22253A]";
 
-                          if (quizOption !== null) {
+                          if (quizSelectedOption !== null) {
                             if (isCorrect) btnStyle = "bg-emerald-500/25 border-emerald-400 text-white font-bold shadow-md";
                             else if (isSelected) btnStyle = "bg-rose-500/25 border-rose-400 text-white font-bold animate-shake";
                           }
@@ -648,29 +796,68 @@ export const ChallengeArena: React.FC = () => {
                           return (
                             <button
                               key={idx}
-                              disabled={quizOption !== null}
-                              onClick={() => handleQuizOption(idx)}
+                              disabled={quizSelectedOption !== null}
+                              onClick={() => handleQuizOptionClick(idx)}
                               className={`w-full p-4 rounded-2xl border text-sm font-bold flex items-center justify-between transition-all cursor-pointer outline-none ${btnStyle}`}
                             >
                               <span>{opt}</span>
-                              {quizOption !== null && isCorrect && <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0" />}
-                              {quizOption !== null && isSelected && !isCorrect && <XCircle className="w-4 h-4 text-rose-400 flex-shrink-0" />}
+                              {quizSelectedOption !== null && isCorrect && <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0" />}
+                              {quizSelectedOption !== null && isSelected && !isCorrect && <XCircle className="w-4 h-4 text-rose-400 flex-shrink-0" />}
                             </button>
                           );
                         })}
                       </div>
 
-                      {quizCompleted && (
-                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-3.5 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-200 text-xs font-mono font-bold">
-                          Correct! +150 XP Awarded to profile!
+                      {quizSelectedOption !== null && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2"
+                        >
+                          <span className="text-xs font-mono text-emerald-400 font-bold block">
+                            {quizSelectedOption === FIVE_QUIZ_QUESTIONS[quizIndex].correct ? "✓ Correct!" : "✕ Incorrect — Explanation:"}
+                          </span>
+                          <p className="text-xs text-slate-200 font-medium leading-relaxed">
+                            {FIVE_QUIZ_QUESTIONS[quizIndex].explanation}
+                          </p>
+                          <div className="pt-2 flex justify-end">
+                            <button
+                              onClick={handleNextQuizQuestion}
+                              className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer flex items-center gap-1.5"
+                            >
+                              <span>{quizIndex + 1 < FIVE_QUIZ_QUESTIONS.length ? "Next Question →" : "Finish Challenge"}</span>
+                            </button>
+                          </div>
                         </motion.div>
                       )}
                     </>
-                  ) : null}
+                  )}
+
+                  {quizFinished && !showAuthGate && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center space-y-4 py-4">
+                      <div className="w-16 h-16 rounded-3xl bg-purple-500/20 border border-purple-500/30 text-purple-300 flex items-center justify-center mx-auto shadow-lg">
+                        <Trophy className="w-8 h-8" />
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="text-xl font-bold text-white">AI Quick Quiz Completed!</h3>
+                        <p className="text-xs text-slate-300 font-medium">You unlocked +150 XP reward!</p>
+                      </div>
+                      <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex justify-center gap-6 font-mono text-sm">
+                        <div>Score: <span className="text-emerald-400 font-bold">{quizScore} / {FIVE_QUIZ_QUESTIONS.length}</span></div>
+                        <div>Reward: <span className="text-amber-300 font-bold">+150 XP</span></div>
+                      </div>
+                      <button
+                        onClick={() => setActiveModal(null)}
+                        className="px-6 py-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer inline-flex items-center gap-2"
+                      >
+                        <span>Close Challenge</span>
+                      </button>
+                    </motion.div>
+                  )}
                 </div>
               )}
 
-              {/* CODE MODAL */}
+              {/* 3. CODE SPRINT MODAL */}
               {activeModal === "code" && (
                 <div className="space-y-5">
                   {!showAuthGate ? (
@@ -680,36 +867,56 @@ export const ChallengeArena: React.FC = () => {
                           <Code className="w-4.5 h-4.5 text-sky-400" />
                           <span>Code Sprint Challenge</span>
                         </div>
-                        <h4 className="text-base font-bold text-white">Reverse a string in Python</h4>
+                        <h4 className="text-base font-bold text-white">Write a Python function to reverse a string</h4>
                       </div>
 
-                      <div className="p-4 rounded-2xl bg-[#0A0B12] border border-slate-800 font-mono text-xs text-slate-200 space-y-1">
-                        <p className="text-indigo-400">def <span className="text-sky-300">reverse_string</span>(s):</p>
-                        <p className="pl-4 text-slate-400"># Return reversed string slice</p>
-                        <p className="pl-4"><span className="text-indigo-400">return</span> s[::-1]</p>
+                      {/* Real Editable Textarea for Python Code */}
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center text-xs text-slate-300 font-mono">
+                          <span>Python Code Editor</span>
+                          <span className="text-emerald-400 font-bold">Python 3.12</span>
+                        </div>
+                        <textarea
+                          rows={4}
+                          value={userCode}
+                          onChange={(e) => setUserCode(e.target.value)}
+                          className="w-full p-3.5 rounded-2xl bg-[#080911] border border-slate-750 font-mono text-xs text-slate-100 outline-none focus:border-sky-500 leading-relaxed resize-none"
+                        />
                       </div>
 
                       <div className="flex justify-between items-center">
-                        <span className="text-xs text-slate-300 font-mono font-bold">Test Cases: Ready</span>
+                        <span className="text-xs text-slate-300 font-mono font-bold">Test Suite Ready</span>
                         <button
-                          disabled={codeRunning}
-                          onClick={handleRunCode}
+                          disabled={codeRunning || completedChallenges.code}
+                          onClick={handleRunCodeTests}
                           className="px-5 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer flex items-center gap-2 disabled:opacity-50"
                         >
                           {codeRunning ? (
                             <>
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                              <span>Running Tests...</span>
+                              <Loader2 className="w-4 h-4 animate-spin text-white" />
+                              <span>Running tests...</span>
                             </>
                           ) : (
-                            <span>Run Tests (+250 XP)</span>
+                            <span>Run Tests +250 XP</span>
                           )}
                         </button>
                       </div>
 
+                      {/* Live Terminal Output Streaming */}
+                      {codeTerminalLogs.length > 0 && (
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-3.5 rounded-2xl bg-[#04050A] border border-slate-800 font-mono text-xs space-y-1">
+                          {codeTerminalLogs.map((log, idx) => (
+                            <p key={idx} className={log.includes("passed") || log.includes("All") ? "text-emerald-400 font-bold" : "text-slate-300"}>
+                              {log}
+                            </p>
+                          ))}
+                        </motion.div>
+                      )}
+
                       {codeCompleted && (
-                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-3.5 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-200 text-xs font-mono font-bold">
-                          Test Case Passed ✓ +250 XP Awarded!
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-3.5 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-200 text-xs font-mono font-bold flex items-center justify-between">
+                          <span>Challenge Completed! +250 XP</span>
+                          <CheckCircle className="w-4 h-4 text-emerald-400" />
                         </motion.div>
                       )}
                     </>
@@ -717,7 +924,7 @@ export const ChallengeArena: React.FC = () => {
                 </div>
               )}
 
-              {/* CYBER MODAL */}
+              {/* 4. CYBER MISSION MODAL */}
               {activeModal === "cyber" && (
                 <div className="space-y-5">
                   {!showAuthGate ? (
@@ -727,17 +934,25 @@ export const ChallengeArena: React.FC = () => {
                           <Shield className="w-4.5 h-4.5 text-rose-400" />
                           <span>Cyber Mission Challenge</span>
                         </div>
-                        <h4 className="text-base font-bold text-white">Audit Security Payload</h4>
-                        <p className="text-xs text-slate-300">
-                          Scenario: Identify the vulnerability type when a payload alters database queries.
+                        <h4 className="text-base font-bold text-white">
+                          An employee receives a suspicious email asking them to reset their company password.
+                        </h4>
+                        <p className="text-xs text-slate-300 font-medium pt-1">
+                          Select the correct security protocol response:
                         </p>
                       </div>
 
                       <div className="space-y-2.5">
-                        {["SQL Injection (SQLi)", "Cross-Site Scripting (XSS)", "CSRF Token Forgery", "Buffer Overflow"].map((opt, idx) => {
+                        {[
+                          "A. Click the link and reset the password.",
+                          "B. Forward the email to friends.",
+                          "C. Verify the sender and report the phishing attempt.",
+                          "D. Ignore company security policy."
+                        ].map((opt, idx) => {
                           const isSelected = cyberOption === idx;
-                          const isCorrect = idx === 0;
+                          const isCorrect = idx === 2; // Option C
                           let btnStyle = "bg-[#1A1C2B] border-slate-700 text-white font-bold hover:border-rose-400 hover:bg-[#22253A]";
+
                           if (cyberOption !== null) {
                             if (isCorrect) btnStyle = "bg-emerald-500/25 border-emerald-400 text-white font-bold shadow-md";
                             else if (isSelected) btnStyle = "bg-rose-500/25 border-rose-400 text-white font-bold animate-shake";
@@ -747,7 +962,7 @@ export const ChallengeArena: React.FC = () => {
                             <button
                               key={idx}
                               disabled={cyberOption !== null}
-                              onClick={() => handleCyberOption(idx)}
+                              onClick={() => handleCyberOptionSelect(idx)}
                               className={`w-full p-4 rounded-2xl border text-sm font-bold flex items-center justify-between transition-all cursor-pointer outline-none ${btnStyle}`}
                             >
                               <span>{opt}</span>
@@ -759,8 +974,14 @@ export const ChallengeArena: React.FC = () => {
                       </div>
 
                       {cyberCompleted && (
-                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-3.5 rounded-2xl bg-purple-500/20 border border-purple-500/40 text-purple-200 text-xs font-mono font-bold">
-                          Mission Complete ✓ Cyber Defender Badge Unlocked +300 XP!
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-4 rounded-2xl bg-purple-500/20 border border-purple-500/40 text-purple-200 text-xs space-y-1 font-sans">
+                          <span className="font-bold text-purple-100 text-xs block">✓ Mission Accomplished!</span>
+                          <p className="text-slate-200 text-xs font-medium">
+                            Phishing attacks trick users into handing over credentials. Always verify domain signatures and report suspicious links.
+                          </p>
+                          <span className="text-amber-300 font-mono font-bold block pt-1">
+                            +300 XP Awarded &amp; Cyber Defender Badge Unlocked 🔐
+                          </span>
                         </motion.div>
                       )}
                     </>
