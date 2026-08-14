@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { WorkspaceWalkthrough } from "../components/WorkspaceWalkthrough";
 import { LearningJourney } from "../components/LearningJourney";
 import { LearningExperiences } from "../components/LearningExperiences";
+import { ChallengeSkills } from "../components/ChallengeSkills";
 import {
   Sparkles,
   Zap,
@@ -441,82 +442,8 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 9.5. Pricing Section */}
-      <section id="pricing" className="max-w-[1100px] mx-auto px-6 space-y-12">
-        <div className="text-center max-w-2xl mx-auto space-y-5">
-          <h2 className="text-2xl sm:text-3xl lg:text-[36px] font-bold tracking-tight text-white leading-tight">Simple, Transparent Pricing</h2>
-          <p className="text-sm sm:text-[15px] text-[#C5CAD3] leading-[1.625]">Choose the perfect tier to supercharge your academic prep.</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-          {/* Free Tier */}
-          <motion.div 
-            whileHover={{ y: -8, scale: 1.02 }}
-            className="p-8 border border-white/5 bg-[#12131A] rounded-[20px] shadow-xl flex flex-col justify-between h-[450px] relative overflow-hidden"
-          >
-            <div className="space-y-4">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Free Basic</span>
-              <h3 className="text-3xl font-extrabold text-white">$0</h3>
-              <p className="text-xs text-slate-400">Essential tools for individual study revision.</p>
-              <div className="border-t border-white/5 pt-4 space-y-2 text-xs text-[#C5CAD3]">
-                <div className="flex items-center gap-2">✓ 3 PDF textbook uploads</div>
-                <div className="flex items-center gap-2">✓ 20 daily AI Tutor questions</div>
-                <div className="flex items-center gap-2">✓ Markdown Notes Editor</div>
-                <div className="flex items-center gap-2">✓ Basic Coding compiler</div>
-              </div>
-            </div>
-            <Link to="/register" className="w-full h-11 bg-white/10 hover:bg-white/20 text-white rounded-[16px] text-xs font-bold transition-all flex items-center justify-center cursor-pointer">
-              Get Started Free
-            </Link>
-          </motion.div>
-
-          {/* Pro Tier (Center card slightly larger, gradient border, glassmorphism) */}
-          <motion.div 
-            whileHover={{ y: -8, scale: 1.03 }}
-            className="p-8 border-2 border-indigo-505 bg-indigo-950/20 backdrop-blur-md rounded-[20px] shadow-2xl flex flex-col justify-between h-[480px] relative overflow-hidden"
-          >
-            <div className="absolute top-4 right-4 px-2 py-0.5 bg-indigo-600 text-white rounded-full text-[8px] font-extrabold uppercase tracking-widest">
-              Most Popular
-            </div>
-            <div className="space-y-4">
-              <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Pro Scholar</span>
-              <h3 className="text-3xl font-extrabold text-white">$9<span className="text-xs text-slate-450">/mo</span></h3>
-              <p className="text-xs text-slate-350">Supercharge studying with advanced agent execution environments.</p>
-              <div className="border-t border-indigo-900/40 pt-4 space-y-2 text-xs text-indigo-100">
-                <div className="flex items-center gap-2 text-indigo-300">✓ Unlimited PDF uploader</div>
-                <div className="flex items-center gap-2">✓ Infinite AI Tutor chats</div>
-                <div className="flex items-center gap-2">✓ Fully featured compiler & debugger</div>
-                <div className="flex items-center gap-2">✓ Pinned Notes & recent logs</div>
-                <div className="flex items-center gap-2">✓ Full Cybersecurity network simulator</div>
-              </div>
-            </div>
-            <Link to="/register" className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 text-white rounded-[16px] text-xs font-bold transition-all flex items-center justify-center shadow-lg shadow-indigo-650/20 cursor-pointer">
-              Upgrade to Pro
-            </Link>
-          </motion.div>
-
-          {/* Scholar Tier */}
-          <motion.div 
-            whileHover={{ y: -8, scale: 1.02 }}
-            className="p-8 border border-white/5 bg-[#12131A] rounded-[20px] shadow-xl flex flex-col justify-between h-[450px] relative overflow-hidden"
-          >
-            <div className="space-y-4">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Enterprise Scholar</span>
-              <h3 className="text-3xl font-extrabold text-white">Custom</h3>
-              <p className="text-xs text-slate-400">Tailored plans for departments and universities.</p>
-              <div className="border-t border-white/5 pt-4 space-y-2 text-xs text-[#C5CAD3]">
-                <div className="flex items-center gap-2">✓ Admin panel analytics integration</div>
-                <div className="flex items-center gap-2">✓ Multi-user seat allocations</div>
-                <div className="flex items-center gap-2">✓ Custom API key configurations</div>
-                <div className="flex items-center gap-2">✓ Premium placement support packages</div>
-              </div>
-            </div>
-            <a href="mailto:admin@studysphere.ai" className="w-full h-11 bg-white/10 hover:bg-white/20 text-white rounded-[16px] text-xs font-bold transition-all flex items-center justify-center cursor-pointer">
-              Contact Sales
-            </a>
-          </motion.div>
-        </div>
-      </section>
+      {/* 9.5. Challenge Your Skills Section */}
+      <ChallengeSkills />
 
       {/* 10. CTA Box Section */}
       <section className="max-w-[1100px] mx-auto px-6 w-full">
