@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
+import { WorkspaceWalkthrough } from "../components/WorkspaceWalkthrough";
 import {
   Sparkles,
   Zap,
@@ -28,7 +29,6 @@ export const LandingPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [activeFAQ, setActiveFAQ] = useState<number | null>(null);
-  const [demoTab, setDemoTab] = useState<"tutor" | "pdf" | "compiler" | "cyber">("tutor");
   const [statsCounters, setStatsCounters] = useState({
     students: 12000,
     chats: 450000,
@@ -353,103 +353,8 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 5. Screenshots Showcase Slider mockup */}
-      <section className="max-w-[1440px] mx-auto px-6 space-y-12 text-center">
-        <div className="space-y-5">
-          <h2 className="text-2xl sm:text-3xl lg:text-[36px] font-bold tracking-tight text-white leading-tight">Workspace Walkthrough</h2>
-          <p className="text-sm sm:text-[15px] text-[#C5CAD3] leading-[1.625] max-w-2xl mx-auto">Toggle between tabs to preview major StudySphere modules directly in action.</p>
-        </div>
-
-        <div className="flex justify-center gap-2 border-b dark:border-slate-900 pb-2 max-w-md mx-auto">
-          {[
-            { id: "tutor", label: "AI Tutor" },
-            { id: "pdf", label: "PDF Reader" },
-            { id: "compiler", label: "Compiler" },
-            { id: "cyber", label: "Cyber Labs" }
-          ].map(t => (
-            <button
-              key={t.id}
-              onClick={() => setDemoTab(t.id as any)}
-              className={`px-3 py-1 rounded-lg text-[9px] font-bold uppercase transition-all cursor-pointer ${
-                demoTab === t.id ? "bg-indigo-600 text-white shadow-sm" : "text-slate-500"
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Simulated UI screenshot panel */}
-        <div className="max-w-4xl mx-auto rounded-3xl border dark:border-slate-850 p-2 bg-slate-50/50 dark:bg-slate-950/20">
-          <div className="rounded-2xl border dark:border-slate-900 bg-white dark:bg-slate-950 overflow-hidden h-72 flex flex-col">
-            {demoTab === "tutor" && (
-              <div className="p-6 text-left flex flex-col h-full justify-between">
-                <div className="space-y-2">
-                  <div className="px-3 py-1 rounded-full bg-slate-50 border w-max text-[8px] font-extrabold uppercase text-slate-400">General tutoring mode</div>
-                  <h4 className="text-sm font-bold text-slate-800 dark:text-white">Explain: Big-O Caching optimization</h4>
-                  <pre className="p-3 bg-slate-950 text-emerald-400 font-mono text-[8px] rounded-xl leading-relaxed border dark:border-slate-800">
-                    {`# Caching lookup improves linear scans from O(N) to O(1) space complexity.
-seen_items = {}
-def check_cache(item_id):
-    return seen_items.get(item_id, None)`}
-                  </pre>
-                </div>
-                <div className="w-full bg-slate-50 border rounded-xl p-2 flex justify-between items-center text-[9px] text-slate-400">
-                  <span>Enter prompt details...</span>
-                  <ArrowRight className="w-4 h-4 text-indigo-650" />
-                </div>
-              </div>
-            )}
-            {demoTab === "pdf" && (
-              <div className="p-6 text-left flex flex-col h-full justify-between">
-                <div className="space-y-2">
-                  <div className="px-3 py-1 rounded-full bg-slate-50 border w-max text-[8px] font-extrabold uppercase text-slate-400">Textbook RAG Analyst</div>
-                  <h4 className="text-sm font-bold text-slate-800 dark:text-white">Ask: What is boundary value testing?</h4>
-                  <div className="p-3 border rounded-xl bg-indigo-5/10 border-indigo-500/5 text-[9px] text-slate-605 leading-relaxed">
-                    "According to Page 12 of the uploaded software_engineering.pdf, Boundary Value Testing is a software testing technique in which test cases are designed to include values at the boundary limits..."
-                  </div>
-                </div>
-                <div className="w-full h-8 bg-slate-50 border rounded-xl flex items-center px-3 text-[9px] text-indigo-650 font-bold">
-                  PDF outline matches found: Page 12 (92% overlap)
-                </div>
-              </div>
-            )}
-            {demoTab === "compiler" && (
-              <div className="p-6 text-left flex flex-col h-full justify-between font-mono">
-                <div className="space-y-2">
-                  <h4 className="text-xs font-black text-slate-800 dark:text-white">Python Compilation output logs</h4>
-                  <div className="p-3 bg-slate-950 text-slate-205 rounded-xl text-[8.5px] leading-relaxed border dark:border-slate-800">
-                    {`>>> Run code checks
-Output: [1, 2, 3, 5, 8]
-Complexity Analysis:
-- Time Complexity: O(N) linear scan
-- Space Complexity: O(1) in-place filter`}
-                  </div>
-                </div>
-                <div className="text-[8px] text-emerald-500 font-bold flex items-center gap-1">
-                  <CheckCircle className="w-3.5 h-3.5" /> Compiler sandbox ready
-                </div>
-              </div>
-            )}
-            {demoTab === "cyber" && (
-              <div className="p-6 text-left flex flex-col h-full justify-between font-mono">
-                <div className="space-y-2">
-                  <h4 className="text-xs font-black text-slate-800 dark:text-white">Stateful Linux Terminal session</h4>
-                  <div className="p-3 bg-slate-950 text-slate-205 rounded-xl text-[8.5px] leading-relaxed border dark:border-slate-800">
-                    {`student@studysphere:~$ ls
-flag.txt    lessons/
-student@studysphere:~$ cat flag.txt
-FLAG{PERSISTENT_LINUX_Blueprints_SEEDED}`}
-                  </div>
-                </div>
-                <div className="text-[8px] text-emerald-500 font-bold flex items-center gap-1">
-                  <CheckCircle className="w-3.5 h-3.5" /> Stateful flag matched (+50 XP awarded!)
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
+      {/* 5. Screenshots Showcase Workspace Walkthrough */}
+      <WorkspaceWalkthrough />
 
       {/* 6. How it works Timeline */}
       <section id="timeline" className="max-w-[1440px] mx-auto px-6 space-y-12">
