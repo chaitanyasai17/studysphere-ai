@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { WorkspaceWalkthrough } from "../components/WorkspaceWalkthrough";
+import { LearningJourney } from "../components/LearningJourney";
 import {
   Sparkles,
   Zap,
@@ -394,29 +395,8 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 8. Testimonials Section */}
-      <section className="max-w-[1440px] mx-auto px-6 space-y-12">
-        <div className="text-center max-w-2xl mx-auto space-y-5">
-          <h2 className="text-2xl sm:text-3xl lg:text-[36px] font-bold tracking-tight text-white leading-tight">Placement Success Stories</h2>
-          <p className="text-sm sm:text-[15px] text-[#C5CAD3] leading-[1.625]">Read reviews from engineering students who cracked job rounds using our interview simulator.</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            { quote: "StudySphere's stateful Linux labs and Caesars Cipher Cryptography labs helped me clear my SOC Analyst entry rounds easily. The XP gamification is extremely addictive!", author: "Sonia G., Cybersecurity Intern", college: "VJTI Mumbai" },
-            { quote: "The resume uploader extracts keywords so cleanly. I matched my CV against target software jobs, updated missing stacks, and got shortlisted at Google!", author: "Arjun K., Software Engineer", college: "IIT Madras" },
-            { quote: "Cracked my Frontend Developer interview at Amazon! The Mock Interview simulator evaluated my answers on complexity and accuracy, giving me absolute confidence.", author: "Prisha M., SDE intern", college: "BITS Pilani" }
-          ].map((t, idx) => (
-            <div key={idx} className="p-8 border border-slate-200/50 dark:border-slate-800/60 bg-white dark:bg-slate-900/40 rounded-3xl shadow-sm space-y-4">
-              <p className="text-sm sm:text-[15px] text-[#C5CAD3] italic leading-[1.625]">"{t.quote}"</p>
-              <div className="border-t pt-3 border-slate-200/50 dark:border-slate-800/60">
-                <strong className="text-base sm:text-[18px] font-semibold text-[#F5F5F7] block">{t.author}</strong>
-                <span className="text-xs sm:text-[13px] font-medium text-[#9EA6B4] block mt-0.5">{t.college}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* 8. Learning Journey Section */}
+      <LearningJourney />
 
       {/* 9. FAQ Accordion Section */}
       <section id="faq" className="max-w-3xl mx-auto px-6 space-y-12">
