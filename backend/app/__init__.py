@@ -28,7 +28,10 @@ def create_app():
     app.config.from_object(Config)
     
     # Configure CORS - Allow React frontend local client and production addresses
-    CORS(app, resources={r"/*": {"origins": "*"}})
+    allowed_origins = os.environ.get("ALLOWED_ORIGINS", "*")
+    if allowed_origins != "*" and "," in allowed_origins:
+        allowed_origins = [o.strip() for o in allowed_origins.split(",") if o.strip()]
+    CORS(app, resources={r"/*": {"origins": allowed_origins}}, supports_credentials=True)
     
     # Create upload/logs directories if they do not exist
     try:

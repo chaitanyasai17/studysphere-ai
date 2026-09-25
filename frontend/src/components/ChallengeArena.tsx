@@ -301,7 +301,8 @@ export const ChallengeArena: React.FC = () => {
     setTestLogs([]);
 
     try {
-      const res = await fetch("/api/coding/execute-public", {
+      const apiUrl = import.meta.env.VITE_API_URL || "";
+      const res = await fetch(`${apiUrl}/api/coding/execute-public`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
