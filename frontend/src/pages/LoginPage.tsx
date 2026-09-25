@@ -63,10 +63,15 @@ export const LoginPage: React.FC = () => {
       navigate(fromPath || "/dashboard");
     } catch (err: any) {
       console.error(err);
-      setError(
-        err.response?.data?.message || "Invalid credentials. Please verify and retry."
-      );
-      addToast("Login Failed", "Check your inputs and try again.", "error");
+      const serverMsg = err.response?.data?.message;
+      if (serverMsg) {
+        setError(serverMsg);
+        addToast("Login Failed", serverMsg, "error");
+      } else {
+        const connMsg = "Could not connect to backend server. Please verify VITE_API_URL configuration.";
+        setError(connMsg);
+        addToast("Connection Error", connMsg, "error");
+      }
     } finally {
       setLoading(false);
     }

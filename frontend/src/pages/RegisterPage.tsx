@@ -41,10 +41,15 @@ export const RegisterPage: React.FC = () => {
       }
     } catch (err: any) {
       console.error(err);
-      setError(
-        err.response?.data?.message || "Failed to register. Please check details."
-      );
-      addToast("Registration Failed", "Email might already be taken.", "error");
+      const serverMsg = err.response?.data?.message;
+      if (serverMsg) {
+        setError(serverMsg);
+        addToast("Registration Failed", serverMsg, "error");
+      } else {
+        const connMsg = "Could not connect to backend server. Please verify VITE_API_URL configuration.";
+        setError(connMsg);
+        addToast("Connection Error", connMsg, "error");
+      }
     } finally {
       setLoading(false);
     }
