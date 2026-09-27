@@ -2,7 +2,16 @@ import React, { useState } from "react";
 import { Link, useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useNotifications } from "../contexts/NotificationsContext";
-import { Mail, Lock, Loader2, AlertCircle, Eye, EyeOff } from "lucide-react";
+import { 
+  Sparkles, 
+  Mail, 
+  Lock, 
+  Loader2, 
+  AlertCircle, 
+  Eye, 
+  EyeOff, 
+  ArrowRight 
+} from "lucide-react";
 import { motion } from "framer-motion";
 
 export const LoginPage: React.FC = () => {
@@ -15,7 +24,7 @@ export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,16 +46,16 @@ export const LoginPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearErrors();
-    if (!email || !password) {
-      setError("Please fill in all credentials.");
+    if (!email.trim() || !password) {
+      setError("Please fill in your email address and password.");
       return;
     }
 
     setLoading(true);
 
     try {
-      await login(email, password);
-      addToast("Welcome back!", "Successfully authenticated.", "success");
+      await login(email.trim(), password);
+      addToast("Welcome back!", "Successfully signed in to StudySphere AI.", "success");
       
       const stateFrom = (location.state as any)?.from;
       let fromPath = "";
@@ -66,7 +75,7 @@ export const LoginPage: React.FC = () => {
       const serverMsg = err.response?.data?.message;
       if (serverMsg) {
         setError(serverMsg);
-        addToast("Login Failed", serverMsg, "error");
+        addToast("Authentication Failed", serverMsg, "error");
       } else {
         const connMsg = "Could not connect to backend server. Please verify VITE_API_URL configuration.";
         setError(connMsg);
@@ -77,37 +86,85 @@ export const LoginPage: React.FC = () => {
     }
   };
 
+  const handleSocialClick = (provider: string) => {
+    addToast(
+      `${provider} Sign-In`,
+      "Single Sign-On is managed through your institution email. Please sign in with your registered account.",
+      "info"
+    );
+  };
+
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="space-y-6"
+      initial={{ opacity: 0, scale: 0.98, y: 15 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+      className="w-full bg-[#12121c]/85 backdrop-blur-2xl border border-white/[0.09] rounded-[26px] p-7 sm:p-9 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8),0_0_50px_-10px_rgba(139,92,246,0.18)] relative overflow-hidden"
     >
-      <div className="space-y-2 text-center sm:text-left">
-        <h1 className="text-2xl font-bold text-white">Welcome Back</h1>
-        <p className="text-sm text-slate-400">Sign in to continue learning</p>
+      
+      {/* Decorative ambient halo inside card top */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-24 bg-gradient-to-b from-purple-500/20 to-transparent blur-2xl pointer-events-none" />
+
+      {/* Card Header Section */}
+      <div className="flex flex-col items-center text-center relative z-10 mb-6">
+        
+        {/* Brand Icon + Name */}
+        <div className="flex items-center gap-2.5 mb-3.5">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 flex items-center justify-center shadow-[0_0_20px_rgba(168,85,247,0.4)]">
+            <Sparkles className="w-5 h-5 text-white" />
+          </div>
+          <span className="font-bold text-lg text-white tracking-tight">
+            StudySphere AI
+          </span>
+        </div>
+
+        {/* Welcome Back Title */}
+        <h2 className="text-2xl sm:text-[28px] font-black text-white tracking-tight">
+          Welcome Back
+        </h2>
+
+        {/* Subtitle */}
+        <p className="text-xs sm:text-sm text-slate-400 mt-1 font-normal">
+          Sign in to continue your learning journey
+        </p>
+
+        {/* Decorative Pill & Dot Indicator (Matching Mockup) */}
+        <div className="flex items-center gap-1.5 mt-3">
+          <div className="w-10 h-1 bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-full" />
+          <div className="w-1.5 h-1 bg-purple-400 rounded-full" />
+        </div>
       </div>
 
+      {/* Session Expired Notice Banner */}
       {showSessionExpired && (
-        <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/10 text-amber-400 text-sm flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+        <div className="mb-5 p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-300 text-xs flex items-center gap-2.5 backdrop-blur-md">
+          <AlertCircle className="w-4 h-4 flex-shrink-0 text-amber-400" />
           <span>Your session has expired. Please sign in again.</span>
         </div>
       )}
 
+      {/* Error Alert Box */}
       {error && (
-        <div className="p-4 rounded-xl border border-red-500/20 bg-red-500/10 text-red-400 text-sm flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-          <span>{error}</span>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-5 p-3.5 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-300 text-xs flex items-start gap-2.5 backdrop-blur-md"
+        >
+          <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-400 mt-0.5" />
+          <span className="leading-relaxed">{error}</span>
+        </motion.div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-300">Email Address</label>
-          <div className="relative">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+      {/* Primary Login Form */}
+      <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
+        
+        {/* Email Field */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-slate-300 tracking-wide block">
+            Email Address
+          </label>
+          <div className="relative flex items-center bg-[#090912]/80 border border-white/[0.08] focus-within:border-purple-500/60 focus-within:shadow-[0_0_15px_rgba(168,85,247,0.2)] rounded-xl transition-all duration-200">
+            <Mail className="w-4 h-4 text-slate-500 ml-3.5 pointer-events-none flex-shrink-0" />
             <input
               type="email"
               placeholder="name@university.edu"
@@ -116,80 +173,145 @@ export const LoginPage: React.FC = () => {
                 setEmail(e.target.value);
                 clearErrors();
               }}
-              className="bg-[#0a0a12] border border-white/[0.06] rounded-xl pl-12 pr-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 outline-none w-full transition-all"
+              className="text-xs sm:text-sm text-white placeholder:text-slate-500 bg-transparent py-2.5 sm:py-3 pl-2.5 pr-4 w-full outline-none"
               required
+              autoComplete="email"
             />
           </div>
         </div>
 
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <label className="text-sm font-medium text-slate-300">Password</label>
-            <Link to="/forgot-password" className="text-sm font-medium text-purple-400 hover:text-purple-300 transition-colors">
-              Forgot password?
-            </Link>
-          </div>
-          <div className="relative">
-            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+        {/* Password Field */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-slate-300 tracking-wide block">
+            Password
+          </label>
+          <div className="relative flex items-center bg-[#090912]/80 border border-white/[0.08] focus-within:border-purple-500/60 focus-within:shadow-[0_0_15px_rgba(168,85,247,0.2)] rounded-xl transition-all duration-200">
+            <Lock className="w-4 h-4 text-slate-500 ml-3.5 pointer-events-none flex-shrink-0" />
             <input
               type={showPassword ? "text" : "password"}
-              placeholder="••••••••••••"
+              placeholder="Enter your password"
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
                 clearErrors();
               }}
-              className="bg-[#0a0a12] border border-white/[0.06] rounded-xl pl-12 pr-12 py-3 text-sm text-white placeholder:text-slate-500 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 outline-none w-full transition-all"
+              className="text-xs sm:text-sm text-white placeholder:text-slate-500 bg-transparent py-2.5 sm:py-3 pl-2.5 pr-10 w-full outline-none font-mono"
               required
+              autoComplete="current-password"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+              className="absolute right-3.5 text-slate-500 hover:text-slate-300 transition-colors p-1 cursor-pointer"
+              title={showPassword ? "Hide password" : "Show password"}
             >
-              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
         </div>
 
-        <div className="flex items-center">
-          <label className="flex items-center gap-2 cursor-pointer">
+        {/* Remember Me & Forgot Password */}
+        <div className="flex items-center justify-between pt-1">
+          <label className="flex items-center gap-2 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
-              className="w-4 h-4 rounded border-white/[0.1] bg-[#0a0a12] text-purple-500 focus:ring-purple-500/20 focus:ring-offset-0"
+              className="w-4 h-4 rounded border-white/[0.15] bg-[#090912] text-purple-600 focus:ring-purple-500/30 accent-purple-600 cursor-pointer"
             />
-            <span className="text-sm text-slate-400">Remember me</span>
+            <span className="text-xs text-slate-300 font-medium">Remember me</span>
           </label>
+
+          <Link 
+            to="/forgot-password" 
+            className="text-xs font-semibold text-purple-400 hover:text-purple-300 transition-colors"
+          >
+            Forgot password?
+          </Link>
         </div>
 
+        {/* Primary CTA Submit Button */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-gradient-to-r from-violet-600 to-purple-500 hover:from-violet-500 hover:to-purple-400 text-white rounded-xl px-6 py-3 font-semibold transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+          className="w-full h-11 sm:h-12 bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-semibold text-sm rounded-xl shadow-[0_0_25px_rgba(147,51,234,0.35)] hover:shadow-[0_0_35px_rgba(147,51,234,0.5)] active:scale-[0.99] transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed mt-2"
         >
           {loading ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
+            <>
+              <Loader2 className="w-4 h-4 animate-spin text-white" />
+              <span>Signing in...</span>
+            </>
           ) : (
-            <span>Sign In</span>
+            <>
+              <span>Sign In</span>
+              <ArrowRight className="w-4 h-4" />
+            </>
           )}
         </button>
       </form>
 
-      <div className="pt-4 text-center sm:text-left space-y-4">
-        <p className="text-sm text-slate-400">
+      {/* "OR" Divider Line */}
+      <div className="relative flex items-center justify-center my-5">
+        <div className="border-t border-white/[0.08] w-full" />
+        <span className="bg-[#12121c] px-3 text-[10px] uppercase font-bold text-slate-500 tracking-widest relative">
+          OR
+        </span>
+        <div className="border-t border-white/[0.08] w-full" />
+      </div>
+
+      {/* Social Single Sign-On Buttons */}
+      <div className="grid grid-cols-2 gap-2.5">
+        <button
+          type="button"
+          onClick={() => handleSocialClick("Google")}
+          className="bg-[#0b0b14]/90 hover:bg-[#151524] border border-white/[0.08] hover:border-white/[0.16] text-white text-xs font-medium py-2.5 px-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer shadow-sm"
+        >
+          <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+            <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.04 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+          </svg>
+          <span className="truncate">Google</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleSocialClick("GitHub")}
+          className="bg-[#0b0b14]/90 hover:bg-[#151524] border border-white/[0.08] hover:border-white/[0.16] text-white text-xs font-medium py-2.5 px-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer shadow-sm"
+        >
+          <svg className="w-4 h-4 flex-shrink-0 fill-current text-white" viewBox="0 0 24 24">
+            <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+          </svg>
+          <span className="truncate">GitHub</span>
+        </button>
+      </div>
+
+      {/* Switch to Register */}
+      <div className="text-center pt-5">
+        <p className="text-xs sm:text-sm text-slate-400">
           Don't have an account?{" "}
-          <Link to="/register" state={location.state} className="font-semibold text-purple-400 hover:text-purple-300 transition-colors">
+          <Link 
+            to="/register" 
+            state={location.state}
+            className="font-semibold text-purple-400 hover:text-purple-300 transition-colors"
+          >
             Register
           </Link>
         </p>
-        <div className="pt-4 border-t border-white/[0.06]">
-          <Link to="/admin/login" className="text-xs text-slate-500 hover:text-slate-300 transition-colors flex items-center justify-center sm:justify-start gap-1">
-            Admin Login <span aria-hidden="true">→</span>
-          </Link>
-        </div>
       </div>
+
+      {/* Admin Login Gateway Link */}
+      <div className="text-center pt-3 mt-3 border-t border-white/[0.06]">
+        <Link 
+          to="/admin/login" 
+          className="text-xs text-purple-400/80 hover:text-purple-300 font-medium tracking-wide inline-flex items-center gap-1.5 transition-colors"
+        >
+          <span>Admin Login</span>
+          <span aria-hidden="true">→</span>
+        </Link>
+      </div>
+
     </motion.div>
   );
 };
