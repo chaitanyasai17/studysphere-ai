@@ -3,6 +3,7 @@ import json
 import logging
 import sqlite3
 import time
+import threading
 from bson import ObjectId
 from datetime import datetime
 from flask import has_app_context, g
@@ -40,9 +41,13 @@ class SqliteCollection:
         self.name = collection_name
 
     def _get_all(self):
-        cursor = self.db_manager.conn.cursor()
-        cursor.execute("SELECT data FROM documents WHERE collection = ?", (self.name,))
-        rows = cursor.fetchall()
+        with self.db_manager.lock:
+            cursor = self.db_manager.conn.cursor()
+            try:
+                cursor.execute("SELECT data FROM documents WHERE collection = ?", (self.name,))
+                rows = cursor.fetchall()
+            finally:
+                cursor.close()
         docs = []
         for r in rows:
             try:
@@ -54,24 +59,32 @@ class SqliteCollection:
     def _save_doc(self, doc):
         doc_id = str(doc.get("_id", doc.get("id")))
         doc_json = json.dumps(doc, cls=JSONEncoder)
-        with self.db_manager.conn:
-            self.db_manager.conn.execute(
-                "INSERT OR REPLACE INTO documents (collection, id, data) VALUES (?, ?, ?)",
-                (self.name, doc_id, doc_json)
-            )
+        with self.db_manager.lock:
+            with self.db_manager.conn:
+                self.db_manager.conn.execute(
+                    "INSERT OR REPLACE INTO documents (collection, id, data) VALUES (?, ?, ?)",
+                    (self.name, doc_id, doc_json)
+                )
 
     def _delete_doc(self, doc_id):
-        with self.db_manager.conn:
-            self.db_manager.conn.execute(
-                "DELETE FROM documents WHERE collection = ? AND id = ?",
-                (self.name, str(doc_id))
-            )
+        with self.db_manager.lock:
+            with self.db_manager.conn:
+                self.db_manager.conn.execute(
+                    "DELETE FROM documents WHERE collection = ? AND id = ?",
+                    (self.name, str(doc_id))
+                )
 
     def _matches(self, doc, query):
         if not query:
             return True
         for key, val in query.items():
             doc_val = doc.get(key)
+            # Case-insensitive comparison for email
+            if key == "email" and isinstance(doc_val, str) and isinstance(val, str):
+                if doc_val.strip().lower() != val.strip().lower():
+                    return False
+                continue
+
             # Handle ObjectId conversions
             if key == "_id" or key.endswith("_id"):
                 if isinstance(val, ObjectId):
@@ -92,8 +105,13 @@ class SqliteCollection:
                         if doc_val is None or doc_val >= op_val:
                             return False
                     elif op == "$ne":
-                        if doc_val == op_val:
-                            return False
+                        # Handle case-insensitive email comparison for $ne
+                        if key == "email" and isinstance(doc_val, str) and isinstance(op_val, str):
+                            if doc_val.strip().lower() == op_val.strip().lower():
+                                return False
+                        else:
+                            if doc_val == op_val:
+                                return False
             else:
                 if doc_val != val:
                     return False
@@ -112,8 +130,27 @@ class SqliteCollection:
 
     @measure_db_time
     def find_one(self, query=None):
-        docs = self._get_all()
         query = query or {}
+        # Direct indexed lookup if query only specifies _id or id
+        if len(query) == 1 and ("_id" in query or "id" in query):
+            doc_id = str(query.get("_id") or query.get("id"))
+            with self.db_manager.lock:
+                cursor = self.db_manager.conn.cursor()
+                try:
+                    cursor.execute(
+                        "SELECT data FROM documents WHERE collection = ? AND id = ?",
+                        (self.name, doc_id)
+                    )
+                    row = cursor.fetchone()
+                    if row:
+                        return json.loads(row["data"])
+                    return None
+                except Exception:
+                    pass
+                finally:
+                    cursor.close()
+
+        docs = self._get_all()
         for doc in docs:
             if self._matches(doc, query):
                 return doc
@@ -333,6 +370,7 @@ class MongoCollectionWrapper:
 class DatabaseManager:
     """Manages connection to MongoDB Atlas, falling back to SQLite for local and serverless execution."""
     def __init__(self):
+        self.lock = threading.RLock()
         self.conn = None
         self.mongo_client = None
         self.mongo_db = None
@@ -363,37 +401,53 @@ class DatabaseManager:
                 logger.warning(f"MongoDB connection failed ({mongo_err}). Falling back to SQLite storage.")
                 self.is_mongo = False
 
-        # 2. SQLite Database Path (Serverless safe /tmp or local data folder)
-        is_serverless = bool(
-            os.getenv("VERCEL")
-            or os.getenv("VERCEL_ENV")
-            or os.getenv("AWS_LAMBDA_FUNCTION_NAME")
-            or os.getenv("LAMBDA_TASK_ROOT")
+        # 2. SQLite Database Path (Support custom persistent directories, serverless /tmp, or local data folder)
+        custom_dir = (
+            os.getenv("DATABASE_DIR")
+            or os.getenv("PERSISTENT_DATA_DIR")
+            or os.getenv("DATA_DIR")
         )
-        if is_serverless:
-            db_dir = "/tmp"
-        else:
-            db_dir = os.path.join(
-                os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-                "data"
-            )
-            
-        try:
+        custom_path = os.getenv("SQLITE_PATH") or os.getenv("DATABASE_PATH")
+        
+        if custom_path:
+            self.db_path = custom_path
+            db_dir = os.path.dirname(os.path.abspath(custom_path))
             os.makedirs(db_dir, exist_ok=True)
-        except Exception:
-            db_dir = "/tmp"
-            
-        self.db_path = os.path.join(db_dir, "studysphere.db")
+        else:
+            is_serverless = bool(
+                os.getenv("VERCEL")
+                or os.getenv("VERCEL_ENV")
+                or os.getenv("AWS_LAMBDA_FUNCTION_NAME")
+                or os.getenv("LAMBDA_TASK_ROOT")
+            )
+            if custom_dir:
+                db_dir = custom_dir
+            elif is_serverless:
+                db_dir = "/tmp"
+            else:
+                db_dir = os.path.join(
+                    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+                    "data"
+                )
+            try:
+                os.makedirs(db_dir, exist_ok=True)
+            except Exception:
+                db_dir = "/tmp"
+            self.db_path = os.path.join(db_dir, "studysphere.db")
         
         try:
-            self.conn = sqlite3.connect(self.db_path, check_same_thread=False)
+            self.conn = sqlite3.connect(self.db_path, check_same_thread=False, timeout=15.0)
             self.conn.row_factory = sqlite3.Row
+            # Enable WAL mode for high concurrency
+            self.conn.execute("PRAGMA journal_mode = WAL;")
+            self.conn.execute("PRAGMA synchronous = NORMAL;")
+            self.conn.execute("PRAGMA busy_timeout = 15000;")
             self._init_db()
-            logger.info(f"Successfully connected to SQLite database at {self.db_path}.")
+            logger.info(f"Successfully connected to SQLite database at {self.db_path} (WAL mode active).")
         except Exception as e:
             logger.warning(f"SQLite file connection failed ({e}). Falling back to in-memory SQLite.")
             try:
-                self.conn = sqlite3.connect(":memory:", check_same_thread=False)
+                self.conn = sqlite3.connect(":memory:", check_same_thread=False, timeout=15.0)
                 self.conn.row_factory = sqlite3.Row
                 self._init_db()
                 logger.info("Successfully connected to in-memory SQLite database.")
@@ -403,15 +457,19 @@ class DatabaseManager:
 
     def _init_db(self):
         if self.conn:
-            with self.conn:
-                self.conn.execute("""
-                    CREATE TABLE IF NOT EXISTS documents (
-                        collection TEXT,
-                        id TEXT,
-                        data TEXT,
-                        PRIMARY KEY (collection, id)
-                    )
-                """)
+            with self.lock:
+                with self.conn:
+                    self.conn.execute("""
+                        CREATE TABLE IF NOT EXISTS documents (
+                            collection TEXT,
+                            id TEXT,
+                            data TEXT,
+                            PRIMARY KEY (collection, id)
+                        )
+                    """)
+                    self.conn.execute("""
+                        CREATE INDEX IF NOT EXISTS idx_documents_collection ON documents(collection)
+                    """)
 
     def get_collection(self, name):
         if self.is_mongo and self.mongo_db is not None:

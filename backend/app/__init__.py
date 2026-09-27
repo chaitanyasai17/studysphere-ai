@@ -96,9 +96,12 @@ def create_app():
     # Root Status / Health API
     @app.route("/api/health", methods=["GET"])
     def health_check():
+        from app.utils.db import get_db
+        db = get_db()
+        db_type = "mongodb" if getattr(db, "is_mongo", False) else "sqlite"
         return jsonify({
             "status": "online",
-            "database": "sqlite",
+            "database": db_type,
             "environment": app.config.get("ENV", "production")
         }), 200
 

@@ -1,9 +1,12 @@
 import jwt
 import bcrypt
 import datetime
+import logging
 from flask import Blueprint, request, jsonify
 from app.config import Config
 from app.utils.db import get_db
+
+logger = logging.getLogger(__name__)
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 
@@ -11,7 +14,13 @@ def hash_password(password):
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
 def check_password(password, hashed):
-    return bcrypt.checkpw(password.encode("utf-8"), hashed.encode("utf-8"))
+    if not password or not hashed:
+        return False
+    try:
+        return bcrypt.checkpw(password.encode("utf-8"), hashed.encode("utf-8"))
+    except Exception as e:
+        logger.warning(f"Error during bcrypt checkpw: {e}")
+        return False
 
 def generate_tokens(user_id):
     now = datetime.datetime.now(datetime.timezone.utc)
@@ -30,17 +39,19 @@ def generate_tokens(user_id):
 @auth_bp.route("/register", methods=["POST"])
 def register():
     data = request.get_json() or {}
-    email = data.get("email")
-    password = data.get("password")
-    name = data.get("name")
+    email = (data.get("email") or "").strip().lower()
+    password = data.get("password") or ""
+    name = (data.get("name") or "").strip()
     
     if not email or not password or not name:
+        logger.warning("Registration rejected: Missing name, email, or password.")
         return jsonify({"message": "Name, email, and password are required!"}), 400
         
     db = get_db()
     users_col = db.get_collection("users")
     
     if users_col.find_one({"email": email}):
+        logger.warning(f"Registration rejected: User with email '{email}' already exists.")
         return jsonify({"message": "User with this email already exists!"}), 400
         
     # Create user
@@ -59,11 +70,12 @@ def register():
         "verification_token": verification_token,
         "reset_token": None,
         "refresh_token": None,
-        "created_at": datetime.datetime.utcnow()
+        "created_at": datetime.datetime.utcnow().isoformat()
     }
     
     res = users_col.insert_one(user_doc)
     user_id = str(res.inserted_id)
+    logger.info(f"User registered successfully: id={user_id}, email={email}, role={role}")
     
     # Initialize basic progress tracking for new student
     progress_col = db.get_collection("progress")
@@ -94,7 +106,7 @@ def register():
         "action": "register",
         "ip_address": request.remote_addr,
         "user_agent": request.headers.get("User-Agent"),
-        "timestamp": datetime.datetime.utcnow()
+        "timestamp": datetime.datetime.utcnow().isoformat()
     })
     
     return jsonify({
@@ -107,17 +119,27 @@ def register():
 @auth_bp.route("/login", methods=["POST"])
 def login():
     data = request.get_json() or {}
-    email = data.get("email")
-    password = data.get("password")
+    email = (data.get("email") or "").strip().lower()
+    password = data.get("password") or ""
     
     if not email or not password:
+        logger.warning("Login rejected: Missing email or password.")
         return jsonify({"message": "Email and password are required!"}), 400
         
     db = get_db()
     users_col = db.get_collection("users")
     user = users_col.find_one({"email": email})
     
-    if not user or not check_password(password, user["password_hash"]):
+    if not user:
+        logger.warning(f"Login rejected: No account found matching email '{email}'.")
+        return jsonify({"message": "Invalid email or password!"}), 401
+        
+    if user.get("is_suspended", False):
+        logger.warning(f"Login rejected: Account is suspended for email '{email}'.")
+        return jsonify({"message": "Your account has been suspended. Please contact support."}), 403
+
+    if not check_password(password, user.get("password_hash")):
+        logger.warning(f"Login rejected: Incorrect password provided for email '{email}'.")
         return jsonify({"message": "Invalid email or password!"}), 401
         
     user_id = str(user["_id"])
@@ -133,8 +155,10 @@ def login():
         "action": "login",
         "ip_address": request.remote_addr,
         "user_agent": request.headers.get("User-Agent"),
-        "timestamp": datetime.datetime.utcnow()
+        "timestamp": datetime.datetime.utcnow().isoformat()
     })
+    
+    logger.info(f"Login successful for user: id={user_id}, email={email}, role={user.get('role', 'user')}")
     
     return jsonify({
         "access_token": access_token,
@@ -211,7 +235,7 @@ def verify_email():
 @auth_bp.route("/forgot-password", methods=["POST"])
 def forgot_password():
     data = request.get_json() or {}
-    email = data.get("email")
+    email = (data.get("email") or "").strip().lower()
     
     if not email:
         return jsonify({"message": "Email is required!"}), 400
