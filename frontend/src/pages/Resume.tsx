@@ -437,10 +437,10 @@ export const ResumeAssistant: React.FC = () => {
     <div className="max-w-7xl mx-auto space-y-6">
       
       {/* Header layout */}
-      <div className="flex justify-between items-center border-b border-slate-200/50 dark:border-slate-850 pb-4">
+      <div className="flex justify-between items-center border-b border-white/[0.06] pb-4">
         <div>
           <h1 className="text-xl font-black tracking-tight">AI Mock Interview & Career Hub</h1>
-          <p className="text-[10px] text-slate-450 mt-1">
+          <p className="text-sm text-slate-450 mt-1">
             Simulate stateful technical interviews, evaluate resumes against ATS scorecards, and compile personalized roadmap milestones.
           </p>
         </div>
@@ -457,10 +457,10 @@ export const ResumeAssistant: React.FC = () => {
           <button
             key={t.id}
             onClick={() => setActiveTab(t.id as any)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-extrabold uppercase transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-extrabold uppercase transition-all cursor-pointer ${
               activeTab === t.id
-                ? "bg-indigo-600 text-white shadow-sm"
-                : "bg-white dark:bg-slate-900 border border-slate-250 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50"
+                ? "bg-purple-600 text-white shadow-sm"
+                : "bg-[#161625] border border-slate-250 dark:border-slate-800 text-slate-400 dark:text-slate-400 hover:bg-slate-50"
             }`}
           >
             {t.icon}
@@ -478,11 +478,11 @@ export const ResumeAssistant: React.FC = () => {
             
             {/* Visual Stats Gauges (Left 4 cols) */}
             <div className="lg:col-span-4 space-y-6">
-              <div className="p-6 rounded-3xl border border-white/5 bg-[#12131A] shadow-xl space-y-5">
-                <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest block">Readiness Index</span>
+              <div className="p-6 rounded-2xl border border-white/[0.06] bg-[#161625] shadow-xl space-y-5">
+                <span className="text-sm font-black text-purple-400 uppercase tracking-widest block">Readiness Index</span>
                 
                 {statsLoading ? (
-                  <div className="h-32 flex items-center justify-center"><Loader2 className="w-5 h-5 animate-spin text-indigo-500" /></div>
+                  <div className="h-32 flex items-center justify-center"><Loader2 className="w-5 h-5 animate-spin text-purple-500" /></div>
                 ) : (
                   <div className="space-y-4 flex flex-col items-center text-center">
                     <div className="relative w-24 h-24 flex items-center justify-center">
@@ -493,7 +493,7 @@ export const ResumeAssistant: React.FC = () => {
                           cy="18" 
                           r="15.915" 
                           fill="none" 
-                          className="text-indigo-500" 
+                          className="text-purple-500" 
                           strokeWidth="2.5" 
                           strokeDasharray={`${stats?.career_readiness_score || 0}, 100`}
                           strokeLinecap="round" 
@@ -507,32 +507,32 @@ export const ResumeAssistant: React.FC = () => {
                     </div>
                     <div>
                       <h4 className="text-xs font-black text-white">Placement Eligibility</h4>
-                      <p className="text-[10px] text-slate-450 mt-1 leading-relaxed">Eligibility calculated from average ATS resumes and mock interview results.</p>
+                      <p className="text-sm text-slate-450 mt-1 leading-relaxed">Eligibility calculated from average ATS resumes and mock interview results.</p>
                     </div>
                   </div>
                 )}
               </div>
 
               {/* Progress bars details */}
-              <div className="p-6 rounded-3xl border border-white/5 bg-[#12131A] shadow-xl space-y-4">
-                <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest block">Study Progress</span>
+              <div className="p-6 rounded-2xl border border-white/[0.06] bg-[#161625] shadow-xl space-y-4">
+                <span className="text-sm font-black text-purple-400 uppercase tracking-widest block">Study Progress</span>
                 <div className="space-y-3.5">
                   <div>
-                    <div className="flex justify-between text-[9px] font-bold text-slate-400 mb-1.5">
+                    <div className="flex justify-between text-sm font-bold text-slate-400 mb-1.5">
                       <span>Coding Challenges Progress</span>
                       <span>{stats?.coding_progress || 0}%</span>
                     </div>
-                    <div className="w-full h-1.5 bg-slate-950 border border-white/5 rounded-full overflow-hidden">
-                      <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${stats?.coding_progress || 0}%` }} />
+                    <div className="w-full h-1.5 bg-[#0a0a12] border border-white/[0.06] rounded-full overflow-hidden">
+                      <div className="h-full bg-purple-500 rounded-full" style={{ width: `${stats?.coding_progress || 0}%` }} />
                     </div>
                   </div>
                   <div>
-                    <div className="flex justify-between text-[9px] font-bold text-slate-400 mb-1.5">
+                    <div className="flex justify-between text-sm font-bold text-slate-400 mb-1.5">
                       <span>Textbook Reading Progress</span>
                       <span>{stats?.study_progress || 0}%</span>
                     </div>
-                    <div className="w-full h-1.5 bg-slate-950 border border-white/5 rounded-full overflow-hidden">
-                      <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${stats?.study_progress || 0}%` }} />
+                    <div className="w-full h-1.5 bg-[#0a0a12] border border-white/[0.06] rounded-full overflow-hidden">
+                      <div className="h-full bg-purple-500 rounded-full" style={{ width: `${stats?.study_progress || 0}%` }} />
                     </div>
                   </div>
                 </div>
@@ -544,53 +544,53 @@ export const ResumeAssistant: React.FC = () => {
               
               {/* Score breakdown metrics cards */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-4.5 rounded-2xl border border-white/5 bg-[#12131A] shadow-lg">
-                  <span className="text-[9px] font-black uppercase text-indigo-400 block mb-1.5">Resume ATS Target</span>
+                <div className="p-4.5 rounded-2xl border border-white/[0.06] bg-[#161625] shadow-lg">
+                  <span className="text-sm font-black uppercase text-purple-400 block mb-1.5">Resume ATS Target</span>
                   <div className="flex items-baseline gap-2">
                     <span className="text-xl font-black text-white">{stats?.resume_score || 0}%</span>
-                    <span className="text-[8px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">LATEST SCORE</span>
+                    <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">LATEST SCORE</span>
                   </div>
                 </div>
-                <div className="p-4.5 rounded-2xl border border-white/5 bg-[#12131A] shadow-lg">
-                  <span className="text-[9px] font-black uppercase text-indigo-400 block mb-1.5">Mock Interview Average</span>
+                <div className="p-4.5 rounded-2xl border border-white/[0.06] bg-[#161625] shadow-lg">
+                  <span className="text-sm font-black uppercase text-purple-400 block mb-1.5">Mock Interview Average</span>
                   <div className="flex items-baseline gap-2">
                     <span className="text-xl font-black text-white">{stats?.interview_score || 0}%</span>
-                    <span className="text-[8px] font-bold text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded">EVALUATIONS AVG</span>
+                    <span className="text-xs font-bold text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded">EVALUATIONS AVG</span>
                   </div>
                 </div>
               </div>
 
               {/* Skills Analysis */}
-              <div className="p-6 rounded-3xl border border-white/5 bg-[#12131A] shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="p-6 rounded-2xl border border-white/[0.06] bg-[#161625] shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-3">
-                  <h5 className="text-[10px] font-black uppercase tracking-widest text-emerald-400 border-b border-white/5 pb-1.5">Verified Strong Skills</h5>
+                  <h5 className="text-sm font-black uppercase tracking-widest text-emerald-400 border-b border-white/[0.06] pb-1.5">Verified Strong Skills</h5>
                   <div className="flex flex-wrap gap-2">
                     {stats?.strong_skills.map(s => (
-                      <span key={s} className="text-[9px] font-bold px-2.5 py-1 rounded-lg bg-emerald-500/5 text-emerald-400 border border-emerald-555 hover:scale-105 transition-transform">{s}</span>
+                      <span key={s} className="text-sm font-bold px-2.5 py-1 rounded-lg bg-emerald-500/5 text-emerald-400 border border-emerald-555 hover:scale-105 transition-transform">{s}</span>
                     ))}
                   </div>
                 </div>
                 <div className="space-y-3">
-                  <h5 className="text-[10px] font-black uppercase tracking-widest text-rose-450 border-b border-white/5 pb-1.5">Target Improvement Skills</h5>
+                  <h5 className="text-sm font-black uppercase tracking-widest text-rose-450 border-b border-white/[0.06] pb-1.5">Target Improvement Skills</h5>
                   <div className="flex flex-wrap gap-2">
                     {stats?.weak_skills.map(s => (
-                      <span key={s} className="text-[9px] font-bold px-2.5 py-1 rounded-lg bg-rose-500/5 text-rose-400 border border-rose-555 hover:scale-105 transition-transform">{s}</span>
+                      <span key={s} className="text-sm font-bold px-2.5 py-1 rounded-lg bg-rose-500/5 text-rose-400 border border-rose-555 hover:scale-105 transition-transform">{s}</span>
                     ))}
                   </div>
                 </div>
               </div>
 
               {/* Recommended Next Actions based on weaknesses */}
-              <div className="p-6 rounded-3xl border border-white/5 bg-[#12131A] shadow-xl space-y-4">
-                <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest block">Recommended Placement Tasks</span>
+              <div className="p-6 rounded-2xl border border-white/[0.06] bg-[#161625] shadow-xl space-y-4">
+                <span className="text-sm font-black text-purple-400 uppercase tracking-widest block">Recommended Placement Tasks</span>
                 <div className="space-y-2.5">
                   {stats?.recommended_actions.map((act, idx) => (
-                    <div key={idx} className="p-3 bg-[#181922] border-l-2 border-indigo-500 rounded-r-xl flex items-center justify-between text-[10px] hover:bg-[#1f202b] transition-colors">
+                    <div key={idx} className="p-3 bg-[#0f0f1a] border-l-2 border-purple-500 rounded-r-xl flex items-center justify-between text-sm hover:bg-[#1f202b] transition-colors">
                       <div className="flex items-center gap-2">
-                        <Info className="w-3.5 h-3.5 text-indigo-400" />
+                        <Info className="w-3.5 h-3.5 text-purple-400" />
                         <span className="text-slate-300 font-bold">{act.task}</span>
                       </div>
-                      <span className="text-[8px] font-black uppercase px-2 py-0.5 bg-indigo-500/10 text-indigo-400 rounded-lg">{act.module}</span>
+                      <span className="text-xs font-black uppercase px-2 py-0.5 bg-purple-500/10 text-purple-400 rounded-lg">{act.module}</span>
                     </div>
                   ))}
                 </div>
@@ -607,19 +607,19 @@ export const ResumeAssistant: React.FC = () => {
             
             {/* Sidebar Setup Form & History log (Left 4 cols) */}
             <div className="lg:col-span-4 space-y-4">
-              <div className="p-5 border border-slate-200/50 dark:border-slate-850 bg-white dark:bg-slate-900/40 rounded-3xl shadow-sm space-y-4">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 border-b pb-2">
-                  <Briefcase className="w-4 h-4 text-indigo-500" /> Target Profile & Files
+              <div className="p-5 border border-white/[0.06] bg-[#161625] rounded-2xl shadow-sm space-y-4">
+                <span className="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 border-b pb-2">
+                  <Briefcase className="w-4 h-4 text-purple-500" /> Target Profile & Files
                 </span>
                 
                 <form onSubmit={handleScanResume} className="space-y-4">
                   {/* Target role dropdown selection */}
                   <div className="space-y-1.5">
-                    <label className="text-[9px] font-bold uppercase tracking-wider text-slate-450 block">Target Job Role</label>
+                    <label className="text-sm font-bold uppercase tracking-wider text-slate-450 block">Target Job Role</label>
                     <select
                       value={scanRole}
                       onChange={(e) => setScanRole(e.target.value)}
-                      className="w-full p-2 border rounded-xl text-[10px] bg-white dark:bg-slate-950 dark:border-slate-800 dark:text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full p-2 border rounded-xl text-sm bg-[#0f0f1a] dark:border-slate-800 dark:text-slate-200 outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500/50"
                     >
                       <option value="Software Engineer">Software Engineer</option>
                       <option value="Python Developer">Python Developer</option>
@@ -635,7 +635,7 @@ export const ResumeAssistant: React.FC = () => {
 
                   {/* Drag & Drop Resume PDF/DOCX Zone */}
                   <div className="space-y-1.5">
-                    <label className="text-[9px] font-bold uppercase tracking-wider text-slate-450 block">Upload Resume (PDF/DOCX)</label>
+                    <label className="text-sm font-bold uppercase tracking-wider text-slate-450 block">Upload Resume (PDF/DOCX)</label>
                     <div 
                       onDragOver={(e) => e.preventDefault()}
                       onDrop={(e) => {
@@ -646,7 +646,7 @@ export const ResumeAssistant: React.FC = () => {
                           handleUploadFile(file, "resume");
                         }
                       }}
-                      className="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-4 text-center cursor-pointer hover:bg-slate-50/50 dark:hover:bg-slate-950/20 transition-all select-none"
+                      className="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-4 text-center cursor-pointer hover:bg-slate-50/50 dark:hover:bg-[#0a0a12]/20 transition-all select-none"
                       onClick={() => document.getElementById("resume-input-file")?.click()}
                     >
                       <input 
@@ -663,14 +663,14 @@ export const ResumeAssistant: React.FC = () => {
                         }}
                       />
                       <Upload className="w-5 h-5 mx-auto text-slate-400 mb-1" />
-                      <p className="text-[9px] font-bold text-slate-600 dark:text-slate-400">Drag & Drop Resume or Browse</p>
+                      <p className="text-sm font-bold text-slate-400 dark:text-slate-400">Drag & Drop Resume or Browse</p>
                       <p className="text-[7px] text-slate-400 mt-0.5">Supports PDF, DOCX up to 5MB</p>
                     </div>
 
                     {/* Resume File Metadata Progress info */}
                     {resumeFile && (
-                      <div className="p-3 border dark:border-slate-850 rounded-xl bg-slate-50/30 dark:bg-slate-950/20 space-y-2">
-                        <div className="flex justify-between items-center text-[8px] font-bold text-slate-600 dark:text-slate-400">
+                      <div className="p-3 border dark:border-slate-850 rounded-xl bg-slate-50/30 dark:bg-[#0a0a12]/20 space-y-2">
+                        <div className="flex justify-between items-center text-xs font-bold text-slate-400 dark:text-slate-400">
                           <span className="truncate max-w-[150px]">{resumeFile.name}</span>
                           <span>{(resumeFile.size / (1024 * 1024)).toFixed(2)} MB</span>
                         </div>
@@ -680,13 +680,13 @@ export const ResumeAssistant: React.FC = () => {
                           </div>
                         )}
                         {uploadStage && (
-                          <div className="flex items-center gap-1.5 text-[8px] font-bold text-slate-500">
-                            {(extractLoading || scanLoading) && <Loader2 className="w-3 h-3 text-indigo-500 animate-spin" />}
-                            <span>Stage: <span className="text-indigo-400 font-extrabold uppercase">{uploadStage}</span></span>
+                          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-400">
+                            {(extractLoading || scanLoading) && <Loader2 className="w-3 h-3 text-purple-500 animate-spin" />}
+                            <span>Stage: <span className="text-purple-400 font-extrabold uppercase">{uploadStage}</span></span>
                           </div>
                         )}
                         {resumeSuccess && (
-                          <span className="text-[8px] text-emerald-500 font-extrabold flex items-center gap-1">
+                          <span className="text-xs text-emerald-500 font-extrabold flex items-center gap-1">
                             <Check className="w-3 h-3" /> {resumeSuccess}
                           </span>
                         )}
@@ -695,7 +695,7 @@ export const ResumeAssistant: React.FC = () => {
                             <span className="text-[7.5px] text-red-400 font-black uppercase flex items-center gap-1">
                               <ShieldAlert className="w-3 h-3" /> Extraction Failed
                             </span>
-                            <p className="text-[8px] text-slate-300 leading-normal">{lastError}</p>
+                            <p className="text-xs text-slate-300 leading-normal">{lastError}</p>
                             <div className="flex gap-2 pt-1">
                               <button
                                 type="button"
@@ -708,7 +708,7 @@ export const ResumeAssistant: React.FC = () => {
                                 <button
                                   type="button"
                                   onClick={downloadDebugReport}
-                                  className="px-2 py-1 bg-[#12131A] border border-white/5 hover:text-white rounded text-[7px] font-bold tracking-wider uppercase cursor-pointer text-slate-400"
+                                  className="px-2 py-1 bg-[#161625] border border-white/[0.06] hover:text-white rounded text-[7px] font-bold tracking-wider uppercase cursor-pointer text-slate-400"
                                 >
                                   Download Debug Report
                                 </button>
@@ -723,19 +723,19 @@ export const ResumeAssistant: React.FC = () => {
                   {/* Optional Job Description Match Toggle Zone */}
                   <div className="space-y-2 border-t pt-3 dark:border-slate-850">
                     <div className="flex justify-between items-center">
-                      <label className="text-[9px] font-bold uppercase tracking-wider text-slate-450 block">Target Job Description (Optional)</label>
-                      <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-0.5 text-[8px] font-bold">
+                      <label className="text-sm font-bold uppercase tracking-wider text-slate-450 block">Target Job Description (Optional)</label>
+                      <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-0.5 text-xs font-bold">
                         <button 
                           type="button"
                           onClick={() => setJdType("paste")}
-                          className={`px-1.5 py-0.5 rounded ${jdType === "paste" ? "bg-white text-slate-800 shadow-sm" : "text-slate-450"}`}
+                          className={`px-1.5 py-0.5 rounded ${jdType === "paste" ? "bg-white text-white shadow-sm" : "text-slate-450"}`}
                         >
                           Paste
                         </button>
                         <button 
                           type="button"
                           onClick={() => setJdType("upload")}
-                          className={`px-1.5 py-0.5 rounded ${jdType === "upload" ? "bg-white text-slate-800 shadow-sm" : "text-slate-450"}`}
+                          className={`px-1.5 py-0.5 rounded ${jdType === "upload" ? "bg-white text-white shadow-sm" : "text-slate-450"}`}
                         >
                           PDF/DOCX
                         </button>
@@ -747,7 +747,7 @@ export const ResumeAssistant: React.FC = () => {
                         value={jdText}
                         onChange={(e) => setJdText(e.target.value)}
                         placeholder="Paste target job requirements details here..."
-                        className="w-full h-20 p-2 text-[10px] rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 dark:text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 resize-none font-mono"
+                        className="w-full h-20 p-2 text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-[#0f0f1a] dark:text-slate-200 outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500/50 resize-none font-mono"
                       />
                     ) : (
                       <div 
@@ -760,7 +760,7 @@ export const ResumeAssistant: React.FC = () => {
                             handleUploadFile(file, "jd");
                           }
                         }}
-                        className="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-4 text-center cursor-pointer hover:bg-slate-50/50 dark:hover:bg-slate-950/20 transition-all select-none"
+                        className="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-4 text-center cursor-pointer hover:bg-slate-50/50 dark:hover:bg-[#0a0a12]/20 transition-all select-none"
                         onClick={() => document.getElementById("jd-input-file")?.click()}
                       >
                         <input 
@@ -777,23 +777,23 @@ export const ResumeAssistant: React.FC = () => {
                           }}
                         />
                         <Upload className="w-5 h-5 mx-auto text-slate-400 mb-1" />
-                        <p className="text-[9px] font-bold text-slate-600 dark:text-slate-400">Drag & Drop JD or Browse</p>
+                        <p className="text-sm font-bold text-slate-400 dark:text-slate-400">Drag & Drop JD or Browse</p>
                       </div>
                     )}
 
                     {jdFile && jdType === "upload" && (
-                      <div className="p-3 border dark:border-slate-850 rounded-xl bg-slate-50/30 dark:bg-slate-950/20 space-y-1.5">
-                        <div className="flex justify-between items-center text-[8px] font-bold text-slate-600">
+                      <div className="p-3 border dark:border-slate-850 rounded-xl bg-slate-50/30 dark:bg-[#0a0a12]/20 space-y-1.5">
+                        <div className="flex justify-between items-center text-xs font-bold text-slate-400">
                           <span className="truncate max-w-[150px]">{jdFile.name}</span>
                           <span>{(jdFile.size / (1024 * 1024)).toFixed(2)} MB</span>
                         </div>
                         {jdProgress > 0 && (
                           <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                            <div className="h-full bg-indigo-500 transition-all duration-300" style={{ width: `${jdProgress}%` }} />
+                            <div className="h-full bg-purple-500 transition-all duration-300" style={{ width: `${jdProgress}%` }} />
                           </div>
                         )}
                         {jdSuccess && (
-                          <span className="text-[8px] text-emerald-500 font-extrabold flex items-center gap-1">
+                          <span className="text-xs text-emerald-500 font-extrabold flex items-center gap-1">
                             <Check className="w-3 h-3" /> {jdSuccess}
                           </span>
                         )}
@@ -805,7 +805,7 @@ export const ResumeAssistant: React.FC = () => {
                   <button
                     type="submit"
                     disabled={scanLoading || extractLoading || !resumeText}
-                    className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer shadow-md disabled:opacity-50"
+                    className="w-full py-2.5 bg-gradient-to-r from-violet-600 to-purple-500 hover:from-violet-500 hover:to-purple-400 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer shadow-md disabled:opacity-50"
                   >
                     {scanLoading ? (
                       <>
@@ -823,24 +823,24 @@ export const ResumeAssistant: React.FC = () => {
               </div>
 
               {/* Resume History List */}
-              <div className="p-5 border border-slate-200/50 dark:border-slate-850 bg-white dark:bg-slate-900/40 rounded-3xl shadow-sm space-y-3 max-h-[300px] overflow-y-auto">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block border-b pb-2">Resume History logs</span>
+              <div className="p-5 border border-white/[0.06] bg-[#161625] rounded-2xl shadow-sm space-y-3 max-h-[300px] overflow-y-auto">
+                <span className="text-sm font-bold uppercase tracking-wider text-slate-400 block border-b pb-2">Resume History logs</span>
                 {resumeHistory.length === 0 ? (
-                  <p className="text-[8px] text-slate-450 text-center py-4">No previous reports found.</p>
+                  <p className="text-xs text-slate-450 text-center py-4">No previous reports found.</p>
                 ) : (
                   <div className="space-y-2">
                     {resumeHistory.map((item) => (
                       <div 
                         key={item._id}
                         onClick={() => setScanResult(item)}
-                        className={`p-2.5 rounded-xl border transition-all cursor-pointer flex justify-between items-center text-[9px] ${
+                        className={`p-2.5 rounded-xl border transition-all cursor-pointer flex justify-between items-center text-sm ${
                           scanResult?._id === item._id 
-                            ? "border-indigo-500 bg-indigo-500/5" 
-                            : "bg-white dark:bg-slate-950 hover:bg-slate-50 border-slate-200 dark:border-slate-850"
+                            ? "border-purple-500 bg-purple-500/5" 
+                            : "bg-[#0f0f1a] hover:bg-slate-50 border-slate-200 dark:border-slate-850"
                         }`}
                       >
                         <div className="space-y-0.5 max-w-[80%]">
-                          <strong className="text-slate-800 dark:text-slate-200 block truncate">{item.filename}</strong>
+                          <strong className="text-white dark:text-slate-200 block truncate">{item.filename}</strong>
                           <span className="text-slate-450 block">{item.role} • {new Date(item.created_at).toLocaleDateString()}</span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -862,33 +862,33 @@ export const ResumeAssistant: React.FC = () => {
             {/* Audit Results Dashboard Panels (Right 8 cols) */}
             <div className="lg:col-span-8 space-y-6">
               {scanLoading ? (
-                <div className="h-[50vh] flex flex-col items-center justify-center text-center space-y-3 border dark:border-slate-850 bg-white dark:bg-slate-900/40 rounded-3xl shadow-sm p-6">
-                  <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+                <div className="h-[50vh] flex flex-col items-center justify-center text-center space-y-3 border dark:border-slate-850 bg-[#161625] rounded-2xl shadow-sm p-6">
+                  <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
                   <h4 className="text-xs font-bold text-slate-850 dark:text-white">AI Auditor Evaluating Scorecard</h4>
-                  <p className="text-[10px] text-slate-400 max-w-xs leading-relaxed">Parsing bullet action verbs, evaluating keyword matching thresholds, and compiling ReportLab visual assets...</p>
+                  <p className="text-sm text-slate-400 max-w-xs leading-relaxed">Parsing bullet action verbs, evaluating keyword matching thresholds, and compiling ReportLab visual assets...</p>
                 </div>
               ) : scanResult ? (
                 <div className="space-y-6">
                   
                   {/* Top Exporter Buttons */}
-                  <div className="flex justify-between items-center p-4 border dark:border-slate-850 bg-white dark:bg-slate-900 rounded-3xl shadow-sm">
-                    <span className="text-[10px] font-black text-slate-800 dark:text-white uppercase tracking-wider">Report Exporters</span>
+                  <div className="flex justify-between items-center p-4 border dark:border-slate-850 bg-[#161625] rounded-2xl shadow-sm">
+                    <span className="text-sm font-black text-white dark:text-white uppercase tracking-wider">Report Exporters</span>
                     <div className="flex gap-2">
                       <button 
                         onClick={() => exportJSON(scanResult)}
-                        className="px-3 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-[9px] font-extrabold uppercase flex items-center gap-1 shadow-sm cursor-pointer"
+                        className="px-3 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-extrabold uppercase flex items-center gap-1 shadow-sm cursor-pointer"
                       >
                         <Download className="w-3 h-3" /> JSON
                       </button>
                       <button 
                         onClick={() => exportMarkdown(scanResult)}
-                        className="px-3 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-[9px] font-extrabold uppercase flex items-center gap-1 shadow-sm cursor-pointer"
+                        className="px-3 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-extrabold uppercase flex items-center gap-1 shadow-sm cursor-pointer"
                       >
                         <Download className="w-3 h-3" /> Markdown
                       </button>
                       <button 
                         onClick={handlePrintReport}
-                        className="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[9px] font-extrabold uppercase flex items-center gap-1 shadow-sm cursor-pointer"
+                        className="px-3 py-1 bg-gradient-to-r from-violet-600 to-purple-500 hover:from-violet-500 hover:to-purple-400 text-white rounded-lg text-sm font-extrabold uppercase flex items-center gap-1 shadow-sm cursor-pointer"
                       >
                         <Download className="w-3 h-3" /> PDF Report
                       </button>
@@ -898,8 +898,8 @@ export const ResumeAssistant: React.FC = () => {
                   {/* ATS Dashboard Score cards */}
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     {/* Overall Score */}
-                    <div className="p-5 border border-white/5 bg-[#12131A] rounded-3xl shadow-xl flex flex-col items-center justify-center text-center space-y-3">
-                      <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest">ATS Score</span>
+                    <div className="p-5 border border-white/[0.06] bg-[#161625] rounded-2xl shadow-xl flex flex-col items-center justify-center text-center space-y-3">
+                      <span className="text-sm font-black text-purple-400 uppercase tracking-widest">ATS Score</span>
                       <div className="relative w-20 h-20 flex items-center justify-center">
                         <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                           <circle cx="18" cy="18" r="15.915" fill="none" className="text-slate-900" strokeWidth="2.5" stroke="currentColor" />
@@ -932,12 +932,12 @@ export const ResumeAssistant: React.FC = () => {
                             : "text-emerald-400"
                         }`}>{scanResult.ats_score}%</span>
                       </div>
-                      <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-555 px-2 py-0.5 rounded-lg">{scanResult.final_recommendation || "Good"}</span>
+                      <span className="text-sm font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-555 px-2 py-0.5 rounded-lg">{scanResult.final_recommendation || "Good"}</span>
                     </div>
 
                     {/* Progress bars metrics list */}
-                    <div className="p-6 border border-white/5 bg-[#12131A] rounded-3xl shadow-xl md:col-span-3 space-y-4">
-                      <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest block">Dashboard Metrics</span>
+                    <div className="p-6 border border-white/[0.06] bg-[#161625] rounded-2xl shadow-xl md:col-span-3 space-y-4">
+                      <span className="text-sm font-black text-purple-400 uppercase tracking-widest block">Dashboard Metrics</span>
                       <div className="grid grid-cols-2 gap-x-4 gap-y-3">
                         {[
                           { label: "Keyword Match", val: scanResult.keyword_match_pct || 75 },
@@ -945,13 +945,13 @@ export const ResumeAssistant: React.FC = () => {
                           { label: "Skills Score", val: scanResult.skill_match_pct || 82 },
                           { label: "Grammar Score", val: scanResult.grammar_score || 85 }
                         ].map((m) => (
-                          <div key={m.label} className="space-y-1 text-[9px]">
+                          <div key={m.label} className="space-y-1 text-sm">
                             <div className="flex justify-between font-bold text-slate-400 mb-1">
                               <span>{m.label}</span>
                               <span>{m.val}%</span>
                             </div>
                             <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                              <div className="h-full bg-indigo-600 rounded-full" style={{ width: `${m.val}%` }} />
+                              <div className="h-full bg-purple-600 rounded-full" style={{ width: `${m.val}%` }} />
                             </div>
                           </div>
                         ))}
@@ -961,18 +961,18 @@ export const ResumeAssistant: React.FC = () => {
 
                   {/* Job Description Match Comparison Section */}
                   {jdText && (
-                    <div className="p-5 border dark:border-slate-850 bg-white dark:bg-slate-900 rounded-3xl shadow-sm space-y-4">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block border-b pb-2">Job Description Comparison</span>
+                    <div className="p-5 border dark:border-slate-850 bg-[#161625] rounded-2xl shadow-sm space-y-4">
+                      <span className="text-sm font-bold uppercase tracking-wider text-slate-400 block border-b pb-2">Job Description Comparison</span>
                       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                         {[
-                          { label: "Overall Match", val: scanResult.job_match_pct, color: "bg-indigo-600" },
+                          { label: "Overall Match", val: scanResult.job_match_pct, color: "bg-purple-600" },
                           { label: "Keyword Overlap", val: scanResult.keyword_match_pct, color: "bg-emerald-600" },
                           { label: "Skill Score", val: scanResult.skill_match_pct, color: "bg-amber-500" },
                           { label: "Experience Match", val: scanResult.experience_match_pct, color: "bg-sky-500" },
                           { label: "Education Match", val: scanResult.education_match_pct, color: "bg-purple-500" }
                         ].map((item) => (
                           <div key={item.label} className="p-3 border rounded-2xl text-center space-y-1.5">
-                            <span className="text-[8px] font-bold text-slate-400 uppercase block">{item.label}</span>
+                            <span className="text-xs font-bold text-slate-400 uppercase block">{item.label}</span>
                             <span className="text-sm font-black text-slate-850 dark:text-white block">{item.val || 0}%</span>
                             <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
                               <div className={`h-full ${item.color}`} style={{ width: `${item.val || 0}%` }} />
@@ -982,7 +982,7 @@ export const ResumeAssistant: React.FC = () => {
                       </div>
                       
                       {scanResult.match_suggestions && scanResult.match_suggestions.length > 0 && (
-                        <div className="p-3 bg-indigo-50/30 dark:bg-indigo-950/15 border border-indigo-500/10 rounded-2xl text-[9px] space-y-1.5 text-slate-600 leading-relaxed">
+                        <div className="p-3 bg-indigo-50/30 dark:bg-indigo-950/15 border border-purple-500/10 rounded-2xl text-sm space-y-1.5 text-slate-400 leading-relaxed">
                           <strong className="text-indigo-650 flex items-center gap-1"><Info className="w-3.5 h-3.5" /> Comparison Suggestions</strong>
                           <ul className="list-disc pl-4 space-y-1">
                             {scanResult.match_suggestions.map((s: string, i: number) => (
@@ -995,9 +995,9 @@ export const ResumeAssistant: React.FC = () => {
                   )}
 
                   {/* Keyword analysis chip panels */}
-                  <div className="p-5 border dark:border-slate-850 bg-white dark:bg-slate-900 rounded-3xl shadow-sm space-y-4">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block border-b pb-2">Target Keywords Analysis</span>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-[9px]">
+                  <div className="p-5 border dark:border-slate-850 bg-[#161625] rounded-2xl shadow-sm space-y-4">
+                    <span className="text-sm font-bold uppercase tracking-wider text-slate-400 block border-b pb-2">Target Keywords Analysis</span>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                       {/* Matched Keywords */}
                       <div className="space-y-2 p-3 border rounded-2xl bg-slate-50/20">
                         <span className="font-extrabold text-emerald-600 uppercase tracking-widest block">Matched Keywords</span>
@@ -1031,9 +1031,9 @@ export const ResumeAssistant: React.FC = () => {
                   </div>
 
                   {/* Resume Section Analyzer checklist */}
-                  <div className="p-5 border dark:border-slate-850 bg-white dark:bg-slate-900 rounded-3xl shadow-sm space-y-4">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block border-b pb-2">ATS Resume Section Checklist</span>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[9px]">
+                  <div className="p-5 border dark:border-slate-850 bg-[#161625] rounded-2xl shadow-sm space-y-4">
+                    <span className="text-sm font-bold uppercase tracking-wider text-slate-400 block border-b pb-2">ATS Resume Section Checklist</span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                       {scanResult.sections && Object.keys(scanResult.sections).map((key) => {
                         const sec = scanResult.sections[key];
                         return (
@@ -1056,15 +1056,15 @@ export const ResumeAssistant: React.FC = () => {
                   </div>
 
                   {/* Skills Categorized panels */}
-                  <div className="p-5 border dark:border-slate-850 bg-white dark:bg-slate-900 rounded-3xl shadow-sm space-y-4">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block border-b pb-2">Skills Categorized Distribution</span>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-[9px]">
+                  <div className="p-5 border dark:border-slate-850 bg-[#161625] rounded-2xl shadow-sm space-y-4">
+                    <span className="text-sm font-bold uppercase tracking-wider text-slate-400 block border-b pb-2">Skills Categorized Distribution</span>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
                       {scanResult.skills_categorized && Object.keys(scanResult.skills_categorized).map((category) => (
                         <div key={category} className="p-3 border rounded-2xl bg-slate-50/10 space-y-2">
                           <strong className="text-indigo-650 block capitalize">{category}</strong>
                           <div className="flex flex-wrap gap-1">
                             {scanResult.skills_categorized[category].map((s: string) => (
-                              <span key={s} className="px-1.5 py-0.5 rounded bg-white dark:bg-slate-950 border text-slate-550 border-slate-200/60 dark:border-slate-800 text-[8px]">{s}</span>
+                              <span key={s} className="px-1.5 py-0.5 rounded bg-[#0f0f1a] border text-slate-550 border-slate-200/60 dark:border-slate-800 text-xs">{s}</span>
                             ))}
                           </div>
                         </div>
@@ -1073,35 +1073,35 @@ export const ResumeAssistant: React.FC = () => {
                   </div>
 
                   {/* Project Analyzer cards */}
-                  <div className="p-5 border dark:border-slate-850 bg-white dark:bg-slate-900 rounded-3xl shadow-sm space-y-4">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block border-b pb-2">Resume Projects Strength Review</span>
+                  <div className="p-5 border dark:border-slate-850 bg-[#161625] rounded-2xl shadow-sm space-y-4">
+                    <span className="text-sm font-bold uppercase tracking-wider text-slate-400 block border-b pb-2">Resume Projects Strength Review</span>
                     <div className="space-y-4">
                       {scanResult.projects?.map((proj: any, idx: number) => (
                         <div key={idx} className="p-4 border rounded-2xl space-y-3 bg-slate-50/10">
                           <div className="flex justify-between items-center border-b pb-2 border-slate-150">
-                            <h6 className="text-[10px] font-black text-slate-800 dark:text-white uppercase tracking-wider">{proj.title}</h6>
-                            <div className="flex gap-2 text-[8px] font-bold">
+                            <h6 className="text-sm font-black text-white dark:text-white uppercase tracking-wider">{proj.title}</h6>
+                            <div className="flex gap-2 text-xs font-bold">
                               <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600">Impact Score: {proj.impact_score}%</span>
-                              <span className="px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600">Strength: {proj.strength_score}%</span>
+                              <span className="px-2 py-0.5 rounded-full bg-purple-500/10 text-indigo-600">Strength: {proj.strength_score}%</span>
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-2 gap-4 text-[9px] text-slate-600 leading-relaxed">
+                          <div className="grid grid-cols-2 gap-4 text-sm text-slate-400 leading-relaxed">
                             <div>
-                              <strong className="block text-slate-800">Technology Stack</strong>
+                              <strong className="block text-white">Technology Stack</strong>
                               <div className="flex flex-wrap gap-1 mt-1">
                                 {proj.tech_stack.map((t: string) => (
-                                  <span key={t} className="px-1.5 py-0.5 rounded bg-white border text-[8px]">{t}</span>
+                                  <span key={t} className="px-1.5 py-0.5 rounded bg-white border text-xs">{t}</span>
                                 ))}
                               </div>
                             </div>
                             <div>
-                              <strong className="block text-slate-800">Recruiter Impression</strong>
+                              <strong className="block text-white">Recruiter Impression</strong>
                               <span className="italic mt-0.5 block">"{proj.recruiter_impression}"</span>
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[9px] pt-1">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm pt-1">
                             <div className="p-2 border rounded-xl bg-white/60">
                               <strong className="block text-slate-700">Action Verbs & Quantified Results</strong>
                               <span className="block mt-0.5">Verbs: {proj.action_verbs}</span>
@@ -1122,13 +1122,13 @@ export const ResumeAssistant: React.FC = () => {
                   </div>
 
                   {/* AI Improvements Tab Revisions */}
-                  <div className="p-5 border dark:border-slate-850 bg-white dark:bg-slate-900 rounded-3xl shadow-sm space-y-4">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block border-b pb-2">AI-Powered Resume Improvements</span>
-                    <div className="space-y-4 text-[9px]">
+                  <div className="p-5 border dark:border-slate-850 bg-[#161625] rounded-2xl shadow-sm space-y-4">
+                    <span className="text-sm font-bold uppercase tracking-wider text-slate-400 block border-b pb-2">AI-Powered Resume Improvements</span>
+                    <div className="space-y-4 text-sm">
                       {scanResult.improvements && Object.keys(scanResult.improvements).map((section) => (
-                        <div key={section} className="p-3 border rounded-2xl bg-indigo-50/10 border-indigo-500/5 space-y-1.5">
+                        <div key={section} className="p-3 border rounded-2xl bg-indigo-50/10 border-purple-500/5 space-y-1.5">
                           <strong className="text-indigo-650 block capitalize">{section.replace("_", " ")}</strong>
-                          <pre className="whitespace-pre-wrap font-mono text-[8px] bg-slate-950 text-slate-200 p-3 rounded-xl overflow-x-auto leading-relaxed border dark:border-slate-850">
+                          <pre className="whitespace-pre-wrap font-mono text-xs bg-[#0a0a12] text-slate-200 p-3 rounded-xl overflow-x-auto leading-relaxed border dark:border-slate-850">
                             {scanResult.improvements[section]}
                           </pre>
                         </div>
@@ -1138,9 +1138,9 @@ export const ResumeAssistant: React.FC = () => {
 
                   {/* AI Recommendations & Learning pathways */}
                   {scanResult.ai_recommendations && (
-                    <div className="p-5 border dark:border-slate-850 bg-white dark:bg-slate-900 rounded-3xl shadow-sm space-y-4">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block border-b pb-2">AI-Generated Career Recommendations</span>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[9px] leading-relaxed">
+                    <div className="p-5 border dark:border-slate-850 bg-[#161625] rounded-2xl shadow-sm space-y-4">
+                      <span className="text-sm font-bold uppercase tracking-wider text-slate-400 block border-b pb-2">AI-Generated Career Recommendations</span>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm leading-relaxed">
                         
                         <div className="p-3 border rounded-2xl bg-slate-50/15 space-y-2">
                           <strong className="text-emerald-600 block">Certifications & Missing Skills</strong>
@@ -1164,10 +1164,10 @@ export const ResumeAssistant: React.FC = () => {
                         </div>
 
                         <div className="p-3 border rounded-2xl bg-slate-50/15 space-y-2 md:col-span-2">
-                          <strong className="text-slate-800 dark:text-slate-200 block">Interview Prep & Learning Roadmap</strong>
+                          <strong className="text-white dark:text-slate-200 block">Interview Prep & Learning Roadmap</strong>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                             <div>
-                              <span className="font-bold text-slate-600">Top Interview Questions to prepare:</span>
+                              <span className="font-bold text-slate-400">Top Interview Questions to prepare:</span>
                               <ul className="list-disc pl-4 space-y-1 mt-1 text-[8.5px]">
                                 {scanResult.ai_recommendations.interview_preparation.map((q: string, i: number) => (
                                   <li key={i}>{q}</li>
@@ -1175,7 +1175,7 @@ export const ResumeAssistant: React.FC = () => {
                               </ul>
                             </div>
                             <div>
-                              <span className="font-bold text-slate-600">Action Plan Roadmap:</span>
+                              <span className="font-bold text-slate-400">Action Plan Roadmap:</span>
                               <ul className="list-disc pl-4 space-y-1 mt-1 text-[8.5px]">
                                 {scanResult.ai_recommendations.learning_roadmap.map((r: string, i: number) => (
                                   <li key={i}>{r}</li>
@@ -1191,14 +1191,14 @@ export const ResumeAssistant: React.FC = () => {
 
                   {/* History Trends chart SVG */}
                   {resumeHistory.length > 0 && (
-                    <div className="p-5 border dark:border-slate-850 bg-white dark:bg-slate-900 rounded-3xl shadow-sm space-y-4">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block border-b pb-2">ATS Score History Trend</span>
+                    <div className="p-5 border dark:border-slate-850 bg-[#161625] rounded-2xl shadow-sm space-y-4">
+                      <span className="text-sm font-bold uppercase tracking-wider text-slate-400 block border-b pb-2">ATS Score History Trend</span>
                       <div className="w-full h-32 flex items-end gap-3 pt-4">
                         {resumeHistory.slice().reverse().map((item, idx) => (
                           <div key={item._id || idx} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end select-none">
-                            <span className="text-[8px] font-bold text-indigo-650 bg-indigo-50 dark:bg-indigo-950 px-1 py-0.5 rounded">{item.ats_score}%</span>
+                            <span className="text-xs font-bold text-indigo-650 bg-indigo-50 dark:bg-indigo-950 px-1 py-0.5 rounded">{item.ats_score}%</span>
                             <div 
-                              className="w-full bg-indigo-500/20 hover:bg-indigo-500 rounded-t-md transition-all duration-300 cursor-pointer"
+                              className="w-full bg-purple-500/20 hover:bg-purple-500 rounded-t-md transition-all duration-300 cursor-pointer"
                               style={{ height: `${item.ats_score}%` }}
                               onClick={() => setScanResult(item)}
                             />
@@ -1211,11 +1211,11 @@ export const ResumeAssistant: React.FC = () => {
 
                 </div>
               ) : (
-                <div className="h-[50vh] flex flex-col items-center justify-center text-center space-y-4 max-w-xs mx-auto border dark:border-slate-850 bg-white dark:bg-slate-900/40 rounded-3xl shadow-sm p-6">
+                <div className="h-[50vh] flex flex-col items-center justify-center text-center space-y-4 max-w-xs mx-auto border dark:border-slate-850 bg-[#161625] rounded-2xl shadow-sm p-6">
                   <FileBadge className="w-10 h-10 text-slate-400" />
                   <div>
                     <h4 className="text-xs font-bold text-slate-850 dark:text-white">Professional AI Resume Analyzer</h4>
-                    <p className="text-[10px] text-slate-455 mt-1 leading-relaxed">Upload your resume in PDF/DOCX format, paste the target role, and optional job description requirements to generate a recruiter compatibility audit.</p>
+                    <p className="text-sm text-slate-455 mt-1 leading-relaxed">Upload your resume in PDF/DOCX format, paste the target role, and optional job description requirements to generate a recruiter compatibility audit.</p>
                   </div>
                 </div>
               )}
@@ -1231,20 +1231,20 @@ export const ResumeAssistant: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-20rem)] overflow-hidden">
             
             {/* Setup Settings & Session logs (Left 4 cols) */}
-            <div className="lg:col-span-4 h-full flex flex-col border border-slate-200/50 dark:border-slate-850 bg-slate-50/50 dark:bg-slate-900/30 rounded-3xl overflow-hidden shadow-sm">
-              <div className="px-6 py-3 border-b border-slate-150 bg-slate-50/20 dark:bg-slate-950/10 flex-shrink-0">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Interview Panel</span>
+            <div className="lg:col-span-4 h-full flex flex-col border border-white/[0.06] bg-[#161625] rounded-2xl overflow-hidden shadow-sm">
+              <div className="px-6 py-3 border-b border-slate-150 bg-slate-50/20 dark:bg-[#0a0a12]/10 flex-shrink-0">
+                <span className="text-sm font-bold uppercase tracking-wider text-slate-400 block">Interview Panel</span>
               </div>
               <div className="flex-grow overflow-y-auto p-4 space-y-4 select-none">
                 
                 {/* Simulator Options forms */}
                 <div className="p-4 border bg-white rounded-2xl space-y-3">
                   <div>
-                    <label className="text-[9px] font-bold uppercase text-slate-400 block mb-1">Target Placement Role</label>
+                    <label className="text-sm font-bold uppercase text-slate-400 block mb-1">Target Placement Role</label>
                     <select
                       value={interviewRole}
                       onChange={(e) => setInterviewRole(e.target.value)}
-                      className="w-full p-2 border rounded-lg text-[10px] outline-none"
+                      className="w-full p-2 border rounded-lg text-sm outline-none"
                     >
                       <option value="Software Engineer">Software Engineer</option>
                       <option value="Cybersecurity Analyst">Cybersecurity Analyst</option>
@@ -1255,11 +1255,11 @@ export const ResumeAssistant: React.FC = () => {
 
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="text-[9px] font-bold uppercase text-slate-400 block mb-1">Questions</label>
+                      <label className="text-sm font-bold uppercase text-slate-400 block mb-1">Questions</label>
                       <select
                         value={length}
                         onChange={(e) => setLength(e.target.value)}
-                        className="w-full p-2 border rounded-lg text-[10px] outline-none"
+                        className="w-full p-2 border rounded-lg text-sm outline-none"
                       >
                         <option value="5">5 Qs</option>
                         <option value="10">10 Qs</option>
@@ -1267,11 +1267,11 @@ export const ResumeAssistant: React.FC = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="text-[9px] font-bold uppercase text-slate-400 block mb-1">Difficulty</label>
+                      <label className="text-sm font-bold uppercase text-slate-400 block mb-1">Difficulty</label>
                       <select
                         value={difficulty}
                         onChange={(e) => setDifficulty(e.target.value)}
-                        className="w-full p-2 border rounded-lg text-[10px] outline-none"
+                        className="w-full p-2 border rounded-lg text-sm outline-none"
                       >
                         <option value="Easy">Easy</option>
                         <option value="Medium">Medium</option>
@@ -1282,7 +1282,7 @@ export const ResumeAssistant: React.FC = () => {
 
                   <button
                     onClick={handleStartInterview}
-                    className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[10px] font-bold uppercase transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
+                    className="w-full py-2 bg-gradient-to-r from-violet-600 to-purple-500 hover:from-violet-500 hover:to-purple-400 text-white rounded-xl text-sm font-bold uppercase transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
                   >
                     <Play className="w-3 h-3" /> Spin Up AI Simulator
                   </button>
@@ -1290,14 +1290,14 @@ export const ResumeAssistant: React.FC = () => {
 
                 {/* Past sessions history logs list */}
                 <div className="space-y-2">
-                  <span className="text-[9px] font-bold uppercase text-slate-450 block px-1">Session Log History</span>
+                  <span className="text-sm font-bold uppercase text-slate-450 block px-1">Session Log History</span>
                   {historyList.map(h => (
-                    <div key={h._id} className="p-3 border rounded-xl bg-white flex items-center justify-between text-[10px]">
+                    <div key={h._id} className="p-3 border rounded-xl bg-white flex items-center justify-between text-sm">
                       <div>
                         <h6 className="font-bold text-slate-700">{h.role}</h6>
-                        <span className="text-[8px] text-slate-400 block mt-0.5">{new Date(h.created_at).toLocaleDateString()}</span>
+                        <span className="text-xs text-slate-400 block mt-0.5">{new Date(h.created_at).toLocaleDateString()}</span>
                       </div>
-                      <span className="font-mono text-indigo-650 bg-indigo-500/5 px-2 py-0.5 rounded font-black">{h.report?.overall_score || 0}%</span>
+                      <span className="font-mono text-indigo-650 bg-purple-500/5 px-2 py-0.5 rounded font-black">{h.report?.overall_score || 0}%</span>
                     </div>
                   ))}
                 </div>
@@ -1306,13 +1306,13 @@ export const ResumeAssistant: React.FC = () => {
             </div>
 
             {/* Interview chatbot console (Right 8 cols) */}
-            <div className="lg:col-span-8 h-full flex flex-col border border-slate-200/50 dark:border-slate-850 bg-white dark:bg-slate-900/40 rounded-3xl overflow-hidden shadow-sm">
-              <div className="px-6 py-3 border-b border-slate-150 bg-slate-50/20 dark:bg-slate-950/10 flex-shrink-0 flex items-center justify-between">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                  <UserCheck className="w-4 h-4 text-indigo-500" /> Mock Recruitment Console
+            <div className="lg:col-span-8 h-full flex flex-col border border-white/[0.06] bg-[#161625] rounded-2xl overflow-hidden shadow-sm">
+              <div className="px-6 py-3 border-b border-slate-150 bg-slate-50/20 dark:bg-[#0a0a12]/10 flex-shrink-0 flex items-center justify-between">
+                <span className="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                  <UserCheck className="w-4 h-4 text-purple-500" /> Mock Recruitment Console
                 </span>
                 {interviewId && !interviewCompleted && (
-                  <span className="text-[9px] font-mono text-indigo-650 bg-indigo-500/10 px-2 py-0.5 rounded">Question {currIndex + 1} of {length}</span>
+                  <span className="text-sm font-mono text-indigo-650 bg-purple-500/10 px-2 py-0.5 rounded">Question {currIndex + 1} of {length}</span>
                 )}
               </div>
 
@@ -1324,26 +1324,26 @@ export const ResumeAssistant: React.FC = () => {
                       <div key={idx} className="space-y-4">
                         {/* Question */}
                         <div className="flex gap-3 max-w-[85%] mr-auto items-start">
-                          <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-white/5 text-indigo-400 flex items-center justify-center flex-shrink-0 text-xs font-black select-none">Q</div>
-                          <div className="p-3 bg-[#181922] border border-white/5 rounded-2xl text-[10.5px] text-slate-200 font-semibold leading-relaxed select-text">{h.q}</div>
+                          <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-white/[0.06] text-purple-400 flex items-center justify-center flex-shrink-0 text-xs font-black select-none">Q</div>
+                          <div className="p-3 bg-[#0f0f1a] border border-white/[0.06] rounded-2xl text-sm text-slate-200 font-semibold leading-relaxed select-text">{h.q}</div>
                         </div>
                         {/* Answer */}
                         <div className="flex gap-3 max-w-[85%] ml-auto flex-row-reverse items-start">
-                          <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center flex-shrink-0 text-xs font-black select-none">ME</div>
-                          <div className="p-3 bg-indigo-650 text-white rounded-2xl text-[10.5px] whitespace-pre-wrap select-text leading-relaxed shadow-md shadow-indigo-600/5">{h.a}</div>
+                          <div className="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center flex-shrink-0 text-xs font-black select-none">ME</div>
+                          <div className="p-3 bg-indigo-650 text-white rounded-2xl text-sm whitespace-pre-wrap select-text leading-relaxed shadow-md shadow-indigo-600/5">{h.a}</div>
                         </div>
                         {/* Recruiter AI feedback */}
-                        <div className="p-4 border border-white/5 rounded-2xl bg-[#12131A] space-y-3 max-w-[90%] mr-auto ml-11 shadow-inner select-text">
-                          <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                            <span className="text-[8px] font-black text-indigo-400 uppercase flex items-center gap-1.5 select-none"><Sparkles className="w-3 h-3" /> Recruiter Evaluation</span>
-                            <span className="text-[9px] font-mono text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-lg">Accuracy Score: {h.eval.score}%</span>
+                        <div className="p-4 border border-white/[0.06] rounded-2xl bg-[#161625] space-y-3 max-w-[90%] mr-auto ml-11 shadow-inner select-text">
+                          <div className="flex justify-between items-center border-b border-white/[0.06] pb-2">
+                            <span className="text-xs font-black text-purple-400 uppercase flex items-center gap-1.5 select-none"><Sparkles className="w-3 h-3" /> Recruiter Evaluation</span>
+                            <span className="text-sm font-mono text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-lg">Accuracy Score: {h.eval.score}%</span>
                           </div>
                           <div className="grid grid-cols-2 gap-3 text-[9.5px] text-slate-400">
                             <div><strong className="text-slate-300">Communication:</strong> {h.eval.communication}</div>
                             <div><strong className="text-slate-300">Confidence:</strong> {h.eval.confidence}</div>
                           </div>
                           <p className="text-[9.5px] text-slate-400"><strong className="text-slate-300">Improvement Tip:</strong> {h.eval.suggestions}</p>
-                          <div className="p-3 border border-white/5 rounded-xl bg-slate-950/60 text-[9px] text-slate-450 leading-relaxed italic">
+                          <div className="p-3 border border-white/[0.06] rounded-xl bg-[#0a0a12]/60 text-sm text-slate-450 leading-relaxed italic">
                             <strong className="text-slate-300 block not-italic mb-1 font-bold">Better Alternative answer sample:</strong>
                             "{h.eval.better_sample_answer}"
                           </div>
@@ -1353,15 +1353,15 @@ export const ResumeAssistant: React.FC = () => {
 
                     {/* Completion Report Card */}
                     {interviewCompleted && finalReport && (
-                      <div id="print-interview-report" className="p-6 border border-white/5 rounded-3xl bg-[#12131A] space-y-6 select-text">
-                        <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                      <div id="print-interview-report" className="p-6 border border-white/[0.06] rounded-2xl bg-[#161625] space-y-6 select-text">
+                        <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
                           <div>
                             <h4 className="text-xs font-black text-white uppercase tracking-wider">Placement Assessment Report</h4>
-                            <span className="text-[9px] text-slate-500 block mt-0.5">StudySphere AI Recruiter Evaluations Platform</span>
+                            <span className="text-sm text-slate-400 block mt-0.5">StudySphere AI Recruiter Evaluations Platform</span>
                           </div>
                           <button
                             onClick={handlePrintReport}
-                            className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 cursor-pointer shadow-md shadow-indigo-600/10"
+                            className="px-3.5 py-1.5 bg-gradient-to-r from-violet-600 to-purple-500 hover:from-violet-500 hover:to-purple-400 text-white rounded-xl text-sm font-bold uppercase transition-all flex items-center gap-1.5 cursor-pointer shadow-md shadow-indigo-600/10"
                           >
                             <Download className="w-3 h-3" /> Export PDF / Print
                           </button>
@@ -1369,55 +1369,55 @@ export const ResumeAssistant: React.FC = () => {
 
                         {/* Overall readiness metric */}
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
-                          <div className="p-4 border border-white/5 rounded-2xl bg-[#181922]">
-                            <span className="text-[8px] font-black uppercase text-slate-500 block mb-1">Overall score</span>
-                            <span className="text-base font-black text-indigo-400">{finalReport.overall_score}%</span>
+                          <div className="p-4 border border-white/[0.06] rounded-2xl bg-[#0f0f1a]">
+                            <span className="text-xs font-black uppercase text-slate-400 block mb-1">Overall score</span>
+                            <span className="text-base font-black text-purple-400">{finalReport.overall_score}%</span>
                           </div>
-                          <div className="p-4 border border-white/5 rounded-2xl bg-[#181922]">
-                            <span className="text-[8px] font-black uppercase text-slate-500 block mb-1">Technical skills</span>
+                          <div className="p-4 border border-white/[0.06] rounded-2xl bg-[#0f0f1a]">
+                            <span className="text-xs font-black uppercase text-slate-400 block mb-1">Technical skills</span>
                             <span className="text-base font-black text-white">{finalReport.technical_score}%</span>
                           </div>
-                          <div className="p-4 border border-white/5 rounded-2xl bg-[#181922]">
-                            <span className="text-[8px] font-black uppercase text-slate-500 block mb-1">HR & Behavioural</span>
+                          <div className="p-4 border border-white/[0.06] rounded-2xl bg-[#0f0f1a]">
+                            <span className="text-xs font-black uppercase text-slate-400 block mb-1">HR & Behavioural</span>
                             <span className="text-base font-black text-white">{finalReport.hr_score}%</span>
                           </div>
-                          <div className="p-4 border border-white/5 rounded-2xl bg-[#181922]">
-                            <span className="text-[8px] font-black uppercase text-slate-500 block mb-1">Communication</span>
+                          <div className="p-4 border border-white/[0.06] rounded-2xl bg-[#0f0f1a]">
+                            <span className="text-xs font-black uppercase text-slate-400 block mb-1">Communication</span>
                             <span className="text-base font-black text-white">{finalReport.communication_score}%</span>
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-[10px]">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
                           <div className="space-y-2">
-                            <h5 className="font-black uppercase tracking-wider text-emerald-400 border-b border-white/5 pb-1">Core Strengths</h5>
+                            <h5 className="font-black uppercase tracking-wider text-emerald-400 border-b border-white/[0.06] pb-1">Core Strengths</h5>
                             <ul className="list-disc pl-4 text-slate-400 space-y-1.5">
                               {finalReport.strengths.map((s: string, idx: number) => <li key={idx}>{s}</li>)}
                             </ul>
                           </div>
                           <div className="space-y-2">
-                            <h5 className="font-black uppercase tracking-wider text-rose-450 border-b border-white/5 pb-1">Core Weaknesses & Gaps</h5>
+                            <h5 className="font-black uppercase tracking-wider text-rose-450 border-b border-white/[0.06] pb-1">Core Weaknesses & Gaps</h5>
                             <ul className="list-disc pl-4 text-slate-400 space-y-1.5">
                               {finalReport.weaknesses.map((w: string, idx: number) => <li key={idx}>{w}</li>)}
                             </ul>
                           </div>
                         </div>
 
-                        <div className="border-t border-white/5 pt-5 space-y-4 text-[10px]">
-                          <h5 className="font-black uppercase tracking-wider text-indigo-400">Placement Preparation Actions checklist</h5>
+                        <div className="border-t border-white/[0.06] pt-5 space-y-4 text-sm">
+                          <h5 className="font-black uppercase tracking-wider text-purple-400">Placement Preparation Actions checklist</h5>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="p-4.5 border border-white/5 rounded-2xl bg-[#181922] space-y-2">
+                            <div className="p-4.5 border border-white/[0.06] rounded-2xl bg-[#0f0f1a] space-y-2">
                               <span className="font-bold text-slate-300 block mb-1">Recommended Projects</span>
                               <div className="flex flex-wrap gap-1.5">
                                 {finalReport.recommended_projects.map((p: string) => (
-                                  <span key={p} className="text-[8px] px-2 py-0.5 rounded bg-slate-950 border border-white/5 text-slate-400 font-bold font-mono">{p}</span>
+                                  <span key={p} className="text-xs px-2 py-0.5 rounded bg-[#0a0a12] border border-white/[0.06] text-slate-400 font-bold font-mono">{p}</span>
                                 ))}
                               </div>
                             </div>
-                            <div className="p-4.5 border border-white/5 rounded-2xl bg-[#181922] space-y-2">
+                            <div className="p-4.5 border border-white/[0.06] rounded-2xl bg-[#0f0f1a] space-y-2">
                               <span className="font-bold text-slate-300 block mb-1">Suggested Certifications</span>
                               <div className="flex flex-wrap gap-1.5">
                                 {finalReport.recommended_certifications.map((c: string) => (
-                                  <span key={c} className="text-[8px] px-2 py-0.5 rounded bg-slate-950 border border-white/5 text-slate-400 font-bold font-mono">{c}</span>
+                                  <span key={c} className="text-xs px-2 py-0.5 rounded bg-[#0a0a12] border border-white/[0.06] text-slate-400 font-bold font-mono">{c}</span>
                                 ))}
                               </div>
                             </div>
@@ -1430,25 +1430,25 @@ export const ResumeAssistant: React.FC = () => {
                     {!interviewCompleted && (
                       <div className="space-y-4 select-none">
                         <div className="flex gap-3 max-w-[85%] mr-auto items-start">
-                          <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-white/5 text-indigo-400 flex items-center justify-center flex-shrink-0 text-xs font-black animate-pulse">Q</div>
-                          <div className="p-3 bg-[#181922] border border-white/5 rounded-2xl text-[10.5px] text-slate-200 font-bold leading-relaxed">{activeQuestion}</div>
+                          <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-white/[0.06] text-purple-400 flex items-center justify-center flex-shrink-0 text-xs font-black animate-pulse">Q</div>
+                          <div className="p-3 bg-[#0f0f1a] border border-white/[0.06] rounded-2xl text-sm text-slate-200 font-bold leading-relaxed">{activeQuestion}</div>
                         </div>
 
                         {/* Text Answer input */}
-                        <form onSubmit={handleSubmitAnswer} className="flex gap-2 border-t border-white/5 pt-4">
+                        <form onSubmit={handleSubmitAnswer} className="flex gap-2 border-t border-white/[0.06] pt-4">
                           <input
                             type="text"
                             placeholder="Type your interview answer..."
                             value={answerInput}
                             onChange={(e) => setAnswerInput(e.target.value)}
                             disabled={interviewLoading}
-                            className="flex-grow px-4 py-2.5 rounded-xl border border-white/5 bg-[#181922] text-xs text-white placeholder-slate-650 focus:ring-1 focus:ring-indigo-500 outline-none"
+                            className="flex-grow px-4 py-2.5 rounded-xl border border-white/[0.06] bg-[#0f0f1a] text-xs text-white placeholder-slate-650 focus:ring-1 focus:ring-purple-500/20 focus:border-purple-500/50 outline-none"
                             required
                           />
                           <button
                             type="submit"
                             disabled={!answerInput.trim() || interviewLoading}
-                            className="p-2.5 bg-indigo-650 hover:bg-indigo-700 text-white rounded-xl cursor-pointer disabled:opacity-50"
+                            className="p-2.5 bg-gradient-to-r from-violet-600 to-purple-500 hover:from-violet-500 hover:to-purple-400 text-white rounded-xl cursor-pointer disabled:opacity-50"
                           >
                             <Send className="w-4 h-4" />
                           </button>
@@ -1461,18 +1461,18 @@ export const ResumeAssistant: React.FC = () => {
                     <UserCheck className="w-10 h-10 text-slate-300" />
                     <div>
                       <h4 className="text-xs font-bold text-slate-850 dark:text-white">AI Mock Interview Simulator</h4>
-                      <p className="text-[10px] text-slate-450 mt-1">Configure your target role and difficulty on the left panel, and click spin up simulator to start mock queries.</p>
+                      <p className="text-sm text-slate-450 mt-1">Configure your target role and difficulty on the left panel, and click spin up simulator to start mock queries.</p>
                     </div>
                   </div>
                 )}
                 {interviewLoading && (
                   <div className="flex gap-3 max-w-[80%] mr-auto items-center">
-                    <div className="w-7 h-7 rounded-lg bg-indigo-500/10 text-indigo-500 border border-indigo-500/10 flex items-center justify-center animate-spin">
+                    <div className="w-7 h-7 rounded-lg bg-purple-500/10 text-purple-500 border border-purple-500/10 flex items-center justify-center animate-spin">
                       <Sparkles className="w-3.5 h-3.5" />
                     </div>
                     <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border flex gap-1 items-center">
-                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-bounce" />
-                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-bounce" style={{ animationDelay: "150ms" }} />
+                      <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-bounce" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-bounce" style={{ animationDelay: "150ms" }} />
                     </div>
                   </div>
                 )}
@@ -1488,15 +1488,15 @@ export const ResumeAssistant: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-20rem)] overflow-hidden">
             
             {/* Target goals settings (Left 5 cols) */}
-            <div className="lg:col-span-5 h-full flex flex-col border border-slate-200/50 dark:border-slate-850 bg-white dark:bg-slate-900/40 rounded-3xl overflow-hidden shadow-sm">
-              <div className="px-6 py-3 border-b border-slate-150 bg-slate-50/20 dark:bg-slate-950/10 flex-shrink-0">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                  <Compass className="w-4 h-4 text-indigo-500" /> Career Goal Settings
+            <div className="lg:col-span-5 h-full flex flex-col border border-white/[0.06] bg-[#161625] rounded-2xl overflow-hidden shadow-sm">
+              <div className="px-6 py-3 border-b border-slate-150 bg-slate-50/20 dark:bg-[#0a0a12]/10 flex-shrink-0">
+                <span className="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                  <Compass className="w-4 h-4 text-purple-500" /> Career Goal Settings
                 </span>
               </div>
               <form onSubmit={handleGenerateRoadmap} className="flex-grow overflow-y-auto p-6 space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-450">Target Career Role</label>
+                  <label className="text-sm font-bold uppercase tracking-wider text-slate-450">Target Career Role</label>
                   <select
                     value={advisorRole}
                     onChange={(e) => setAdvisorRole(e.target.value)}
@@ -1512,12 +1512,12 @@ export const ResumeAssistant: React.FC = () => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-450">Current Skills Set</label>
+                  <label className="text-sm font-bold uppercase tracking-wider text-slate-450">Current Skills Set</label>
                   <textarea
                     value={advisorSkills}
                     onChange={(e) => setAdvisorSkills(e.target.value)}
                     placeholder="Python, Flask database blueprints, basic html layout..."
-                    className="w-full h-24 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs focus:ring-2 focus:ring-indigo-500 outline-none resize-none font-mono"
+                    className="w-full h-24 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-[#0f0f1a] text-xs focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500/50 outline-none resize-none font-mono"
                     required
                   />
                 </div>
@@ -1525,7 +1525,7 @@ export const ResumeAssistant: React.FC = () => {
                 <button
                   type="submit"
                   disabled={advisorLoading || !advisorSkills.trim()}
-                  className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer shadow-md disabled:opacity-50"
+                  className="w-full py-2 bg-gradient-to-r from-violet-600 to-purple-500 hover:from-violet-500 hover:to-purple-400 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer shadow-md disabled:opacity-50"
                 >
                   {advisorLoading ? (
                     <>
@@ -1543,47 +1543,47 @@ export const ResumeAssistant: React.FC = () => {
             </div>
 
             {/* Compiled Learning timeline (Right 7 cols) */}
-            <div className="lg:col-span-7 h-full flex flex-col border border-slate-200/50 dark:border-slate-850 bg-white dark:bg-slate-900/40 rounded-3xl overflow-hidden shadow-sm">
-              <div className="px-6 py-3 border-b border-slate-150 bg-slate-50/20 dark:bg-slate-950/10 flex-shrink-0">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                  <Layers className="w-4 h-4 text-indigo-500" /> Learning Roadmap Timeline
+            <div className="lg:col-span-7 h-full flex flex-col border border-white/[0.06] bg-[#161625] rounded-2xl overflow-hidden shadow-sm">
+              <div className="px-6 py-3 border-b border-slate-150 bg-slate-50/20 dark:bg-[#0a0a12]/10 flex-shrink-0">
+                <span className="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                  <Layers className="w-4 h-4 text-purple-500" /> Learning Roadmap Timeline
                 </span>
               </div>
               <div className="flex-grow overflow-y-auto p-6 space-y-6">
                 {advisorLoading ? (
                   <div className="h-full flex flex-col items-center justify-center text-center space-y-3">
-                    <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
-                    <p className="text-[10px] text-slate-400">AI Recruiter mapping milestones timeline...</p>
+                    <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
+                    <p className="text-sm text-slate-400">AI Recruiter mapping milestones timeline...</p>
                   </div>
                 ) : advisorRoadmap ? (
                   <div className="space-y-6">                    {/* Roadmap steps */}
                     <div className="space-y-4 select-none">
-                      <h5 className="text-[10px] font-black uppercase text-indigo-400 tracking-wider">Step-by-Step Learning Timeline</h5>
-                      <div className="space-y-4 pl-3 border-l-2 border-indigo-500/30">
+                      <h5 className="text-sm font-black uppercase text-purple-400 tracking-wider">Step-by-Step Learning Timeline</h5>
+                      <div className="space-y-4 pl-3 border-l-2 border-purple-500/30">
                         {advisorRoadmap.learning_roadmap.map((step: any, idx: number) => (
                           <div key={idx} className="relative pl-5 space-y-1">
                             <span className="absolute -left-[22px] top-1.5 w-3 h-3 rounded-full bg-indigo-550 border-2 border-slate-950 animate-pulse" />
-                            <h6 className="text-[11px] font-black text-white">{step.step}</h6>
-                            <p className="text-[10px] text-slate-400 leading-relaxed">{step.details}</p>
+                            <h6 className="text-sm font-black text-white">{step.step}</h6>
+                            <p className="text-sm text-slate-400 leading-relaxed">{step.details}</p>
                           </div>
                         ))}
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 text-[10px]">
-                      <div className="p-4 border border-white/5 rounded-2xl bg-slate-950/60 space-y-2">
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div className="p-4 border border-white/[0.06] rounded-2xl bg-[#0a0a12]/60 space-y-2">
                         <span className="font-bold text-slate-300 block mb-1">Recommended Courses</span>
                         <div className="space-y-1.5">
                           {advisorRoadmap.recommended_courses.map((c: string) => (
-                            <div key={c} className="text-[9.5px] text-slate-400 flex items-center gap-1.5"><CheckCircle className="w-3.5 h-3.5 text-indigo-500" /> {c}</div>
+                            <div key={c} className="text-[9.5px] text-slate-400 flex items-center gap-1.5"><CheckCircle className="w-3.5 h-3.5 text-purple-500" /> {c}</div>
                           ))}
                         </div>
                       </div>
-                      <div className="p-4 border border-white/5 rounded-2xl bg-slate-950/60 space-y-2">
+                      <div className="p-4 border border-white/[0.06] rounded-2xl bg-[#0a0a12]/60 space-y-2">
                         <span className="font-bold text-slate-300 block mb-1">Recommended Certs</span>
                         <div className="space-y-1.5">
                           {advisorRoadmap.recommended_certifications.map((c: string) => (
-                            <div key={c} className="text-[9.5px] text-slate-400 flex items-center gap-1.5"><CheckCircle className="w-3.5 h-3.5 text-indigo-500" /> {c}</div>
+                            <div key={c} className="text-[9.5px] text-slate-400 flex items-center gap-1.5"><CheckCircle className="w-3.5 h-3.5 text-purple-500" /> {c}</div>
                           ))}
                         </div>
                       </div>
@@ -1591,15 +1591,15 @@ export const ResumeAssistant: React.FC = () => {
 
                     {/* Milestones checklists */}
                     <div className="space-y-2 select-none">
-                      <h5 className="text-[10px] font-bold uppercase text-slate-450">Monthly Milestones Checklist</h5>
+                      <h5 className="text-sm font-bold uppercase text-slate-450">Monthly Milestones Checklist</h5>
                       <div className="space-y-2">
                         {advisorRoadmap.milestones.map((m: any, idx: number) => (
-                          <div key={idx} className="p-2.5 border rounded-xl bg-slate-50/10 flex items-center justify-between text-[10px]">
+                          <div key={idx} className="p-2.5 border rounded-xl bg-slate-50/10 flex items-center justify-between text-sm">
                             <div>
-                              <strong className="text-slate-800">{m.title}</strong>
-                              <span className="text-[9px] text-slate-450 block mt-0.5">{m.desc}</span>
+                              <strong className="text-white">{m.title}</strong>
+                              <span className="text-sm text-slate-450 block mt-0.5">{m.desc}</span>
                             </div>
-                            <Award className="w-4 h-4 text-indigo-500" />
+                            <Award className="w-4 h-4 text-purple-500" />
                           </div>
                         ))}
                       </div>
@@ -1610,7 +1610,7 @@ export const ResumeAssistant: React.FC = () => {
                     <Compass className="w-10 h-10 text-slate-300" />
                     <div>
                       <h4 className="text-xs font-bold text-slate-850 dark:text-white">Career advisor roadmap</h4>
-                      <p className="text-[10px] text-slate-455 mt-1">Configure target career role preferences to generate weekly study roadmaps and milestone checklists.</p>
+                      <p className="text-sm text-slate-455 mt-1">Configure target career role preferences to generate weekly study roadmaps and milestone checklists.</p>
                     </div>
                   </div>
                 )}

@@ -26,7 +26,11 @@ import {
   ShieldCheck,
   Briefcase,
   Compass,
-  Bookmark
+  Bookmark,
+  Bot,
+  User,
+  PanelLeftClose,
+  PanelLeftOpen
 } from "lucide-react";
 
 interface Message {
@@ -67,6 +71,7 @@ export const AITutor: React.FC = () => {
   const [archivedCollapsed, setArchivedCollapsed] = useState(true);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Load all sessions on mount
   const loadSessions = async (selectId?: string) => {
@@ -114,6 +119,14 @@ export const AITutor: React.FC = () => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
+  // Auto-resize textarea
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
+    }
+  }, [input]);
+
   const handleStartSession = async (title = "New Study Session", mode = "general") => {
     try {
       const res = await api.post("/api/ai/chats", { title, mode });
@@ -122,6 +135,8 @@ export const AITutor: React.FC = () => {
       setActiveSessionId(newSession._id);
       setSearchParams({ id: newSession._id });
       addToast("Session Started", `New ${mode.toUpperCase()} session initialized.`, "success");
+      // On mobile, auto close sidebar when picking new session
+      if (window.innerWidth < 768) setSidebarOpen(false);
     } catch (e) {
       addToast("Error", "Could not create new session.", "error");
     }
@@ -163,6 +178,7 @@ export const AITutor: React.FC = () => {
     if (!textToSend.trim() || !activeSessionId || loading) return;
 
     setInput("");
+    if (textareaRef.current) textareaRef.current.style.height = "auto";
     setLoading(true);
     
     const userMsg: Message = {
@@ -224,6 +240,13 @@ export const AITutor: React.FC = () => {
       const msg = e.response?.data?.message || "AI response failed. Verify LLM configuration.";
       addToast("Failed", msg, "error");
       setLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage(input);
     }
   };
 
@@ -307,7 +330,7 @@ export const AITutor: React.FC = () => {
     return codeParts.map((codePart, codeIdx) => {
       if (codeIdx % 2 === 1) {
         return (
-          <code key={codeIdx} className="px-1.5 py-0.5 rounded bg-slate-800 text-indigo-300 font-mono text-[10px] border border-white/5">
+          <code key={codeIdx} className="px-1.5 py-0.5 rounded bg-[#0f0f1a] text-purple-400 font-mono text-sm border border-white/[0.06]">
             {codePart}
           </code>
         );
@@ -317,7 +340,7 @@ export const AITutor: React.FC = () => {
       return boldParts.map((boldPart, boldIdx) => {
         if (boldIdx % 2 === 1) {
           return (
-            <strong key={boldIdx} className="font-extrabold text-white">
+            <strong key={boldIdx} className="font-bold text-white">
               {renderCitations(boldPart)}
             </strong>
           );
@@ -339,7 +362,7 @@ export const AITutor: React.FC = () => {
               onClick={() => {
                 addToast("Citation Source", `Verified source reference #${num} verified from ingested notebook.`, "info");
               }}
-              className="px-1 bg-indigo-500/20 text-indigo-300 rounded font-black hover:bg-indigo-500/40 transition-colors cursor-pointer select-none text-[8.5px]"
+              className="px-1 bg-purple-500/20 text-purple-300 rounded font-bold hover:bg-purple-500/40 transition-colors cursor-pointer select-none text-[10px]"
             >
               [{num}]
             </span>
@@ -366,7 +389,7 @@ export const AITutor: React.FC = () => {
               <div key={lineIdx} className="min-h-[1.25rem]">
                 {tokens.map((token, tokenIdx) => {
                   if (/^(?:const|let|var|function|return|import|export|from|class|if|else|for|while|async|await|try|catch|new|def|class|print)$/.test(token)) {
-                    return <span key={tokenIdx} className="text-pink-400 font-bold">{token}</span>;
+                    return <span key={tokenIdx} className="text-pink-400 font-medium">{token}</span>;
                   }
                   if (/^["'].*["']$/.test(token)) {
                     return <span key={tokenIdx} className="text-emerald-400">{token}</span>;
@@ -385,17 +408,17 @@ export const AITutor: React.FC = () => {
         };
 
         return (
-          <div key={i} className="my-4 border border-white/5 rounded-2xl overflow-hidden bg-[#0B0B12] shadow-2xl max-w-full">
-            <div className="flex items-center justify-between px-4 py-2 bg-slate-900/60 border-b border-white/5 text-[10px] text-slate-400 font-mono select-none">
+          <div key={i} className="my-4 border border-white/[0.08] rounded-xl overflow-hidden bg-[#0a0a12] max-w-full">
+            <div className="flex items-center justify-between px-4 py-2 bg-[#161625] border-b border-white/[0.08] text-xs text-slate-400 font-mono select-none">
               <span>{lang.toUpperCase()}</span>
               <button
                 onClick={() => handleCopyText(code)}
-                className="flex items-center gap-1 hover:text-white transition-colors cursor-pointer text-slate-400"
+                className="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer text-slate-400"
               >
                 <Copy className="w-3.5 h-3.5" /> Copy Code
               </button>
             </div>
-            <pre className="p-4 overflow-x-auto text-[11px] font-mono text-slate-200 leading-relaxed bg-[#0F0F16]">
+            <pre className="p-4 overflow-x-auto text-sm font-mono text-slate-300 leading-relaxed bg-[#0a0a12]">
               <code>{highlightCode(code)}</code>
             </pre>
           </div>
@@ -404,21 +427,21 @@ export const AITutor: React.FC = () => {
       
       const lines = part.split("\n");
       return (
-        <div key={i} className="space-y-2">
+        <div key={i} className="space-y-3">
           {lines.map((line, idx) => {
             if (line.startsWith("### ")) {
-              return <h4 key={idx} className="text-xs font-black text-white mt-4 mb-2 tracking-wide uppercase">{line.replace("### ", "")}</h4>;
+              return <h4 key={idx} className="text-sm font-bold text-white mt-4 mb-2 tracking-wide">{line.replace("### ", "")}</h4>;
             }
             if (line.startsWith("## ")) {
-              return <h3 key={idx} className="text-sm font-black text-white mt-5 mb-2 border-b border-white/5 pb-1 tracking-wide uppercase">{line.replace("## ", "")}</h3>;
+              return <h3 key={idx} className="text-base font-bold text-white mt-5 mb-2 pb-1">{line.replace("## ", "")}</h3>;
             }
             if (line.startsWith("# ")) {
-              return <h2 key={idx} className="text-base font-black text-white mt-6 mb-3 border-b border-white/10 pb-2 tracking-wide uppercase">{line.replace("# ", "")}</h2>;
+              return <h2 key={idx} className="text-lg font-bold text-white mt-6 mb-3 pb-2">{line.replace("# ", "")}</h2>;
             }
             if (line.startsWith("- ") || line.startsWith("* ")) {
               const cleanLine = line.replace(/^[-*]\s+/, "");
               return (
-                <ul key={idx} className="list-disc pl-5 text-xs text-slate-300 space-y-1">
+                <ul key={idx} className="list-disc pl-6 text-sm text-slate-300 space-y-1">
                   <li>{renderInlineTokens(cleanLine)}</li>
                 </ul>
               );
@@ -427,14 +450,14 @@ export const AITutor: React.FC = () => {
               const cleanLine = line.replace(/^\d+\.\s+/, "");
               const num = line.match(/^\d+/)?.[0] || "1";
               return (
-                <ol key={idx} className="list-decimal pl-5 text-xs text-slate-300 space-y-1">
+                <ol key={idx} className="list-decimal pl-6 text-sm text-slate-300 space-y-1">
                   <li value={parseInt(num)}>{renderInlineTokens(cleanLine)}</li>
                 </ol>
               );
             }
             
             return line.trim() ? (
-              <p key={idx} className="text-xs leading-relaxed text-slate-300">{renderInlineTokens(line)}</p>
+              <p key={idx} className="text-sm leading-relaxed text-slate-300">{renderInlineTokens(line)}</p>
             ) : <div key={idx} className="h-2" />;
           })}
         </div>
@@ -456,28 +479,30 @@ export const AITutor: React.FC = () => {
   // Dynamic suggested prompts matching the active mode selection
   const modeSuggestions: Record<string, { title: string; text: string; icon: React.ReactNode }[]> = {
     general: [
-      { title: "Define Term", text: "Explain the concept of quantum computing in simple terms.", icon: <Sparkles className="w-4 h-4 text-indigo-500" /> },
-      { title: "Summarize Chapter", text: "Summarize the key takeaways of carbon cycle biology.", icon: <BookOpen className="w-4 h-4 text-emerald-500" /> }
+      { title: "Explain Concept", text: "Explain the concept of quantum computing in simple terms.", icon: <Sparkles className="w-5 h-5 text-purple-400" /> },
+      { title: "Summarize Topic", text: "Summarize the key takeaways of carbon cycle biology.", icon: <BookOpen className="w-5 h-5 text-emerald-400" /> },
+      { title: "Study Plan", text: "Create a 4-week study plan for mastering React fundamentals.", icon: <Layers className="w-5 h-5 text-cyan-400" /> },
+      { title: "Practice Questions", text: "Generate 5 practice questions about World War II history.", icon: <HelpCircle className="w-5 h-5 text-pink-400" /> }
     ],
     programming: [
-      { title: "quicksort Big-O", text: "Explain time complexity of quicksort and write python sample.", icon: <Code2 className="w-4 h-4 text-indigo-500" /> },
-      { title: "Debug Function", text: "Explain recursion logic vs loops in factorial scripts.", icon: <RefreshCw className="w-4 h-4 text-sky-500" /> }
+      { title: "Algorithm Analysis", text: "Explain time complexity of quicksort and write a Python sample.", icon: <Code2 className="w-5 h-5 text-purple-400" /> },
+      { title: "Debug Logic", text: "Explain recursion logic vs loops in factorial scripts.", icon: <RefreshCw className="w-5 h-5 text-blue-400" /> }
     ],
     cyber: [
-      { title: "Define SQLi", text: "Explain SQL Injection vulnerabilities and secure parameterizations.", icon: <ShieldCheck className="w-4 h-4 text-rose-500" /> },
-      { title: "RSA Cipher", text: "Explain how public/private keys exchange values securely.", icon: <HelpCircle className="w-4 h-4 text-amber-500" /> }
+      { title: "Vulnerability Check", text: "Explain SQL Injection vulnerabilities and secure parameterizations.", icon: <ShieldCheck className="w-5 h-5 text-rose-400" /> },
+      { title: "Cryptography", text: "Explain how public/private keys exchange values securely in RSA.", icon: <HelpCircle className="w-5 h-5 text-amber-400" /> }
     ],
     resume: [
-      { title: "CV Project Section", text: "Improve the project description bullets for my React application.", icon: <FileText className="w-4 h-4 text-indigo-500" /> },
-      { title: "Skills Listing", text: "Suggest cloud engineer CV skills for ATS optimization.", icon: <Layers className="w-4 h-4 text-teal-500" /> }
+      { title: "Improve Project", text: "Improve the project description bullets for my React application.", icon: <FileText className="w-5 h-5 text-purple-400" /> },
+      { title: "Optimize Skills", text: "Suggest cloud engineer CV skills for ATS optimization.", icon: <Layers className="w-5 h-5 text-teal-400" /> }
     ],
     interview: [
-      { title: "Junior Dev Prompts", text: "Conduct a mock interview for a Junior Front-end Engineer position.", icon: <Briefcase className="w-4 h-4 text-sky-500" /> },
-      { title: "HR Templates", text: "Give me common HR questions and structured answer templates.", icon: <Compass className="w-4 h-4 text-indigo-500" /> }
+      { title: "Mock Interview", text: "Conduct a mock interview for a Junior Front-end Engineer position.", icon: <Briefcase className="w-5 h-5 text-blue-400" /> },
+      { title: "Behavioral Questions", text: "Give me common HR behavioral questions and STAR method templates.", icon: <Compass className="w-5 h-5 text-purple-400" /> }
     ],
     career: [
-      { title: "SOC Analyst Roadmap", text: "Provide a detailed study roadmap to become a SOC Analyst.", icon: <Compass className="w-4 h-4 text-orange-500" /> },
-      { title: "Backend projects", text: "What projects should I build to show proficiency in backend Blueprints?", icon: <BookOpen className="w-4 h-4 text-indigo-500" /> }
+      { title: "Career Roadmap", text: "Provide a detailed study roadmap to become a SOC Analyst.", icon: <Compass className="w-5 h-5 text-amber-400" /> },
+      { title: "Portfolio Ideas", text: "What projects should I build to show proficiency in backend architecture?", icon: <BookOpen className="w-5 h-5 text-purple-400" /> }
     ]
   };
 
@@ -489,134 +514,136 @@ export const AITutor: React.FC = () => {
   const archivedSessions = filteredSessions.filter(s => s.is_archived);
 
   return (
-    <div className="h-[calc(100vh-8.5rem)] flex border border-white/5 bg-[#12131A] rounded-3xl overflow-hidden shadow-xl w-full">
+    <div className="h-[calc(100vh-6rem)] flex bg-[#0a0a12] text-white overflow-hidden -m-6 w-[calc(100%+3rem)]">
       
       {/* Session Side List Drawer */}
-      <div className={`${sidebarOpen ? "w-[300px]" : "w-0"} flex-shrink-0 border-r border-white/5 transition-all flex flex-col overflow-hidden bg-[#11121A]`}>
-        <div className="p-4 border-b border-slate-200/50 dark:border-slate-850 flex gap-2 items-center">
-          <div className="relative flex-grow">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+      <div 
+        className={`${sidebarOpen ? "w-full md:w-[280px]" : "w-0"} flex-shrink-0 border-r border-white/[0.04] transition-all duration-300 flex flex-col overflow-hidden bg-[#0c0c16] z-20 absolute md:relative h-full`}
+      >
+        <div className="p-4 border-b border-white/[0.04] space-y-4">
+          <button
+            onClick={() => handleStartSession("New Chat", "general")}
+            className="w-full bg-gradient-to-r from-violet-600 to-purple-500 hover:from-violet-500 hover:to-purple-400 text-white rounded-xl px-4 py-2.5 font-semibold transition-all duration-300 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(139,92,246,0.15)]"
+          >
+            <Plus className="w-4 h-4" />
+            New Chat
+          </button>
+          
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
             <input
               type="text"
               placeholder="Search chats..."
               value={sessionSearch}
               onChange={(e) => setSessionSearch(e.target.value)}
-              className="premium-input w-full pl-8 pr-3"
+              className="w-full bg-[#0f0f1a] border border-white/[0.06] rounded-xl pl-9 pr-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 outline-none transition-all"
             />
           </div>
-          <button
-            onClick={() => handleStartSession("New Session", "general")}
-            className="premium-button-primary w-10 h-10 flex items-center justify-center p-0 flex-shrink-0"
-            title="New Chat Session"
-          >
-            <Plus className="w-4 h-4" />
-          </button>
         </div>
 
         {/* Sessions Category Stack */}
-        <div className="flex-grow overflow-y-auto p-3 space-y-4">
+        <div className="flex-grow overflow-y-auto p-3 space-y-6">
           
           {/* CATEGORY 1: Favorites */}
-          <div>
-            <button 
-              onClick={() => setFavsCollapsed(!favsCollapsed)}
-              className="w-full flex items-center justify-between text-[10px] font-extrabold uppercase text-slate-400 tracking-wider hover:text-slate-600 px-2 py-1 focus:outline-none"
-            >
-              <span>Favorites 🌟 ({favoriteSessions.length})</span>
-              <ChevronRight className={`w-3.5 h-3.5 transition-transform ${favsCollapsed ? "" : "rotate-90"}`} />
-            </button>
-            {!favsCollapsed && (
-              <div className="space-y-1 mt-1">
-                {favoriteSessions.map(session => (
-                  <div
-                    key={session._id}
-                    onClick={() => {
-                      setActiveSessionId(session._id);
-                      setSearchParams({ id: session._id });
-                    }}
-                    className={`group flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all border ${
-                      session._id === activeSessionId
-                        ? "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm"
-                        : "border-transparent hover:bg-slate-100/50 dark:hover:bg-slate-850/30"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 min-w-0 flex-grow">
-                      <MessageSquare className={`w-3.5 h-3.5 flex-shrink-0 ${session._id === activeSessionId ? "text-indigo-500" : "text-slate-400"}`} />
-                      <span className={`text-xs truncate ${session._id === activeSessionId ? "font-bold text-slate-850 dark:text-white" : "text-slate-600 dark:text-slate-400"}`}>
-                        {session.title}
-                      </span>
+          {favoriteSessions.length > 0 && (
+            <div>
+              <button 
+                onClick={() => setFavsCollapsed(!favsCollapsed)}
+                className="w-full flex items-center justify-between text-xs font-semibold text-slate-500 tracking-wider hover:text-slate-300 px-2 py-1 mb-1 transition-colors"
+              >
+                <span>Favorites ({favoriteSessions.length})</span>
+                <ChevronRight className={`w-3.5 h-3.5 transition-transform ${favsCollapsed ? "" : "rotate-90"}`} />
+              </button>
+              {!favsCollapsed && (
+                <div className="space-y-1">
+                  {favoriteSessions.map(session => (
+                    <div
+                      key={session._id}
+                      onClick={() => {
+                        setActiveSessionId(session._id);
+                        setSearchParams({ id: session._id });
+                        if (window.innerWidth < 768) setSidebarOpen(false);
+                      }}
+                      className={`group flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all border-l-2 ${
+                        session._id === activeSessionId
+                          ? "bg-purple-500/10 border-purple-500 text-white"
+                          : "border-transparent hover:bg-white/[0.04] text-slate-400"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0 flex-grow">
+                        <MessageSquare className={`w-4 h-4 flex-shrink-0 ${session._id === activeSessionId ? "text-purple-400" : "text-slate-500"}`} />
+                        <span className="text-sm truncate font-medium">
+                          {session.title}
+                        </span>
+                      </div>
+                      <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleUpdateSessionAttribute(session._id, { is_favorite: false }); }}
+                          className="p-1 rounded text-yellow-500 hover:bg-white/10"
+                          title="Unfavorite"
+                        >
+                          <Star className="w-3.5 h-3.5 fill-yellow-500" />
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleUpdateSessionAttribute(session._id, { is_favorite: false }); }}
-                        className="p-1 rounded text-yellow-500 hover:bg-slate-200 dark:hover:bg-slate-800"
-                        title="Unfavorite"
-                      >
-                        <Star className="w-3 h-3 fill-yellow-500" />
-                      </button>
-                      <button
-                        onClick={(e) => handleDeleteSession(e, session._id)}
-                        className="p-1 rounded hover:bg-rose-500/10 text-slate-400 hover:text-rose-500"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* CATEGORY 2: Recent Chats */}
           <div>
             <button 
               onClick={() => setRecentsCollapsed(!recentsCollapsed)}
-              className="w-full flex items-center justify-between text-[10px] font-extrabold uppercase text-slate-400 tracking-wider hover:text-slate-600 px-2 py-1 focus:outline-none"
+              className="w-full flex items-center justify-between text-xs font-semibold text-slate-500 tracking-wider hover:text-slate-300 px-2 py-1 mb-1 transition-colors"
             >
-              <span>Recent Chats 💬 ({recentSessions.length})</span>
+              <span>Recent Chats ({recentSessions.length})</span>
               <ChevronRight className={`w-3.5 h-3.5 transition-transform ${recentsCollapsed ? "" : "rotate-90"}`} />
             </button>
             {!recentsCollapsed && (
-              <div className="space-y-1 mt-1">
+              <div className="space-y-1">
                 {recentSessions.map(session => (
                   <div
                     key={session._id}
                     onClick={() => {
                       setActiveSessionId(session._id);
                       setSearchParams({ id: session._id });
+                      if (window.innerWidth < 768) setSidebarOpen(false);
                     }}
-                    className={`group flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all border ${
+                    className={`group flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all border-l-2 ${
                       session._id === activeSessionId
-                        ? "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm"
-                        : "border-transparent hover:bg-slate-100/50 dark:hover:bg-slate-850/30"
+                        ? "bg-purple-500/10 border-purple-500 text-white"
+                        : "border-transparent hover:bg-white/[0.04] text-slate-400"
                     }`}
                   >
-                    <div className="flex items-center gap-2 min-w-0 flex-grow">
-                      <MessageSquare className={`w-3.5 h-3.5 flex-shrink-0 ${session._id === activeSessionId ? "text-indigo-500" : "text-slate-400"}`} />
-                      <span className={`text-xs truncate ${session._id === activeSessionId ? "font-bold text-slate-850 dark:text-white" : "text-slate-600 dark:text-slate-400"}`}>
+                    <div className="flex items-center gap-2.5 min-w-0 flex-grow">
+                      <MessageSquare className={`w-4 h-4 flex-shrink-0 ${session._id === activeSessionId ? "text-purple-400" : "text-slate-500"}`} />
+                      <span className="text-sm truncate font-medium">
                         {session.title}
                       </span>
                     </div>
-                    <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
+                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
                       <button
                         onClick={(e) => { e.stopPropagation(); handleUpdateSessionAttribute(session._id, { is_favorite: true }); }}
-                        className="p-1 rounded text-slate-400 hover:text-yellow-500"
+                        className="p-1.5 rounded text-slate-400 hover:text-yellow-500 hover:bg-white/10"
                         title="Add to Favorites"
                       >
-                        <Star className="w-3 h-3" />
+                        <Star className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={(e) => { e.stopPropagation(); handleUpdateSessionAttribute(session._id, { is_archived: true }); }}
-                        className="p-1 rounded text-slate-400 hover:text-indigo-500"
+                        className="p-1.5 rounded text-slate-400 hover:text-purple-400 hover:bg-white/10"
                         title="Archive Chat"
                       >
-                        <Archive className="w-3 h-3" />
+                        <Archive className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={(e) => handleDeleteSession(e, session._id)}
-                        className="p-1 rounded hover:bg-rose-500/10 text-slate-400 hover:text-rose-500"
+                        className="p-1.5 rounded text-slate-400 hover:text-rose-400 hover:bg-white/10"
+                        title="Delete Chat"
                       >
-                        <Trash2 className="w-3 h-3" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>
@@ -626,94 +653,116 @@ export const AITutor: React.FC = () => {
           </div>
 
           {/* CATEGORY 3: Archived */}
-          <div>
-            <button 
-              onClick={() => setArchivedCollapsed(!archivedCollapsed)}
-              className="w-full flex items-center justify-between text-[10px] font-extrabold uppercase text-slate-400 tracking-wider hover:text-slate-600 px-2 py-1 focus:outline-none"
-            >
-              <span>Archived 📁 ({archivedSessions.length})</span>
-              <ChevronRight className={`w-3.5 h-3.5 transition-transform ${archivedCollapsed ? "" : "rotate-90"}`} />
-            </button>
-            {!archivedCollapsed && (
-              <div className="space-y-1 mt-1">
-                {archivedSessions.map(session => (
-                  <div
-                    key={session._id}
-                    onClick={() => {
-                      setActiveSessionId(session._id);
-                      setSearchParams({ id: session._id });
-                    }}
-                    className={`group flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all border ${
-                      session._id === activeSessionId
-                        ? "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm"
-                        : "border-transparent hover:bg-slate-100/50 dark:hover:bg-slate-850/30"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 min-w-0 flex-grow">
-                      <MessageSquare className={`w-3.5 h-3.5 flex-shrink-0 ${session._id === activeSessionId ? "text-indigo-500" : "text-slate-400"}`} />
-                      <span className={`text-xs truncate ${session._id === activeSessionId ? "font-bold text-slate-850 dark:text-white" : "text-slate-600 dark:text-slate-400"}`}>
-                        {session.title}
-                      </span>
+          {archivedSessions.length > 0 && (
+            <div>
+              <button 
+                onClick={() => setArchivedCollapsed(!archivedCollapsed)}
+                className="w-full flex items-center justify-between text-xs font-semibold text-slate-500 tracking-wider hover:text-slate-300 px-2 py-1 mb-1 transition-colors"
+              >
+                <span>Archived ({archivedSessions.length})</span>
+                <ChevronRight className={`w-3.5 h-3.5 transition-transform ${archivedCollapsed ? "" : "rotate-90"}`} />
+              </button>
+              {!archivedCollapsed && (
+                <div className="space-y-1">
+                  {archivedSessions.map(session => (
+                    <div
+                      key={session._id}
+                      onClick={() => {
+                        setActiveSessionId(session._id);
+                        setSearchParams({ id: session._id });
+                        if (window.innerWidth < 768) setSidebarOpen(false);
+                      }}
+                      className={`group flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all border-l-2 ${
+                        session._id === activeSessionId
+                          ? "bg-purple-500/10 border-purple-500 text-white"
+                          : "border-transparent hover:bg-white/[0.04] text-slate-400"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0 flex-grow">
+                        <MessageSquare className={`w-4 h-4 flex-shrink-0 ${session._id === activeSessionId ? "text-purple-400" : "text-slate-500"}`} />
+                        <span className="text-sm truncate font-medium">
+                          {session.title}
+                        </span>
+                      </div>
+                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleUpdateSessionAttribute(session._id, { is_archived: false }); }}
+                          className="p-1.5 rounded text-purple-400 hover:bg-white/10"
+                          title="Unarchive"
+                        >
+                          <Archive className="w-3.5 h-3.5 fill-purple-500/20" />
+                        </button>
+                        <button
+                          onClick={(e) => handleDeleteSession(e, session._id)}
+                          className="p-1.5 rounded text-slate-400 hover:text-rose-400 hover:bg-white/10"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleUpdateSessionAttribute(session._id, { is_archived: false }); }}
-                        className="p-1 rounded text-indigo-500 hover:bg-slate-200"
-                        title="Unarchive"
-                      >
-                        <Archive className="w-3 h-3 fill-indigo-500/10" />
-                      </button>
-                      <button
-                        onClick={(e) => handleDeleteSession(e, session._id)}
-                        className="p-1 rounded hover:bg-rose-500/10 text-slate-400 hover:text-rose-500"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
         </div>
       </div>
 
       {/* Message Chat Frame */}
-      <div className="flex-grow flex flex-col relative min-w-0">
+      <div className="flex-grow flex flex-col relative min-w-0 bg-[#0a0a12] h-full">
         
         {/* Active Session Header details */}
-        <div className="h-14 flex items-center justify-between px-6 border-b border-white/5 bg-[#12131A] backdrop-blur-md z-10 flex-shrink-0">
+        <div className="h-16 flex items-center justify-between px-4 md:px-6 border-b border-white/[0.06] bg-[#0a0a12]/80 backdrop-blur-md z-10 flex-shrink-0">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-1.5 rounded bg-slate-100 dark:bg-slate-800/40 text-slate-450 hover:text-slate-600 animate-pulse"
+              className="p-2 rounded-lg bg-white/[0.05] hover:bg-white/[0.08] text-slate-300 transition-colors hidden md:block"
+              title="Toggle Sidebar"
             >
-              <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+              {sidebarOpen ? <PanelLeftClose className="w-5 h-5" /> : <PanelLeftOpen className="w-5 h-5" />}
             </button>
-            <h4 className="text-xs font-bold truncate max-w-[150px] sm:max-w-[300px]">
-              {sessions.find((s) => s._id === activeSessionId)?.title || "Active Study Room"}
-            </h4>
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="p-2 rounded-lg bg-white/[0.05] hover:bg-white/[0.08] text-slate-300 transition-colors md:hidden"
+            >
+              <MessageSquare className="w-5 h-5" />
+            </button>
+            
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:flex items-center justify-center w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 border border-purple-500/30">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="text-sm font-semibold text-white truncate max-w-[150px] sm:max-w-[300px]">
+                  {sessions.find((s) => s._id === activeSessionId)?.title || "AI Tutor"}
+                </h4>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  <span className="text-[10px] text-slate-400 font-medium">GPT-4 Optimized</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           {messages.length > 0 && (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-4">
               <div className="relative hidden md:block">
-                <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                 <input
                   type="text"
                   placeholder="Find in chat..."
                   value={messageSearch}
                   onChange={(e) => setMessageSearch(e.target.value)}
-                  className="pl-7 pr-3 py-1 rounded-lg border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/40 text-[10px] outline-none w-32 focus:w-44 transition-all"
+                  className="pl-9 pr-3 py-1.5 rounded-xl border border-white/[0.06] bg-[#0f0f1a] text-sm text-white placeholder:text-slate-500 outline-none w-32 focus:w-48 transition-all focus:border-purple-500/50"
                 />
               </div>
               <button
                 onClick={handleExportChat}
-                className="p-1.5 rounded-lg border hover:bg-slate-50 dark:hover:bg-slate-850 text-slate-600 dark:text-slate-400 cursor-pointer"
+                className="p-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.08] text-slate-300 transition-colors border border-white/[0.04]"
                 title="Export Conversation"
               >
-                <Download className="w-3.5 h-3.5" />
+                <Download className="w-4 h-4" />
               </button>
             </div>
           )}
@@ -721,22 +770,22 @@ export const AITutor: React.FC = () => {
 
         {/* Dynamic Mode Switcher Toolbar */}
         {activeSessionId && (
-          <div className="px-6 py-2 bg-slate-50 dark:bg-slate-950/30 border-b border-slate-200/40 dark:border-slate-850/60 overflow-x-auto flex gap-2 flex-shrink-0 scrollbar-none">
+          <div className="px-4 md:px-6 py-3 bg-[#0a0a12] border-b border-white/[0.04] overflow-x-auto flex gap-2 flex-shrink-0 scrollbar-none">
             {[
-              { id: "general", label: "General", icon: <Sparkles className="w-3 h-3" /> },
-              { id: "programming", label: "Programming", icon: <Code2 className="w-3 h-3" /> },
-              { id: "cyber", label: "Security", icon: <ShieldCheck className="w-3 h-3" /> },
-              { id: "resume", label: "Resume", icon: <FileText className="w-3 h-3" /> },
-              { id: "interview", label: "Interview", icon: <Briefcase className="w-3 h-3" /> },
-              { id: "career", label: "Career Guidance", icon: <Compass className="w-3 h-3" /> }
+              { id: "general", label: "General", icon: <Sparkles className="w-3.5 h-3.5" /> },
+              { id: "programming", label: "Programming", icon: <Code2 className="w-3.5 h-3.5" /> },
+              { id: "cyber", label: "Security", icon: <ShieldCheck className="w-3.5 h-3.5" /> },
+              { id: "resume", label: "Resume", icon: <FileText className="w-3.5 h-3.5" /> },
+              { id: "interview", label: "Interview", icon: <Briefcase className="w-3.5 h-3.5" /> },
+              { id: "career", label: "Career Guidance", icon: <Compass className="w-3.5 h-3.5" /> }
             ].map(m => (
               <button
                 key={m.id}
                 onClick={() => handleUpdateSessionAttribute(activeSessionId, { mode: m.id })}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-extrabold uppercase transition-all cursor-pointer ${
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                   activeMode === m.id
-                    ? "bg-indigo-600 border-indigo-650 text-white shadow-sm"
-                    : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50"
+                    ? "bg-purple-500/20 border border-purple-500/40 text-purple-300 shadow-[0_0_15px_rgba(139,92,246,0.1)]"
+                    : "bg-[#161625] border border-white/[0.06] text-slate-400 hover:bg-white/[0.05] hover:text-slate-300"
                 }`}
               >
                 {m.icon}
@@ -747,33 +796,31 @@ export const AITutor: React.FC = () => {
         )}
 
         {/* Messages Stack Scroll */}
-        <div className="flex-grow overflow-y-auto p-6 space-y-6">
+        <div className="flex-grow overflow-y-auto p-4 md:p-6 space-y-6 md:space-y-8 scroll-smooth">
           {messages.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-center space-y-6 max-w-lg mx-auto">
-              <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center">
-                <Sparkles className="w-6 h-6 text-indigo-500 animate-spin" />
+            <div className="h-full flex flex-col items-center justify-center text-center max-w-3xl mx-auto py-10 animate-fade-in">
+              <div className="w-20 h-20 rounded-3xl bg-purple-500/10 flex items-center justify-center mb-6 border border-purple-500/20 shadow-[0_0_30px_rgba(139,92,246,0.15)] relative">
+                <div className="absolute inset-0 rounded-3xl bg-purple-500/20 blur-xl"></div>
+                <Sparkles className="w-10 h-10 text-purple-400 relative z-10" />
               </div>
-              <div className="space-y-2">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white">Ask your AI Study Tutor</h3>
-                <p className="text-xs text-slate-500">
-                  Type questions regarding math derivations, review coding logic, draft outlines, or prepare quiz reviews.
-                </p>
-              </div>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">Hello! I'm your AI learning assistant</h2>
+              <p className="text-sm md:text-base text-slate-400 mb-10 max-w-xl">
+                I can explain complex concepts, solve tricky problems, generate study materials, or help you debug code. What would you like to learn today?
+              </p>
 
-              {/* Suggestions Cards (Mode specific) */}
-              <div className="grid grid-cols-1 gap-3 w-full pt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                 {suggestedPrompts.map((p, idx) => (
                   <button
                     key={idx}
                     onClick={() => handleSendMessage(p.text)}
-                    className="flex items-center gap-4 p-3 rounded-xl border border-slate-200/50 dark:border-slate-850 hover:border-indigo-500/40 dark:hover:border-indigo-500/25 bg-white dark:bg-slate-900 text-left hover:-translate-y-0.5 transition-all w-full shadow-sm cursor-pointer"
+                    className="flex items-start gap-4 p-4 rounded-2xl bg-[#161625] border border-white/[0.06] hover:border-purple-500/30 hover:shadow-[0_0_20px_rgba(139,92,246,0.05)] text-left hover:-translate-y-1 transition-all duration-300 cursor-pointer group"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-800/40 flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-xl bg-white/[0.04] group-hover:bg-purple-500/10 flex items-center justify-center flex-shrink-0 transition-colors">
                       {p.icon}
                     </div>
                     <div>
-                      <h4 className="text-[10px] font-bold text-slate-800 dark:text-slate-200">{p.title}</h4>
-                      <p className="text-[10px] text-slate-450 dark:text-slate-400 mt-0.5 truncate max-w-[250px]">{p.text}</p>
+                      <h4 className="text-sm font-semibold text-white mb-1 group-hover:text-purple-300 transition-colors">{p.title}</h4>
+                      <p className="text-xs text-slate-400 leading-relaxed">{p.text}</p>
                     </div>
                   </button>
                 ))}
@@ -785,70 +832,68 @@ export const AITutor: React.FC = () => {
               return (
                 <div
                   key={idx}
-                  className={`flex gap-4 max-w-3xl ${
-                    isAssistant ? "mr-auto" : "ml-auto flex-row-reverse"
+                  className={`flex gap-3 md:gap-5 max-w-4xl mx-auto w-full ${
+                    isAssistant ? "justify-start" : "justify-end"
                   }`}
                 >
-                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 border ${
-                    isAssistant 
-                      ? "bg-indigo-500/10 text-indigo-500 border-indigo-500/10 animate-pulse" 
-                      : "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200"
-                  }`}>
-                    {isAssistant ? <Sparkles className="w-4 h-4" /> : "ME"}
-                  </div>
+                  {isAssistant && (
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center flex-shrink-0 border bg-[#161625] border-purple-500/30 text-purple-400 shadow-[0_0_15px_rgba(139,92,246,0.15)] mt-1">
+                      <Sparkles className="w-4 h-4 md:w-5 md:h-5" />
+                    </div>
+                  )}
 
-                  <div className={`p-4 rounded-2xl space-y-3 ${
+                  <div className={`p-4 md:p-5 rounded-3xl space-y-3 max-w-[85%] md:max-w-[80%] ${
                     isAssistant
-                      ? "bg-slate-50 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-850"
-                      : "bg-indigo-600 text-white shadow-md shadow-indigo-600/10"
+                      ? "bg-[#161625] border border-white/[0.06] rounded-tl-sm"
+                      : "bg-purple-500/20 border border-purple-500/20 text-white rounded-tr-sm"
                   }`}>
                     {/* Render message formatting */}
-                    <div className="text-xs leading-relaxed break-words">
+                    <div className="text-sm leading-relaxed break-words text-slate-200">
                       {isAssistant ? renderMarkdown(m.content) : <p className="whitespace-pre-wrap">{m.content}</p>}
                     </div>
 
                     {isAssistant && (
-                      <div className="flex flex-wrap items-center gap-3 border-t border-slate-200/50 dark:border-slate-800/40 pt-2.5 mt-2.5 text-[9px] text-slate-400">
+                      <div className="flex flex-wrap items-center gap-3 border-t border-white/[0.06] pt-3 mt-4 text-xs text-slate-400">
                         <button
                           onClick={() => handleCopyText(m.content)}
-                          className="flex items-center gap-1 hover:text-slate-600 cursor-pointer focus:outline-none"
+                          className="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer"
                         >
-                          <Copy className="w-3 h-3" /> Copy
+                          <Copy className="w-3.5 h-3.5" /> Copy
                         </button>
                         
                         <button
                           onClick={() => handleSaveToNotes(m.content)}
-                          className="flex items-center gap-1 hover:text-slate-600 text-indigo-550 cursor-pointer focus:outline-none"
+                          className="flex items-center gap-1.5 hover:text-purple-300 text-purple-400 transition-colors cursor-pointer"
                         >
-                          <FileText className="w-3 h-3" /> Save Note
+                          <FileText className="w-3.5 h-3.5" /> Save Note
                         </button>
 
                         <button
                           onClick={handleGenerateQuiz}
-                          className="flex items-center gap-1 hover:text-slate-600 text-emerald-550 cursor-pointer focus:outline-none"
+                          className="flex items-center gap-1.5 hover:text-emerald-300 text-emerald-400 transition-colors cursor-pointer"
                         >
-                          <Award className="w-3 h-3" /> Generate Quiz
+                          <Award className="w-3.5 h-3.5" /> Quiz
                         </button>
 
                         <button
                           onClick={handleGenerateFlashcards}
-                          className="flex items-center gap-1 hover:text-slate-600 text-teal-550 cursor-pointer focus:outline-none"
+                          className="flex items-center gap-1.5 hover:text-teal-300 text-teal-400 transition-colors cursor-pointer"
                         >
-                          <Bookmark className="w-3 h-3" /> Create Flashcard
+                          <Bookmark className="w-3.5 h-3.5" /> Flashcard
                         </button>
 
                         {idx === messages.length - 1 && (
                           <button
                             type="button"
                             onClick={handleRegenerate}
-                            className="flex items-center gap-1 hover:text-slate-600 cursor-pointer focus:outline-none"
+                            className="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer"
                           >
-                            <RefreshCw className="w-3 h-3" /> Regenerate
+                            <RefreshCw className="w-3.5 h-3.5" /> Retry
                           </button>
                         )}
 
-                        <div className="flex items-center gap-1 hover:text-slate-200 select-none border-l border-white/10 pl-3">
-                          {["👍", "👎", "💡", "❤️"].map((emoji) => {
+                        <div className="flex items-center gap-1 select-none border-l border-white/[0.08] pl-3 ml-1">
+                          {["👍", "👎"].map((emoji) => {
                             const isSelected = reactions[`${activeSessionId}-${idx}`] === emoji;
                             return (
                               <button
@@ -859,10 +904,10 @@ export const AITutor: React.FC = () => {
                                     ...prev,
                                     [`${activeSessionId}-${idx}`]: isSelected ? "" : emoji
                                   }));
-                                  addToast("Feedback Recorded", `You marked explanation with ${emoji}.`, "success");
+                                  if (!isSelected) addToast("Feedback", `Marked with ${emoji}`, "success");
                                 }}
-                                className={`px-1.5 py-0.5 rounded text-[11px] transition-all hover:scale-125 cursor-pointer ${
-                                  isSelected ? "bg-indigo-500/20 border border-indigo-500/45 scale-110" : "bg-transparent opacity-50 hover:opacity-100"
+                                className={`px-2 py-1 rounded-lg text-sm transition-all cursor-pointer ${
+                                  isSelected ? "bg-white/10 scale-110" : "bg-transparent opacity-60 hover:opacity-100 hover:bg-white/5"
                                 }`}
                               >
                                 {emoji}
@@ -873,6 +918,12 @@ export const AITutor: React.FC = () => {
                       </div>
                     )}
                   </div>
+
+                  {!isAssistant && (
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center flex-shrink-0 bg-[#161625] border border-white/[0.08] text-slate-300 mt-1">
+                      <User className="w-4 h-4 md:w-5 md:h-5" />
+                    </div>
+                  )}
                 </div>
               );
             })
@@ -880,45 +931,53 @@ export const AITutor: React.FC = () => {
 
           {/* Typing Loading anim */}
           {loading && (messages.length === 0 || messages[messages.length - 1].role !== "assistant" || messages[messages.length - 1].content === "") && (
-            <div className="flex gap-4 max-w-lg mr-auto">
-              <div className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center flex-shrink-0 border border-indigo-500/10">
-                <Sparkles className="w-4 h-4 animate-spin-slow" />
+            <div className="flex gap-3 md:gap-5 max-w-4xl mx-auto w-full justify-start">
+              <div className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center flex-shrink-0 border bg-[#161625] border-purple-500/30 text-purple-400 mt-1">
+                <Sparkles className="w-4 h-4 md:w-5 md:h-5 animate-pulse" />
               </div>
-              <div className="p-4 rounded-2xl bg-[#181922] border border-white/5 flex items-center gap-1.5 h-10">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-bounce" style={{ animationDelay: "0ms" }} />
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-bounce" style={{ animationDelay: "150ms" }} />
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-bounce" style={{ animationDelay: "300ms" }} />
+              <div className="p-4 rounded-3xl bg-[#161625] border border-white/[0.06] rounded-tl-sm flex items-center gap-2 h-12 w-24 justify-center">
+                <span className="w-2 h-2 rounded-full bg-purple-500 animate-bounce" style={{ animationDelay: "0ms" }} />
+                <span className="w-2 h-2 rounded-full bg-purple-500 animate-bounce" style={{ animationDelay: "150ms" }} />
+                <span className="w-2 h-2 rounded-full bg-purple-500 animate-bounce" style={{ animationDelay: "300ms" }} />
               </div>
             </div>
           )}
-          <div ref={scrollRef} />
+          <div ref={scrollRef} className="h-4" />
         </div>
 
         {/* Input panel block */}
-        <div className="p-4 border-t border-white/5 bg-[#12131A] flex-shrink-0">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSendMessage(input);
-            }}
-            className="flex items-center gap-3"
-          >
-            <input
-              type="text"
-              placeholder={activeSessionId ? "Ask a study question..." : "Select or create a chat session from sidebar"}
-              disabled={!activeSessionId || loading}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              className="flex-grow px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-xs focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none disabled:opacity-50"
-            />
-            <button
-              type="submit"
-              disabled={!activeSessionId || !input.trim() || loading}
-              className="p-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md disabled:opacity-50 disabled:shadow-none hover:shadow-indigo-655/20 transition-all flex-shrink-0 active:scale-95 cursor-pointer"
+        <div className="p-4 md:p-6 border-t border-white/[0.06] bg-[#0a0a12] flex-shrink-0 z-10">
+          <div className="max-w-4xl mx-auto relative">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSendMessage(input);
+              }}
+              className="relative flex items-end gap-3 bg-[#0f0f1a] border border-white/[0.06] rounded-2xl p-2 md:p-3 focus-within:border-purple-500/50 focus-within:ring-1 focus-within:ring-purple-500/20 transition-all shadow-lg"
             >
-              <Send className="w-4 h-4" />
-            </button>
-          </form>
+              <textarea
+                ref={textareaRef}
+                rows={1}
+                placeholder={activeSessionId ? "Message AI Tutor... (Shift+Enter for new line)" : "Select or create a chat to begin..."}
+                disabled={!activeSessionId || loading}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="flex-grow px-3 py-2 bg-transparent text-sm text-white placeholder:text-slate-500 outline-none disabled:opacity-50 resize-none max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10"
+                style={{ minHeight: "40px" }}
+              />
+              <button
+                type="submit"
+                disabled={!activeSessionId || !input.trim() || loading}
+                className="p-3 bg-gradient-to-r from-violet-600 to-purple-500 hover:from-violet-500 hover:to-purple-400 text-white rounded-xl shadow-lg disabled:opacity-50 disabled:shadow-none transition-all flex-shrink-0 cursor-pointer self-end mb-0.5"
+              >
+                <Send className="w-5 h-5" />
+              </button>
+            </form>
+            <div className="text-center mt-3">
+              <p className="text-[10px] text-slate-500">AI Tutor can make mistakes. Verify important information.</p>
+            </div>
+          </div>
         </div>
 
       </div>

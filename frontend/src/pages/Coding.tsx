@@ -3,14 +3,12 @@ import api from "../services/api";
 import { useNotifications } from "../contexts/NotificationsContext";
 import Editor from "@monaco-editor/react";
 import {
-  Code,
   Play,
   Loader2,
   Sparkles,
   RefreshCw,
   Copy,
   BookOpen,
-  Info,
   Terminal,
   Activity,
   Layers,
@@ -24,9 +22,12 @@ import {
   Edit,
   FolderOpen,
   Keyboard,
-  Settings,
-  HelpCircle,
-  FileText
+  X,
+  PanelLeftClose,
+  PanelLeftOpen,
+  PanelRightClose,
+  PanelRightOpen,
+  Code2
 } from "lucide-react";
 
 interface Challenge {
@@ -106,6 +107,10 @@ export const CodingPractice: React.FC = () => {
   // Right sidebar tutor assistant state
   const [tutorOutput, setTutorOutput] = useState<string | null>(null);
   const [tutorLoading, setTutorLoading] = useState(false);
+
+  // Layout Panels State
+  const [showLeftPanel, setShowLeftPanel] = useState(true);
+  const [showAIPanel, setShowAIPanel] = useState(false);
 
   // --- PLAYGROUND MODE STATES ---
   const [playFiles, setPlayFiles] = useState<Record<string, PlayFile>>(() => {
@@ -407,6 +412,7 @@ export const CodingPractice: React.FC = () => {
     if (!code.trim() || tutorLoading) return;
     setTutorLoading(true);
     setTutorOutput(null);
+    setShowAIPanel(true);
     addToast("Invoking AI Advisor", "AI inspecting algorithm bounds...", "info");
 
     try {
@@ -545,47 +551,46 @@ export const CodingPractice: React.FC = () => {
   };
 
   const handleEditorWillMount = (monaco: any) => {
-    // Register custom dark theme
+    // Register custom dark theme matching premium SaaS design
     monaco.editor.defineTheme("studysphere-dark", {
       base: "vs-dark",
       inherit: true,
       rules: [
-        { token: "comment", foreground: "6B7280", fontStyle: "italic" },
-        { token: "keyword", foreground: "C084FC" },
-        { token: "function", foreground: "60A5FA" },
-        { token: "string", foreground: "34D399" },
-        { token: "number", foreground: "FBBF24" },
-        { token: "variable", foreground: "E5E7EB" }
+        { token: "comment", foreground: "64748B", fontStyle: "italic" },
+        { token: "keyword", foreground: "A855F7" },
+        { token: "function", foreground: "3B82F6" },
+        { token: "string", foreground: "10B981" },
+        { token: "number", foreground: "F59E0B" },
+        { token: "variable", foreground: "E2E8F0" }
       ],
       colors: {
-        "editor.background": "#09090B",
-        "editor.foreground": "#E5E7EB",
-        "editorLineNumber.foreground": "#4C566A",
-        "editorCursor.foreground": "#EC4899",
-        "editor.selectionBackground": "#3B4252",
-        "editor.lineHighlightBackground": "#111827"
+        "editor.background": "#0a0a12",
+        "editor.foreground": "#E2E8F0",
+        "editorLineNumber.foreground": "#64748B",
+        "editorCursor.foreground": "#8B5CF6",
+        "editor.selectionBackground": "#8B5CF640",
+        "editor.lineHighlightBackground": "#161625"
       }
     });
 
-    // Register custom light theme
     monaco.editor.defineTheme("studysphere-light", {
       base: "vs",
       inherit: true,
       rules: [
-        { token: "comment", foreground: "6B7280", fontStyle: "italic" },
-        { token: "keyword", foreground: "7C3AED", fontStyle: "bold" },
-        { token: "function", foreground: "2563EB" },
-        { token: "string", foreground: "059669" },
-        { token: "number", foreground: "D97706" },
-        { token: "variable", foreground: "1F2937" }
+        { token: "comment", foreground: "64748B", fontStyle: "italic" },
+        { token: "keyword", foreground: "8B5CF6", fontStyle: "bold" },
+        { token: "function", foreground: "3B82F6" },
+        { token: "string", foreground: "10B981" },
+        { token: "number", foreground: "F59E0B" },
+        { token: "variable", foreground: "0f0f1a" }
       ],
       colors: {
         "editor.background": "#FFFFFF",
-        "editor.foreground": "#1F2937",
-        "editorLineNumber.foreground": "#9CA3AF",
-        "editorCursor.foreground": "#7C3AED",
-        "editor.selectionBackground": "#E5E7EB",
-        "editor.lineHighlightBackground": "#F3F4F6"
+        "editor.foreground": "#0f0f1a",
+        "editorLineNumber.foreground": "#94A3B8",
+        "editorCursor.foreground": "#8B5CF6",
+        "editor.selectionBackground": "#E2E8F0",
+        "editor.lineHighlightBackground": "#F8FAFC"
       }
     });
   };
@@ -616,10 +621,10 @@ export const CodingPractice: React.FC = () => {
     
     return parts.map((p, i) => {
       if (p.type === 'bold') {
-        return <strong key={i} className="font-extrabold text-white">{p.content}</strong>;
+        return <strong key={i} className="font-bold text-white">{p.content}</strong>;
       }
       if (p.type === 'inline-code') {
-        return <code key={i} className="px-1.5 py-0.5 rounded bg-slate-900 border border-white/5 font-mono text-[9px] text-amber-500 font-semibold">{p.content}</code>;
+        return <code key={i} className="px-1.5 py-0.5 rounded bg-white/[0.05] border border-white/[0.08] font-mono text-xs text-purple-400 font-semibold">{p.content}</code>;
       }
       return p.content;
     });
@@ -637,20 +642,20 @@ export const CodingPractice: React.FC = () => {
         const codeText = matches ? matches[2] : part.slice(3, -3);
         
         return (
-          <div key={idx} className="my-3 rounded-xl overflow-hidden border border-white/5 bg-[#181922] shadow-inner select-text">
-            <div className="flex justify-between items-center bg-[#11121a] px-3.5 py-1.5 border-b border-white/5 text-[9px] font-black uppercase text-indigo-400 select-none">
-              <span>{lang || "code"}</span>
+          <div key={idx} className="my-4 rounded-xl overflow-hidden border border-white/[0.06] bg-[#0a0a12] shadow-sm select-text">
+            <div className="flex justify-between items-center bg-[#161625] px-4 py-2 border-b border-white/[0.06] text-xs font-semibold text-purple-400 select-none">
+              <span className="uppercase">{lang || "code"}</span>
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(codeText);
                   addToast("Copied", "Code snippet copied to clipboard.", "success");
                 }}
-                className="hover:text-white cursor-pointer transition-colors flex items-center gap-1"
+                className="hover:text-white cursor-pointer transition-colors flex items-center gap-1.5"
               >
-                <Copy className="w-3 h-3" /> Copy
+                <Copy className="w-3.5 h-3.5" /> Copy
               </button>
             </div>
-            <pre className="p-3 text-[10px] font-mono text-slate-300 overflow-x-auto whitespace-pre leading-relaxed select-text">
+            <pre className="p-4 text-xs font-mono text-slate-300 overflow-x-auto whitespace-pre leading-relaxed select-text">
               <code>{codeText}</code>
             </pre>
           </div>
@@ -664,73 +669,36 @@ export const CodingPractice: React.FC = () => {
         if (cleanPara.startsWith("- ") || cleanPara.startsWith("* ")) {
           const listText = cleanPara.substring(2);
           return (
-            <ul key={`${idx}-${pIdx}`} className="list-disc pl-4 text-[10px] text-slate-350 my-1 leading-relaxed select-text">
+            <ul key={`${idx}-${pIdx}`} className="list-disc pl-5 text-sm text-slate-400 my-1.5 leading-relaxed select-text">
               <li>{renderInlineText(listText)}</li>
             </ul>
           );
         }
         
-        if (cleanPara.startsWith("- [ ]") || cleanPara.startsWith("- [x]")) {
-          const checked = cleanPara.startsWith("- [x]");
-          const listText = cleanPara.substring(5);
-          return (
-            <div key={`${idx}-${pIdx}`} className="flex items-start gap-2 text-[10px] text-slate-350 my-1 leading-relaxed select-text">
-              <input type="checkbox" checked={checked} readOnly className="w-3.5 h-3.5 rounded border-white/5 bg-slate-900" />
-              <span>{renderInlineText(listText)}</span>
-            </div>
-          );
-        }
-        
         if (cleanPara.startsWith("### ")) {
           return (
-            <h5 key={`${idx}-${pIdx}`} className="text-[10px] font-black text-indigo-400 uppercase mt-4 mb-1.5 tracking-wider select-text">
+            <h5 key={`${idx}-${pIdx}`} className="text-sm font-bold text-purple-400 mt-5 mb-2 tracking-wide select-text">
               {cleanPara.replace("### ", "")}
             </h5>
           );
         }
         if (cleanPara.startsWith("## ")) {
           return (
-            <h4 key={`${idx}-${pIdx}`} className="text-xs font-black text-white mt-5 mb-2 border-b border-white/5 pb-1 select-text">
+            <h4 key={`${idx}-${pIdx}`} className="text-base font-bold text-white mt-6 mb-3 select-text">
               {cleanPara.replace("## ", "")}
             </h4>
           );
         }
         if (cleanPara.startsWith("# ")) {
           return (
-            <h3 key={`${idx}-${pIdx}`} className="text-sm font-black text-white mt-6 mb-3 select-text">
+            <h3 key={`${idx}-${pIdx}`} className="text-lg font-bold text-white mt-8 mb-4 select-text">
               {cleanPara.replace("# ", "")}
             </h3>
           );
         }
         
-        if (cleanPara.startsWith("> ")) {
-          return (
-            <blockquote key={`${idx}-${pIdx}`} className="border-l-2 border-indigo-500 pl-3 py-1 my-2 bg-indigo-500/5 text-[9.5px] italic text-indigo-200 select-text">
-              {renderInlineText(cleanPara.substring(2))}
-            </blockquote>
-          );
-        }
-        
-        if (cleanPara.startsWith("|") && cleanPara.endsWith("|")) {
-          const cells = cleanPara.split("|").slice(1, -1).map(c => c.trim());
-          if (cells.every(c => c.startsWith("-"))) return null;
-          return (
-            <div key={`${idx}-${pIdx}`} className="overflow-x-auto my-2 select-text">
-              <table className="min-w-full divide-y divide-white/5 border border-white/5 rounded-xl overflow-hidden text-[9px]">
-                <tbody>
-                  <tr className="bg-[#181922]">
-                    {cells.map((c, cellIdx) => (
-                      <td key={cellIdx} className="px-3 py-1.5 font-semibold text-slate-300 border-r border-white/5 last:border-0">{renderInlineText(c)}</td>
-                    ))}
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          );
-        }
-        
         return (
-          <p key={`${idx}-${pIdx}`} className="text-[10.5px] text-slate-350 my-1.5 leading-relaxed select-text">
+          <p key={`${idx}-${pIdx}`} className="text-sm text-slate-400 my-2.5 leading-relaxed select-text">
             {renderInlineText(cleanPara)}
           </p>
         );
@@ -741,274 +709,259 @@ export const CodingPractice: React.FC = () => {
   const activeResult = mode === "challenges" ? executionResult : playgroundExecutionResult;
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8.5rem)] border border-white/5 bg-[#12131A] rounded-3xl overflow-hidden shadow-xl w-full">
-      {/* MODE TABS SWITCHER */}
-      <div className="flex border-b border-slate-200/50 dark:border-slate-850 bg-slate-55/20 dark:bg-slate-950/20 px-6 py-2.5 gap-4 flex-shrink-0 select-none items-center justify-between">
-        <div className="flex gap-3">
+    <div className="flex flex-col h-[calc(100vh-4rem)] bg-[#0a0a12] text-white overflow-hidden font-sans w-full">
+      {/* TOP TOOLBAR */}
+      <div className="bg-[#0c0c16] border-b border-white/[0.04] px-4 py-3 flex flex-wrap gap-3 items-center justify-between shrink-0">
+        <div className="flex items-center gap-4">
           <button
-            onClick={() => setMode("challenges")}
-            className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              mode === "challenges"
-                ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/10"
-                : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-            }`}
+            onClick={() => setShowLeftPanel(!showLeftPanel)}
+            className="text-slate-400 hover:text-white transition-colors"
+            title="Toggle Sidebar"
           >
-            Coding Challenges
+            {showLeftPanel ? <PanelLeftClose className="w-5 h-5" /> : <PanelLeftOpen className="w-5 h-5" />}
           </button>
-          <button
-            onClick={() => setMode("playground")}
-            className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              mode === "playground"
-                ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/10"
-                : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-            }`}
+          
+          <select
+            value={mode}
+            onChange={(e) => setMode(e.target.value as any)}
+            className="bg-[#0f0f1a] border border-white/[0.06] rounded-xl px-3 py-2 text-sm text-white focus:border-purple-500/50 outline-none cursor-pointer"
           >
-            Code Playground
-          </button>
-        </div>
-
-        {mode === "playground" && (
-          <span className="text-[9.5px] text-indigo-400 flex items-center gap-1.5 font-bold uppercase select-none animate-pulse">
-            <Keyboard className="w-4 h-4" /> Ctrl+Enter to Run
-          </span>
-        )}
-      </div>
-
-      <div className="flex flex-grow overflow-hidden w-full">
-        {/* 1. LEFT SIDEBAR: Challenges or File Explorer */}
-        <div className="w-[260px] flex-shrink-0 border-r border-white/5 flex flex-col bg-[#11121A] overflow-hidden select-none">
+            <option value="challenges">Challenges</option>
+            <option value="playground">Playground</option>
+          </select>
+          
           {mode === "challenges" ? (
-            <>
-              <div className="p-3.5 border-b border-slate-200/50 dark:border-slate-855 bg-slate-55/20 flex-shrink-0">
-                <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                  <Layers className="w-3.5 h-3.5 text-indigo-550" /> Coding Challenges
-                </span>
-              </div>
-              <div className="flex-grow overflow-y-auto p-2 space-y-1">
-                {challengesLoading ? (
-                  <div className="h-48 flex items-center justify-center">
-                    <Loader2 className="w-5 h-5 animate-spin text-indigo-500" />
-                  </div>
-                ) : (
-                  challenges.map(chall => {
-                    const isActive = chall.id === selectedChallenge?.id;
-                    const difficultyColors = {
-                      Easy: "bg-emerald-500/10 text-emerald-500 border-emerald-500/15",
-                      Medium: "bg-amber-500/10 text-amber-500 border-amber-500/15",
-                      Hard: "bg-rose-500/10 text-rose-500 border-rose-500/15"
-                    };
-                    return (
-                      <div
-                        key={chall.id}
-                        onClick={() => handleSelectChallenge(chall)}
-                        className={`p-3 rounded-xl cursor-pointer border transition-all ${
-                          isActive
-                            ? "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm"
-                            : "border-transparent hover:bg-slate-100/50 dark:hover:bg-slate-850/30"
-                        }`}
-                      >
-                        <h4 className="text-[10px] font-bold text-slate-800 dark:text-white truncate">
-                          {chall.title}
-                        </h4>
-                        <div className="flex items-center gap-2 mt-1.5">
-                          <span
-                            className={`text-[8px] font-bold px-1.5 py-0.5 rounded border uppercase ${
-                              difficultyColors[chall.difficulty]
-                            }`}
-                          >
-                            {chall.difficulty}
-                          </span>
-                          <span className="text-[8px] text-slate-450 uppercase">{chall.category}</span>
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </>
+            <select
+              value={language}
+              onChange={(e) => handleLanguageChange(e.target.value)}
+              className="bg-[#0f0f1a] border border-white/[0.06] rounded-xl px-3 py-2 text-sm text-white focus:border-purple-500/50 outline-none cursor-pointer"
+            >
+              <option value="python">Python</option>
+              <option value="javascript">JavaScript</option>
+              <option value="cpp">C++</option>
+              <option value="java">Java</option>
+              <option value="sql">SQL</option>
+            </select>
           ) : (
-            <>
-              {/* VS Code style File Explorer */}
-              <div className="p-3 border-b border-slate-200/50 dark:border-slate-850 bg-slate-50/20 flex-shrink-0 flex items-center justify-between">
-                <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                  <FolderOpen className="w-3.5 h-3.5 text-indigo-500" /> Workspace Explorer
-                </span>
-                <button
-                  onClick={() => setIsCreatingFile(!isCreatingFile)}
-                  className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-400 hover:text-indigo-400 cursor-pointer"
-                  title="New File"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
-
-              {isCreatingFile && (
-                <div className="p-3 border-b border-slate-200/50 dark:border-slate-850 bg-slate-100/30 dark:bg-slate-900/30 space-y-2">
-                  <input
-                    type="text"
-                    value={newFileName}
-                    onChange={(e) => setNewFileName(e.target.value)}
-                    placeholder="e.g. main.py, utils.js"
-                    className="w-full px-3 py-1.5 text-xs bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg outline-none"
-                  />
-                  <div className="flex gap-2">
-                    <button
-                      onClick={handleCreateFile}
-                      className="px-3 py-1 bg-indigo-650 hover:bg-indigo-700 text-white rounded text-[10px] font-bold cursor-pointer"
-                    >
-                      Create
-                    </button>
-                    <button
-                      onClick={() => setIsCreatingFile(false)}
-                      className="px-3 py-1 bg-slate-200 dark:bg-slate-800 text-slate-650 rounded text-[10px] font-bold cursor-pointer"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex-grow overflow-y-auto p-2 space-y-1">
-                {Object.keys(playFiles).map(fname => {
-                  const isActive = activePlayFile === fname;
-                  return (
-                    <div
-                      key={fname}
-                      onClick={() => setActivePlayFile(fname)}
-                      className={`flex items-center justify-between p-2.5 rounded-xl cursor-pointer border transition-all ${
-                        isActive
-                          ? "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm"
-                          : "border-transparent hover:bg-slate-100/50 dark:hover:bg-slate-850/30"
-                      }`}
-                    >
-                      <span className="text-[10px] font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2 truncate">
-                        <FileCode className="w-3.5 h-3.5 text-indigo-400" /> {fname}
-                      </span>
-                      <div className="flex gap-1">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRenameFile(fname);
-                          }}
-                          className="p-1 rounded text-slate-400 hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
-                          title="Rename"
-                        >
-                          <Edit className="w-3 h-3" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteFile(fname);
-                          }}
-                          className="p-1 rounded text-slate-400 hover:text-rose-455 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
-                          title="Delete"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </>
+            <select
+              value={language}
+              onChange={(e) => handlePlaygroundLanguageChange(e.target.value)}
+              className="bg-[#0f0f1a] border border-white/[0.06] rounded-xl px-3 py-2 text-sm text-white focus:border-purple-500/50 outline-none cursor-pointer"
+            >
+              <option value="python">Python</option>
+              <option value="java">Java</option>
+              <option value="c">C</option>
+              <option value="cpp">C++</option>
+              <option value="javascript">JavaScript</option>
+              <option value="typescript">TypeScript</option>
+              <option value="go">Go</option>
+              <option value="rust">Rust</option>
+              <option value="php">PHP</option>
+              <option value="ruby">Ruby</option>
+              <option value="kotlin">Kotlin</option>
+              <option value="swift">Swift</option>
+              <option value="csharp">C#</option>
+              <option value="sql">SQL</option>
+              <option value="bash">Bash</option>
+            </select>
           )}
         </div>
 
-        {/* 2. CENTER PANEL: IDE Source Code Editor & Console tabs */}
-        <div className="flex-grow flex flex-col min-w-0 bg-slate-950">
-          {/* Editor controls bar */}
-          <div className="px-6 py-2.5 border-b border-slate-850 bg-slate-900 flex justify-between items-center flex-shrink-0 select-none">
-            <div className="flex items-center gap-4">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                <Terminal className="w-3.5 h-3.5 text-indigo-500" /> Source Workspace
-              </span>
+        <div className="flex-1 text-center truncate px-4 hidden md:block">
+          {mode === "challenges" && selectedChallenge && (
+            <span className="font-semibold text-white">{selectedChallenge.title}</span>
+          )}
+          {mode === "playground" && (
+            <span className="text-sm text-slate-400 flex items-center justify-center gap-2">
+              <Keyboard className="w-4 h-4" /> Ctrl+Enter to Run
+            </span>
+          )}
+        </div>
 
-              {mode === "challenges" ? (
-                <select
-                  value={language}
-                  onChange={(e) => handleLanguageChange(e.target.value)}
-                  className="p-1 border border-slate-800 bg-slate-950 text-slate-300 rounded text-[9px] font-bold uppercase outline-none cursor-pointer"
-                >
-                  <option value="python">Python</option>
-                  <option value="javascript">JavaScript</option>
-                  <option value="cpp">C++</option>
-                  <option value="java">Java</option>
-                  <option value="sql">SQL</option>
-                </select>
-              ) : (
-                <select
-                  value={language}
-                  onChange={(e) => handlePlaygroundLanguageChange(e.target.value)}
-                  className="p-1 border border-slate-800 bg-slate-950 text-slate-300 rounded text-[9px] font-bold uppercase outline-none cursor-pointer"
-                >
-                  <option value="python">Python</option>
-                  <option value="java">Java</option>
-                  <option value="c">C</option>
-                  <option value="cpp">C++</option>
-                  <option value="javascript">JavaScript</option>
-                  <option value="typescript">TypeScript</option>
-                  <option value="go">Go</option>
-                  <option value="rust">Rust</option>
-                  <option value="php">PHP</option>
-                  <option value="ruby">Ruby</option>
-                  <option value="kotlin">Kotlin</option>
-                  <option value="swift">Swift</option>
-                  <option value="csharp">C#</option>
-                  <option value="sql">SQL</option>
-                  <option value="bash">Bash</option>
-                </select>
-              )}
-            </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowAIPanel(!showAIPanel)}
+            className={`bg-white/[0.05] border border-white/[0.08] rounded-xl px-4 py-2 hover:bg-white/[0.08] flex items-center gap-2 text-sm transition-colors ${showAIPanel ? 'text-purple-400 border-purple-500/30' : 'text-white'}`}
+          >
+            <Sparkles className="w-4 h-4" /> AI Assistant
+          </button>
+          <button
+            onClick={handleResetCode}
+            className="bg-white/[0.05] border border-white/[0.08] text-white rounded-xl px-4 py-2 hover:bg-white/[0.08] flex items-center gap-2 text-sm transition-colors"
+          >
+            <RefreshCw className="w-4 h-4" /> Reset
+          </button>
+          <button
+            onClick={handleRunCodeAction}
+            disabled={executionLoading || (!code.trim() && mode === "challenges")}
+            className="bg-gradient-to-r from-violet-600 to-purple-500 hover:from-violet-500 hover:to-purple-400 text-white rounded-xl px-6 py-2 font-semibold transition-all duration-300 flex items-center gap-2 text-sm disabled:opacity-50"
+          >
+            {executionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />} Run
+          </button>
+          {mode === "challenges" && (
+            <button
+              onClick={() => handleExecuteCode(true)}
+              disabled={executionLoading || !code.trim()}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl px-6 py-2 font-semibold transition-all duration-300 flex items-center gap-2 text-sm disabled:opacity-50"
+            >
+              Submit
+            </button>
+          )}
+        </div>
+      </div>
 
-            <div className="flex items-center gap-2.5">
-              {mode === "playground" && (
-                <>
-                  <div className="flex items-center gap-1 bg-slate-950 border border-slate-800 rounded-lg p-1">
-                    <span className="text-[8px] text-slate-450 uppercase font-sans px-1">Size</span>
-                    <select
-                      value={playgroundFontSize}
-                      onChange={(e) => setPlaygroundFontSize(parseInt(e.target.value))}
-                      className="bg-transparent border-none outline-none text-slate-300 text-[9px] font-bold"
-                    >
-                      {[12, 13, 14, 15, 16, 18, 20].map(sz => (
-                        <option key={sz} value={sz}>{sz}px</option>
-                      ))}
-                    </select>
+      {/* MAIN SPLIT LAYOUT */}
+      <div className="flex flex-1 overflow-hidden flex-col lg:flex-row relative">
+        
+        {/* LEFT PANEL: Challenges or Explorer */}
+        {showLeftPanel && (
+          <div className="w-full lg:w-[280px] shrink-0 border-b lg:border-b-0 lg:border-r border-white/[0.06] bg-[#0c0c16] flex flex-col h-[250px] lg:h-full z-10">
+            {mode === "challenges" ? (
+              <>
+                <div className="px-5 py-4 border-b border-white/[0.06] shrink-0">
+                  <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+                    <Layers className="w-4 h-4 text-purple-400" /> Problems
+                  </h3>
+                </div>
+                <div className="flex-1 overflow-y-auto p-3 space-y-2">
+                  {challengesLoading ? (
+                    <div className="flex items-center justify-center h-full">
+                      <Loader2 className="w-6 h-6 animate-spin text-purple-500" />
+                    </div>
+                  ) : (
+                    challenges.map(chall => {
+                      const isActive = chall.id === selectedChallenge?.id;
+                      const difficultyColors = {
+                        Easy: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+                        Medium: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+                        Hard: "bg-rose-500/10 text-rose-400 border-rose-500/20"
+                      };
+                      return (
+                        <div
+                          key={chall.id}
+                          onClick={() => handleSelectChallenge(chall)}
+                          className={`p-4 rounded-xl cursor-pointer border transition-all duration-300 ${
+                            isActive
+                              ? "bg-[#161625] border-purple-500/30 shadow-[0_0_15px_rgba(139,92,246,0.05)]"
+                              : "bg-transparent border-transparent hover:bg-white/[0.02]"
+                          }`}
+                        >
+                          <h4 className="text-sm font-semibold text-white mb-2">{chall.title}</h4>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs px-2 py-0.5 rounded-full border ${difficultyColors[chall.difficulty]}`}>
+                              {chall.difficulty}
+                            </span>
+                            <span className="text-xs text-slate-500">{chall.category}</span>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="px-5 py-4 border-b border-white/[0.06] shrink-0 flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+                    <FolderOpen className="w-4 h-4 text-purple-400" /> Explorer
+                  </h3>
+                  <button
+                    onClick={() => setIsCreatingFile(!isCreatingFile)}
+                    className="p-1.5 rounded-lg hover:bg-white/[0.05] text-slate-400 hover:text-white transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {isCreatingFile && (
+                  <div className="p-4 border-b border-white/[0.06] bg-white/[0.02] space-y-3">
+                    <input
+                      type="text"
+                      value={newFileName}
+                      onChange={(e) => setNewFileName(e.target.value)}
+                      placeholder="e.g. main.py"
+                      className="w-full bg-[#0a0a12] border border-white/[0.06] rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-purple-500/50"
+                    />
+                    <div className="flex gap-2">
+                      <button onClick={handleCreateFile} className="flex-1 bg-purple-600 hover:bg-purple-500 text-white rounded-lg py-1.5 text-sm font-medium transition-colors">
+                        Create
+                      </button>
+                      <button onClick={() => setIsCreatingFile(false)} className="flex-1 bg-white/[0.05] hover:bg-white/[0.1] text-white rounded-lg py-1.5 text-sm font-medium transition-colors">
+                        Cancel
+                      </button>
+                    </div>
                   </div>
-                  <span className="text-[8.5px] font-bold text-slate-500 flex items-center gap-1 uppercase select-none">
-                    {isAutoSaving ? (
-                      <span className="flex items-center gap-1"><Loader2 className="w-2.5 h-2.5 animate-spin" /> Saving...</span>
-                    ) : (
-                      "● Auto Saved"
-                    )}
-                  </span>
-                </>
+                )}
+
+                <div className="flex-1 overflow-y-auto p-2 space-y-1">
+                  {Object.keys(playFiles).map(fname => {
+                    const isActive = activePlayFile === fname;
+                    return (
+                      <div
+                        key={fname}
+                        onClick={() => setActivePlayFile(fname)}
+                        className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all ${
+                          isActive
+                            ? "bg-[#161625] text-white"
+                            : "text-slate-400 hover:bg-white/[0.02] hover:text-white"
+                        }`}
+                      >
+                        <span className="text-sm flex items-center gap-2 truncate">
+                          <FileCode className={`w-4 h-4 ${isActive ? 'text-purple-400' : ''}`} /> {fname}
+                        </span>
+                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={(e) => { e.stopPropagation(); handleRenameFile(fname); }} className="p-1 rounded hover:bg-white/[0.1]">
+                            <Edit className="w-3.5 h-3.5" />
+                          </button>
+                          <button onClick={(e) => { e.stopPropagation(); handleDeleteFile(fname); }} className="p-1 rounded hover:bg-white/[0.1] text-rose-400">
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* EDITOR AREA */}
+        <div className="flex-1 flex flex-col min-w-0 bg-[#0a0a12] border-b lg:border-b-0 lg:border-r border-white/[0.06]">
+          <div className="bg-[#161625] px-4 py-2 border-b border-white/[0.06] flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-slate-300 flex items-center gap-2">
+                <Code2 className="w-4 h-4 text-purple-400" />
+                {mode === "playground" ? activePlayFile : `main.${langToExt[language] || 'py'}`}
+              </span>
+            </div>
+            <div className="flex items-center gap-4">
+              {mode === "playground" && (
+                <span className="text-xs text-slate-500 flex items-center gap-1.5">
+                  {isAutoSaving ? (
+                    <><Loader2 className="w-3 h-3 animate-spin" /> Saving...</>
+                  ) : (
+                    "● Auto-saved"
+                  )}
+                </span>
               )}
-              <button
-                onClick={handleResetCode}
-                className="p-1.5 text-[9px] font-bold text-slate-400 hover:text-slate-200 flex items-center gap-1 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer"
-              >
-                <RefreshCw className="w-3 h-3" /> Reset
-              </button>
               <button
                 onClick={() => setEditorTheme(editorTheme === "dark" ? "light" : "dark")}
-                className="p-1.5 text-[9px] font-bold text-slate-400 hover:text-slate-200 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer"
+                className="text-xs font-medium text-slate-400 hover:text-white transition-colors"
               >
                 {editorTheme === "dark" ? "Light Theme" : "Dark Theme"}
               </button>
             </div>
           </div>
 
-          {/* Selected Challenge description info */}
           {mode === "challenges" && selectedChallenge && (
-            <div className="p-4 bg-slate-900 border-b border-slate-850 select-text flex-shrink-0">
-              <h3 className="text-xs font-black text-white">{selectedChallenge.title}</h3>
-              <p className="text-[10px] text-slate-455 mt-1 leading-relaxed">{selectedChallenge.desc}</p>
+            <div className="p-4 bg-[#0c0c16] border-b border-white/[0.06] shrink-0">
+              <h3 className="text-base font-bold text-white mb-2">{selectedChallenge.title}</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">{selectedChallenge.desc}</p>
             </div>
           )}
 
-          {/* Monaco Editor Area */}
-          <div className="flex-grow relative overflow-hidden flex">
+          <div className="flex-1 relative">
             <Editor
               height="100%"
               language={
@@ -1043,318 +996,247 @@ export const CodingPractice: React.FC = () => {
                 cursorBlinking: "blink",
                 cursorSmoothCaretAnimation: "on",
                 smoothScrolling: true,
-                padding: { top: 12, bottom: 12 },
+                padding: { top: 16, bottom: 16 },
                 renderLineHighlight: "all",
                 automaticLayout: true
               }}
             />
           </div>
+        </div>
 
-          {/* BOTTOM Console Output (Heights 220px) */}
-          <div className="h-[230px] border-t border-slate-850 bg-slate-900 flex flex-col flex-shrink-0 overflow-hidden">
-            {/* Console tabs selectors */}
-            <div className="flex border-b border-slate-850 bg-slate-900 text-[9px] font-extrabold uppercase select-none flex-shrink-0">
-              {mode === "challenges" ? (
-                [
-                  { id: "output", label: "Console Output", icon: <Terminal className="w-3 h-3" /> },
-                  { id: "evaluation", label: "AI Code Review", icon: <Gauge className="w-3 h-3" /> },
-                  { id: "complexity", label: "Complexity", icon: <Activity className="w-3 h-3" /> }
-                ].map(tab => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveConsoleTab(tab.id as any)}
-                    className={`flex items-center gap-1 px-4 py-2.5 border-r border-slate-850 cursor-pointer transition-all ${
-                      activeConsoleTab === tab.id
-                        ? "bg-slate-950 text-white font-black"
-                        : "text-slate-450 hover:bg-slate-855/50"
-                    }`}
-                  >
-                    {tab.icon}
-                    {tab.label}
-                  </button>
-                ))
-              ) : (
-                [
-                  { id: "output", label: "Console", icon: <Terminal className="w-3 h-3" /> },
-                  { id: "input", label: "Custom Stdin", icon: <Keyboard className="w-3 h-3" /> },
-                  { id: "evaluation", label: "Output Panel", icon: <Gauge className="w-3 h-3" /> },
-                  { id: "errors", label: "Errors List", icon: <AlertTriangle className="w-3 h-3" /> },
-                  { id: "complexity", label: "AI Complexity", icon: <Activity className="w-3 h-3" /> },
-                  { id: "terminal", label: "Terminal logs", icon: <Cpu className="w-3 h-3" /> }
-                ].map(tab => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveConsoleTab(tab.id as any)}
-                    className={`flex items-center gap-1.5 px-3.5 py-2.5 border-r border-slate-850 cursor-pointer transition-all ${
-                      activeConsoleTab === tab.id
-                        ? "bg-slate-950 text-white font-black"
-                        : "text-slate-450 hover:bg-slate-850/50"
-                    }`}
-                  >
-                    {tab.icon}
-                    {tab.label}
-                  </button>
-                ))
-              )}
+        {/* OUTPUT PANEL */}
+        <div className="w-full lg:w-[400px] xl:w-[450px] shrink-0 flex flex-col bg-[#0a0a12] h-[300px] lg:h-full">
+          <div className="flex overflow-x-auto border-b border-white/[0.06] bg-[#0c0c16] shrink-0 scrollbar-hide">
+            {(mode === "challenges" 
+              ? [
+                  { id: "output", label: "Output", icon: <Terminal className="w-4 h-4" /> },
+                  { id: "evaluation", label: "Review", icon: <Gauge className="w-4 h-4" /> },
+                  { id: "complexity", label: "Complexity", icon: <Activity className="w-4 h-4" /> }
+                ]
+              : [
+                  { id: "output", label: "Output", icon: <Terminal className="w-4 h-4" /> },
+                  { id: "input", label: "Input", icon: <Keyboard className="w-4 h-4" /> },
+                  { id: "errors", label: "Errors", icon: <AlertTriangle className="w-4 h-4" /> },
+                  { id: "terminal", label: "Logs", icon: <Cpu className="w-4 h-4" /> }
+                ]
+            ).map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveConsoleTab(tab.id as any)}
+                className={`flex items-center gap-2 px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 ${
+                  activeConsoleTab === tab.id
+                    ? "border-purple-500 text-white bg-white/[0.02]"
+                    : "border-transparent text-slate-400 hover:text-white hover:bg-white/[0.02]"
+                }`}
+              >
+                {tab.icon} {tab.label}
+              </button>
+            ))}
+          </div>
 
-              {/* Run solutions actions */}
-              <div className="ml-auto flex items-center gap-2 px-3">
-                <button
-                  onClick={handleRunCodeAction}
-                  disabled={executionLoading || (!code.trim() && mode === "challenges")}
-                  className="px-3.5 py-1 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-[9px] font-bold uppercase transition-all flex items-center gap-1 cursor-pointer"
-                >
-                  {executionLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Play className="w-3 h-3" />} Run Code
-                </button>
-                {mode === "challenges" && (
-                  <button
-                    onClick={() => handleExecuteCode(true)}
-                    disabled={executionLoading || !code.trim()}
-                    className="px-3.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[9px] font-bold uppercase transition-all flex items-center gap-1 cursor-pointer"
-                  >
-                    Submit Solution
-                  </button>
-                )}
+          <div className="flex-1 overflow-y-auto p-5 font-mono text-sm bg-[#0a0a12]">
+            {executionLoading && activeConsoleTab !== "input" ? (
+              <div className="flex items-center justify-center h-full gap-3 text-slate-400">
+                <Loader2 className="w-5 h-5 animate-spin text-purple-500" /> Executing...
               </div>
-            </div>
-
-            {/* Console panel content scroll */}
-            <div className="flex-grow overflow-y-auto p-4 font-mono text-[9.5px] leading-relaxed text-slate-300 bg-slate-950/40 select-text">
-              {executionLoading && activeConsoleTab !== "input" ? (
-                <div className="h-full flex items-center gap-2 text-slate-500">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" /> Compiling program structures...
-                </div>
-              ) : (
-                <>
-                  {/* TAB content 1: Stdout Console */}
-                  {activeConsoleTab === "output" && (
-                    <div className="space-y-2 select-text font-mono">
-                      {mode === "challenges" && activeResult?.stderr ? (
-                        <div className="p-3.5 bg-rose-500/5 border border-rose-500/15 rounded-xl">
-                          <span className="text-[9px] font-black text-rose-500 uppercase block mb-1">Runtime Exception</span>
-                          <pre className="text-rose-500 text-[10px] whitespace-pre-wrap leading-relaxed">{activeResult.stderr}</pre>
+            ) : (
+              <>
+                {activeConsoleTab === "output" && (
+                  <div className="space-y-4">
+                    {mode === "challenges" && activeResult?.stderr ? (
+                      <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl">
+                        <span className="text-xs font-bold text-rose-400 uppercase tracking-wider mb-2 block">Runtime Error</span>
+                        <pre className="text-rose-400 text-sm whitespace-pre-wrap">{activeResult.stderr}</pre>
+                      </div>
+                    ) : activeResult ? (
+                      <div className="bg-[#161625] border border-white/[0.06] rounded-xl overflow-hidden">
+                        <div className="flex justify-between items-center bg-white/[0.02] px-4 py-3 border-b border-white/[0.06]">
+                          <div className="flex items-center gap-2">
+                            {activeResult.success ? (
+                              <span className="text-emerald-400 flex items-center gap-1.5 text-sm font-medium">
+                                <CheckCircle className="w-4 h-4" /> Success
+                              </span>
+                            ) : (
+                              <span className="text-rose-400 flex items-center gap-1.5 text-sm font-medium">
+                                <AlertTriangle className="w-4 h-4" /> Failed
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-slate-500 text-xs">Exit Code: {activeResult.exit_code || (activeResult.success ? 0 : 1)}</span>
                         </div>
-                      ) : activeResult ? (
-                        <div className="p-3.5 bg-[#181922] border border-white/5 rounded-2xl space-y-3 shadow-inner">
-                          <div className="flex justify-between items-center border-b border-white/5 pb-2 text-[9px] font-bold uppercase select-none">
-                            <div className="flex items-center gap-1.5">
-                              {activeResult.success ? (
-                                <span className="text-emerald-400 flex items-center gap-1">
-                                  <CheckCircle className="w-3.5 h-3.5 text-emerald-500" /> Process Completed
-                                </span>
-                              ) : (
-                                <span className="text-rose-450 flex items-center gap-1">
-                                  <AlertTriangle className="w-3.5 h-3.5 text-rose-500" /> Process Terminated
-                                </span>
-                              )}
-                            </div>
-                            <span className="text-slate-550 font-mono">Exit Code: {activeResult.exit_code || (activeResult.success ? 0 : 1)}</span>
+                        
+                        <div className="p-4 space-y-4">
+                          <div>
+                            <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold block mb-2">Stdout</span>
+                            <pre className="text-slate-300 whitespace-pre-wrap">{activeResult.stdout || "No output"}</pre>
                           </div>
-                          
-                          <div className="space-y-1">
-                            <span className="text-[8px] text-slate-500 font-bold uppercase block select-none">Standard Output (stdout)</span>
-                            <pre className="text-slate-100 font-mono text-[10px] leading-relaxed whitespace-pre-wrap">{activeResult.stdout || "(no output printed)"}</pre>
-                          </div>
-
                           {activeResult.stderr && (
-                            <div className="space-y-1 pt-2 border-t border-white/5">
-                              <span className="text-[8px] text-rose-555 font-bold uppercase block select-none">Standard Error (stderr)</span>
-                              <pre className="text-rose-400 font-mono text-[10px] leading-relaxed whitespace-pre-wrap">{activeResult.stderr}</pre>
+                            <div className="pt-4 border-t border-white/[0.06]">
+                              <span className="text-xs text-rose-500 uppercase tracking-wider font-semibold block mb-2">Stderr</span>
+                              <pre className="text-rose-400 whitespace-pre-wrap">{activeResult.stderr}</pre>
                             </div>
                           )}
                         </div>
-                      ) : (
-                        <div className="text-slate-500 italic py-6 select-none flex items-center gap-2">
-                          <Terminal className="w-4 h-4 text-slate-550 animate-pulse" />
-                          <span>No execution logs. Click Run Code above to inspect outputs.</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* TAB content 2: Stdin Input Panel */}
-                  {activeConsoleTab === "input" && (
-                    <div className="h-full flex flex-col gap-2">
-                      <label className="text-[8.5px] text-slate-450 uppercase font-sans font-bold">
-                        Provide Standard Input (stdin) parameters:
-                      </label>
-                      <textarea
-                        value={playgroundStdin}
-                        onChange={(e) => setPlaygroundStdin(e.target.value)}
-                        placeholder="Provide stdin inputs for your program here..."
-                        className="flex-grow p-3 bg-slate-900 border border-slate-800 rounded-xl outline-none resize-none text-[10.5px] font-mono text-slate-200"
-                      />
-                    </div>
-                  )}
-
-                  {/* TAB content 3: Output Panel (Stdout metrics) */}
-                  {activeConsoleTab === "evaluation" && (
-                    <div className="space-y-3">
-                      {activeResult ? (
-                        <div className="space-y-2">
-                          <div className="p-3 border border-slate-800 bg-slate-950/60 rounded-xl space-y-1">
-                            <span className="text-[8px] text-slate-500 uppercase font-sans font-bold">Standard Output</span>
-                            <pre className="text-emerald-400 whitespace-pre-wrap">{activeResult.stdout || "(no output printed)"}</pre>
-                          </div>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="p-3 border border-slate-800 bg-slate-950/60 rounded-xl">
-                              <span className="text-[8px] text-slate-500 block uppercase font-sans font-bold">Execution Time</span>
-                              <span className="text-xs font-black text-indigo-400">{activeResult.execution_time || "15 ms"}</span>
-                            </div>
-                            <div className="p-3 border border-slate-800 bg-slate-950/60 rounded-xl">
-                              <span className="text-[8px] text-slate-500 block uppercase font-sans font-bold">Memory Limit</span>
-                              <span className="text-xs font-black text-indigo-400">{activeResult.memory || "16 MB"}</span>
-                            </div>
-                          </div>
-                          <div className="p-3 border border-slate-800 bg-slate-950/60 rounded-xl font-sans text-slate-450 leading-relaxed">
-                            {mode === "challenges" ? activeResult.security_review : "Program finished successfully. Output generated from sandboxed virtual runtime."}
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-slate-650 italic">Execute code first to inspect output panel details.</div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* TAB content 4: Errors Panel */}
-                  {activeConsoleTab === "errors" && (
-                    <div className="space-y-2">
-                      {activeResult?.stderr ? (
-                        <div className="p-3 border border-rose-500/20 bg-rose-500/5 rounded-xl space-y-2">
-                          <span className="text-[8px] font-bold text-rose-500 uppercase font-sans">Error stack traces</span>
-                          <pre className="text-rose-500 text-[10px] whitespace-pre-wrap">{activeResult.stderr}</pre>
-                          <p className="text-[9px] text-slate-455 font-sans mt-2">
-                            The editor line causing the compilation or runtime exception is highlighted in red inside the trace stack.
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="text-emerald-500 font-bold flex items-center gap-1.5 font-sans">
-                          <CheckCircle className="w-4 h-4" /> No compilation or syntax errors detected.
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* TAB content 5: Complexity & AI Reviews */}
-                  {activeConsoleTab === "complexity" && (
-                    <div className="grid grid-cols-2 gap-4 font-sans text-[9px] text-slate-450 p-1">
-                      <div className="p-3 border border-slate-800 bg-slate-950 rounded-xl space-y-1">
-                        <strong className="text-slate-350 block uppercase text-[8px] font-bold">Estimated Time Complexity</strong>
-                        <span className="text-xs font-mono font-black text-indigo-500">
-                          {activeResult?.complexity_analysis?.time_complexity || "O(1)"}
-                        </span>
-                        <p className="text-[8px] text-slate-500 mt-1 leading-normal">
-                          Computed from loops, structural recursions, and mapping search footprints.
-                        </p>
                       </div>
-                      <div className="p-3 border border-slate-800 bg-slate-950 rounded-xl space-y-1">
-                        <strong className="text-slate-350 block uppercase text-[8px] font-bold">Space Complexity</strong>
-                        <span className="text-xs font-mono font-black text-indigo-500">
-                          {activeResult?.complexity_analysis?.space_complexity || "O(1)"}
-                        </span>
-                        <p className="text-[8px] text-slate-500 mt-1 leading-normal">
-                          Assesses runtime parameter space bounds and array allocation mappings.
-                        </p>
-                      </div>
-                    </div>
-                  )}
+                    ) : (
+                      <div className="text-slate-500 italic text-center py-8">Run your code to see the output here.</div>
+                    )}
+                  </div>
+                )}
 
-                  {/* TAB content 6: Terminal Panel Logs */}
-                  {activeConsoleTab === "terminal" && (
-                    <div className="space-y-1">
-                      <div className="text-slate-550 border-b border-slate-900 pb-1 mb-2 uppercase text-[8px] font-sans font-bold">
-                        Process Stream Terminal Logs
-                      </div>
-                      {playgroundTerminalLogs.length === 0 ? (
-                        <div className="text-slate-650 italic">Terminal stream is inactive.</div>
-                      ) : (
-                        playgroundTerminalLogs.map((log, idx) => (
-                          <div key={idx} className="flex gap-2 items-center text-indigo-400 font-mono text-[9.5px]">
-                            <span>&gt;</span>
-                            <span>{log}</span>
+                {activeConsoleTab === "input" && (
+                  <div className="h-full flex flex-col">
+                    <label className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-3">
+                      Standard Input (stdin)
+                    </label>
+                    <textarea
+                      value={playgroundStdin}
+                      onChange={(e) => setPlaygroundStdin(e.target.value)}
+                      placeholder="Type standard input here..."
+                      className="flex-1 bg-[#161625] border border-white/[0.06] rounded-xl p-4 text-sm text-slate-300 outline-none focus:border-purple-500/50 resize-none font-mono"
+                    />
+                  </div>
+                )}
+
+                {activeConsoleTab === "evaluation" && (
+                  <div className="space-y-4">
+                    {activeResult ? (
+                      <>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="bg-[#161625] border border-white/[0.06] rounded-xl p-4">
+                            <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold block mb-1">Time</span>
+                            <span className="text-lg font-bold text-purple-400">{activeResult.execution_time || "15 ms"}</span>
                           </div>
-                        ))
-                      )}
+                          <div className="bg-[#161625] border border-white/[0.06] rounded-xl p-4">
+                            <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold block mb-1">Memory</span>
+                            <span className="text-lg font-bold text-purple-400">{activeResult.memory || "16 MB"}</span>
+                          </div>
+                        </div>
+                        <div className="bg-[#161625] border border-white/[0.06] rounded-xl p-4 text-slate-400 font-sans">
+                          {mode === "challenges" ? activeResult.security_review : "Program completed in secure sandbox."}
+                        </div>
+                      </>
+                    ) : (
+                      <div className="text-slate-500 italic text-center py-8">Run your code first.</div>
+                    )}
+                  </div>
+                )}
+
+                {activeConsoleTab === "errors" && (
+                  <div>
+                    {activeResult?.stderr ? (
+                      <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-4">
+                        <span className="text-xs text-rose-400 uppercase tracking-wider font-semibold block mb-2">Stack Trace</span>
+                        <pre className="text-rose-400 whitespace-pre-wrap">{activeResult.stderr}</pre>
+                      </div>
+                    ) : (
+                      <div className="text-emerald-400 flex items-center gap-2">
+                        <CheckCircle className="w-5 h-5" /> No errors detected.
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {activeConsoleTab === "complexity" && (
+                  <div className="space-y-4 font-sans">
+                    <div className="bg-[#161625] border border-white/[0.06] rounded-xl p-4">
+                      <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold block mb-1">Time Complexity</span>
+                      <span className="text-lg font-mono font-bold text-purple-400">
+                        {activeResult?.complexity_analysis?.time_complexity || "O(1)"}
+                      </span>
                     </div>
-                  )}
-                </>
+                    <div className="bg-[#161625] border border-white/[0.06] rounded-xl p-4">
+                      <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold block mb-1">Space Complexity</span>
+                      <span className="text-lg font-mono font-bold text-purple-400">
+                        {activeResult?.complexity_analysis?.space_complexity || "O(1)"}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {activeConsoleTab === "terminal" && (
+                  <div className="space-y-2">
+                    {playgroundTerminalLogs.length === 0 ? (
+                      <div className="text-slate-500 italic">No terminal logs.</div>
+                    ) : (
+                      playgroundTerminalLogs.map((log, idx) => (
+                        <div key={idx} className="flex gap-3 text-slate-300">
+                          <span className="text-purple-500 font-bold">$</span>
+                          <span>{log}</span>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* AI ASSISTANT OVERLAY PANEL */}
+        {showAIPanel && (
+          <div className="absolute right-0 top-0 bottom-0 w-full lg:w-[350px] bg-[#0c0c16] border-l border-white/[0.06] shadow-2xl z-20 flex flex-col">
+            <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between shrink-0 bg-[#0c0c16]">
+              <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-purple-400" /> AI Assistant
+              </h3>
+              <button onClick={() => setShowAIPanel(false)} className="text-slate-400 hover:text-white transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="p-4 border-b border-white/[0.06] bg-[#0a0a12] shrink-0">
+              <div className="grid grid-cols-2 gap-2">
+                {(mode === "challenges" 
+                  ? [
+                      { id: "explain", label: "Explain Code" },
+                      { id: "optimize", label: "Optimize" },
+                      { id: "debug", label: "Debug" },
+                      { id: "convert", label: "Convert JS" }
+                    ]
+                  : [
+                      { id: "explain", label: "Explain" },
+                      { id: "debug", label: "Debug" },
+                      { id: "optimize", label: "Optimize" },
+                      { id: "generate", label: "Generate" },
+                      { id: "comments", label: "Comments" },
+                      { id: "testcases", label: "Tests" }
+                    ]
+                ).map(act => (
+                  <button
+                    key={act.id}
+                    onClick={() => handleTutorAction(act.id)}
+                    disabled={tutorLoading || !code.trim()}
+                    className="bg-[#161625] hover:bg-white/[0.05] border border-white/[0.06] text-slate-300 rounded-lg py-2 text-xs font-medium transition-colors disabled:opacity-50"
+                  >
+                    {act.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-5">
+              {tutorLoading ? (
+                <div className="flex flex-col items-center justify-center h-full gap-4 text-slate-400">
+                  <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
+                  <p className="text-sm">Analyzing code...</p>
+                </div>
+              ) : tutorOutput ? (
+                <div className="space-y-4">
+                  {renderTutorMarkdown(tutorOutput)}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full text-center space-y-4 opacity-60">
+                  <BookOpen className="w-12 h-12 text-slate-500" />
+                  <div>
+                    <h5 className="font-semibold text-white mb-2">AI Ready</h5>
+                    <p className="text-sm text-slate-400">Select an action above to get AI assistance with your code.</p>
+                  </div>
+                </div>
               )}
             </div>
           </div>
-        </div>
-
-        {/* 3. RIGHT SIDEBAR: AI Recruiter Assistant / Playground Actions */}
-        <div className="w-[280px] flex-shrink-0 border-l border-white/5 flex flex-col bg-[#11121A] overflow-hidden">
-          <div className="p-3.5 border-b border-slate-200/50 dark:border-slate-850 bg-slate-55/20 flex-shrink-0 flex items-center justify-between">
-            <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-555" /> AI Coding Advisor
-            </span>
-          </div>
-
-          {/* AI Helper Actions panel */}
-          <div className="p-3.5 border-b border-slate-100 dark:border-slate-850 grid grid-cols-2 gap-1.5 flex-shrink-0 select-none">
-            {mode === "challenges" ? (
-              [
-                { id: "explain", label: "Explain Code" },
-                { id: "optimize", label: "Optimize Big-O" },
-                { id: "debug", label: "Fix Errors" },
-                { id: "convert", label: "Convert JS" }
-              ].map(act => (
-                <button
-                  key={act.id}
-                  onClick={() => handleTutorAction(act.id)}
-                  disabled={tutorLoading || !code.trim()}
-                  className="py-1.5 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-lg text-[9px] font-bold text-slate-600 dark:text-slate-350 cursor-pointer disabled:opacity-50"
-                >
-                  {act.label}
-                </button>
-              ))
-            ) : (
-              [
-                { id: "explain", label: "Explain Code" },
-                { id: "debug", label: "Fix Errors" },
-                { id: "optimize", label: "Optimize Code" },
-                { id: "generate", label: "Generate Code" },
-                { id: "comments", label: "Add Comments" },
-                { id: "convert", label: "Convert Language" },
-                { id: "complexity", label: "Complexity" },
-                { id: "testcases", label: "Test Cases" },
-                { id: "documentation", label: "Generate Docs" }
-              ].map(act => (
-                <button
-                  key={act.id}
-                  onClick={() => handleTutorAction(act.id)}
-                  disabled={tutorLoading || !code.trim()}
-                  className="py-1.5 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-lg text-[9px] font-bold text-slate-600 dark:text-slate-350 cursor-pointer disabled:opacity-50"
-                >
-                  {act.label}
-                </button>
-              ))
-            )}
-          </div>
-
-          {/* Chat answer reader scroll */}
-          <div className="flex-grow overflow-y-auto p-4 select-text">
-            {tutorLoading ? (
-              <div className="h-full flex flex-col items-center justify-center text-center space-y-3">
-                <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
-                <p className="text-[9px] text-slate-400">AI Code Auditor reviewing code logic patterns...</p>
-              </div>
-            ) : tutorOutput ? (
-              <div className="prose dark:prose-invert">{renderTutorMarkdown(tutorOutput)}</div>
-            ) : (
-              <div className="h-full flex flex-col items-center justify-center text-center space-y-4 max-w-[200px] mx-auto select-none">
-                <BookOpen className="w-8 h-8 text-slate-300" />
-                <div>
-                  <h5 className="text-[10px] font-bold text-slate-800 dark:text-white">AI Learning Mode</h5>
-                  <p className="text-[8px] text-slate-450 leading-relaxed mt-1">
-                    Select one of the helper tabs above to inspect algorithmic optimizations, complexities, or test cases.
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

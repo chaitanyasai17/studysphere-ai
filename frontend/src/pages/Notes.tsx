@@ -74,11 +74,11 @@ export const Notes: React.FC = () => {
   const [aiOutput, setAiOutput] = useState<string | null>(null);
 
   // Panels widths (slider)
-  const [leftWidth, setLeftWidth] = useState(250);
-  const [rightWidth, setRightWidth] = useState(380);
+  const [leftWidth, setLeftWidth] = useState(260);
+  const [rightWidth, setRightWidth] = useState(260);
 
   // Right-hand tabs (Related Learning, Version Timeline, Visual Mind Map)
-  const [activeRightTab, setActiveRightTab] = useState<"related" | "history" | "mindmap">("related");
+  const [activeRightTab, setActiveRightTab] = useState<"related" | "history" | "ai">("related");
 
   // Related items list from backend
   const [relatedItems, setRelatedItems] = useState<{ notes: any[]; pdfs: any[]; chats: any[] }>({
@@ -94,9 +94,6 @@ export const Notes: React.FC = () => {
   const [isStudyMode, setIsStudyMode] = useState(false);
   const [focusTimer, setFocusTimer] = useState(0);
   const [focusTimerActive, setFocusTimerActive] = useState(false);
-
-  // Mind map expand state
-  const [mindMapExpanded, setMindMapExpanded] = useState<string[]>(["Root"]);
 
   // Sidebar collapsible lists states
   const [pinnedCollapsed, setPinnedCollapsed] = useState(false);
@@ -259,6 +256,7 @@ export const Notes: React.FC = () => {
     if (!activeNoteId || aiLoading) return;
     setAiLoading(true);
     setAiOutput(null);
+    setActiveRightTab("ai");
     try {
       const res = await api.post(`/api/notes/${activeNoteId}/ai`, { action });
       setAiOutput(res.data.result);
@@ -376,7 +374,7 @@ export const Notes: React.FC = () => {
     return codeParts.map((codePart, codeIdx) => {
       if (codeIdx % 2 === 1) {
         return (
-          <code key={codeIdx} className="px-1.5 py-0.5 rounded bg-slate-800 text-indigo-300 font-mono text-[10px] border border-white/5">
+          <code key={codeIdx} className="px-1.5 py-0.5 rounded bg-white/[0.05] text-purple-400 font-mono text-sm border border-white/[0.06]">
             {codePart}
           </code>
         );
@@ -386,7 +384,7 @@ export const Notes: React.FC = () => {
       return boldParts.map((boldPart, boldIdx) => {
         if (boldIdx % 2 === 1) {
           return (
-            <strong key={boldIdx} className="font-extrabold text-white">
+            <strong key={boldIdx} className="font-semibold text-white">
               {boldPart}
             </strong>
           );
@@ -443,17 +441,17 @@ export const Notes: React.FC = () => {
           };
 
           elements.push(
-            <div key={`code-${idx}`} className="my-4 border border-white/5 rounded-2xl overflow-hidden bg-[#0B0B12] shadow-2xl max-w-full text-left">
-              <div className="flex items-center justify-between px-4 py-2 bg-slate-900/60 border-b border-white/5 text-[10px] text-slate-400 font-mono select-none">
+            <div key={`code-${idx}`} className="my-4 border border-white/[0.06] rounded-2xl overflow-hidden bg-[#0f0f1a] shadow-lg max-w-full text-left">
+              <div className="flex items-center justify-between px-4 py-2 bg-[#161625] border-b border-white/[0.06] text-xs text-slate-400 font-mono select-none">
                 <span>{codeBlockLang.toUpperCase()}</span>
                 <button
                   onClick={() => handleCopyText(codeText)}
-                  className="flex items-center gap-1 hover:text-white transition-colors cursor-pointer text-slate-400 animate-pulse"
+                  className="flex items-center gap-1 hover:text-white transition-colors cursor-pointer text-slate-400"
                 >
-                  <Eye className="w-3.5 h-3.5" /> Copy Code
+                  <Eye className="w-4 h-4" /> Copy Code
                 </button>
               </div>
-              <pre className="p-4 overflow-x-auto text-[11px] font-mono text-slate-200 leading-relaxed bg-[#0F0F16]">
+              <pre className="p-4 overflow-x-auto text-sm font-mono text-slate-300 leading-relaxed bg-[#0a0a12]">
                 <code>{highlightCode(codeText)}</code>
               </pre>
             </div>
@@ -485,18 +483,18 @@ export const Notes: React.FC = () => {
           const header = tableRows[0];
           const body = tableRows.slice(1);
           elements.push(
-            <div key={`table-${idx}`} className="my-4 overflow-x-auto border border-white/5 rounded-2xl bg-[#12131A] shadow-xl">
-              <table className="w-full text-left border-collapse text-[11px]">
+            <div key={`table-${idx}`} className="my-4 overflow-x-auto border border-white/[0.06] rounded-2xl bg-[#0f0f1a] shadow-lg">
+              <table className="w-full text-left border-collapse text-sm">
                 <thead>
-                  <tr className="bg-slate-900/60 border-b border-white/5 text-slate-350">
+                  <tr className="bg-[#161625] border-b border-white/[0.06] text-white">
                     {header.map((h, hIdx) => (
-                      <th key={hIdx} className="p-3 font-extrabold uppercase">{h}</th>
+                      <th key={hIdx} className="p-3 font-semibold">{h}</th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5 text-slate-300">
+                <tbody className="divide-y divide-white/[0.06] text-slate-400">
                   {body.map((r, rIdx) => (
-                    <tr key={rIdx} className="hover:bg-white/5 transition-colors">
+                    <tr key={rIdx} className="hover:bg-white/[0.02] transition-colors">
                       {r.map((cell, cIdx) => (
                         <td key={cIdx} className="p-3">{renderInlineTokens(cell)}</td>
                       ))}
@@ -512,21 +510,21 @@ export const Notes: React.FC = () => {
       
       // Headers
       if (line.startsWith("# ")) {
-        elements.push(<h1 key={idx} className="text-base font-black text-white mt-5 mb-3 border-b border-white/10 pb-2 tracking-wide uppercase">{line.replace("# ", "")}</h1>);
+        elements.push(<h1 key={idx} className="text-2xl font-bold text-white mt-8 mb-4 border-b border-white/[0.06] pb-2">{line.replace("# ", "")}</h1>);
         continue;
       }
       if (line.startsWith("## ")) {
-        elements.push(<h2 key={idx} className="text-sm font-black text-white mt-4 mb-2 border-b border-white/5 pb-1 tracking-wide uppercase">{line.replace("## ", "")}</h2>);
+        elements.push(<h2 key={idx} className="text-xl font-semibold text-white mt-6 mb-3 border-b border-white/[0.06] pb-1">{line.replace("## ", "")}</h2>);
         continue;
       }
       if (line.startsWith("### ")) {
-        elements.push(<h3 key={idx} className="text-xs font-black text-white mt-3 mb-1.5 tracking-wide uppercase">{line.replace("### ", "")}</h3>);
+        elements.push(<h3 key={idx} className="text-lg font-medium text-white mt-4 mb-2">{line.replace("### ", "")}</h3>);
         continue;
       }
       
       // Quotes
       if (line.startsWith("> ")) {
-        elements.push(<blockquote key={idx} className="border-l-4 border-indigo-500 pl-4 py-1 italic my-2 bg-indigo-500/5 text-[11px] text-slate-400 rounded">{line.replace("> ", "")}</blockquote>);
+        elements.push(<blockquote key={idx} className="border-l-4 border-purple-500 pl-4 py-2 italic my-4 bg-purple-500/10 text-sm text-slate-300 rounded-r-lg">{line.replace("> ", "")}</blockquote>);
         continue;
       }
       
@@ -535,14 +533,14 @@ export const Notes: React.FC = () => {
         const checked = line.includes("[x]");
         const textContent = line.substring(6);
         elements.push(
-          <div key={idx} className="flex items-center gap-2 text-[11px] text-slate-300 my-1">
+          <div key={idx} className="flex items-center gap-3 text-sm text-slate-400 my-2">
             <input 
               type="checkbox" 
               checked={checked} 
               readOnly 
-              className="rounded border-slate-700 bg-slate-900 text-indigo-600 focus:ring-0 focus:ring-offset-0 w-3.5 h-3.5" 
+              className="rounded border-white/[0.06] bg-[#0a0a12] text-purple-500 focus:ring-0 focus:ring-offset-0 w-4 h-4" 
             />
-            <span className={checked ? "line-through text-slate-500 font-semibold" : "font-semibold text-slate-200"}>{renderInlineTokens(textContent)}</span>
+            <span className={checked ? "line-through text-slate-500" : "text-slate-300"}>{renderInlineTokens(textContent)}</span>
           </div>
         );
         continue;
@@ -551,7 +549,7 @@ export const Notes: React.FC = () => {
       // Bullet lists
       if (line.startsWith("- ") || line.startsWith("* ")) {
         const clean = line.replace(/^[-*]\s+/, "");
-        elements.push(<li key={idx} className="list-disc pl-4 text-[11px] text-slate-300 ml-2">{renderInlineTokens(clean)}</li>);
+        elements.push(<li key={idx} className="list-disc pl-2 text-sm text-slate-400 ml-4 my-1">{renderInlineTokens(clean)}</li>);
         continue;
       }
       
@@ -560,7 +558,7 @@ export const Notes: React.FC = () => {
         const clean = line.replace(/^\d+\.\s+/, "");
         const num = line.match(/^\d+/)?.[0] || "1";
         elements.push(
-          <ol key={idx} className="list-decimal pl-5 text-[11px] text-slate-300 ml-2">
+          <ol key={idx} className="list-decimal pl-2 text-sm text-slate-400 ml-4 my-1">
             <li value={parseInt(num)}>{renderInlineTokens(clean)}</li>
           </ol>
         );
@@ -571,9 +569,9 @@ export const Notes: React.FC = () => {
       const imgMatch = line.match(/!\[(.*?)\]\((.*?)\)/);
       if (imgMatch) {
         elements.push(
-          <div key={idx} className="my-4 flex flex-col items-center">
-            <img src={imgMatch[2]} alt={imgMatch[1]} className="rounded-2xl border border-white/5 shadow-2xl max-w-full max-h-[240px] object-contain" />
-            {imgMatch[1] && <span className="text-[9px] text-slate-500 mt-1 select-none font-mono">{imgMatch[1]}</span>}
+          <div key={idx} className="my-6 flex flex-col items-center">
+            <img src={imgMatch[2]} alt={imgMatch[1]} className="rounded-2xl border border-white/[0.06] shadow-xl max-w-full max-h-[400px] object-contain bg-[#0f0f1a] p-2" />
+            {imgMatch[1] && <span className="text-xs text-slate-500 mt-2 select-none font-mono">{imgMatch[1]}</span>}
           </div>
         );
         continue;
@@ -581,9 +579,9 @@ export const Notes: React.FC = () => {
 
       // Default paragraph
       if (line.trim()) {
-        elements.push(<p key={idx} className="text-[11px] text-slate-300 my-1 leading-relaxed">{renderInlineTokens(line)}</p>);
+        elements.push(<p key={idx} className="text-sm text-slate-400 my-2 leading-relaxed">{renderInlineTokens(line)}</p>);
       } else {
-        elements.push(<div key={idx} className="h-2" />);
+        elements.push(<div key={idx} className="h-4" />);
       }
     }
     
@@ -624,118 +622,67 @@ export const Notes: React.FC = () => {
   const activeVersionHistory = activeNote?.version_history || [];
 
   return (
-    <div className="h-[calc(100vh-8.5rem)] flex border border-white/5 bg-[#12131A] rounded-3xl overflow-hidden shadow-xl w-full relative">
+    <div className="h-[calc(100vh-8.5rem)] flex border border-white/[0.06] bg-[#0a0a12] rounded-3xl overflow-hidden shadow-xl w-full relative max-w-[1400px] mx-auto">
       
       {!isStudyMode && (
         <div 
-          style={{ width: viewMode === "split" ? "22%" : `${leftWidth}px` }}
-          className="flex-shrink-0 border-r border-white/5 flex flex-col bg-[#11121A] overflow-hidden select-none"
+          style={{ width: viewMode === "split" ? "260px" : `${leftWidth}px` }}
+          className="flex-shrink-0 border-r border-white/[0.04] flex flex-col bg-[#0c0c16] overflow-hidden select-none transition-all duration-300 md:block hidden md:w-[260px]"
         >
-          <div className="p-3 border-b border-slate-200/50 dark:border-slate-850 flex gap-2 items-center flex-shrink-0">
+          <div className="p-4 border-b border-white/[0.06] flex gap-3 items-center flex-shrink-0">
             <div className="relative flex-grow">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
               <input
                 type="text"
                 placeholder="Search notes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="premium-input w-full pl-8 pr-3"
+                className="w-full pl-9 pr-4 py-2.5 bg-[#0f0f1a] border border-white/[0.06] rounded-xl text-white placeholder:text-slate-500 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 outline-none text-sm"
               />
             </div>
             <button
               onClick={handleCreateNote}
-              className="premium-button-primary w-10 h-10 flex items-center justify-center p-0 flex-shrink-0 cursor-pointer"
+              className="bg-gradient-to-r from-violet-600 to-purple-500 hover:from-violet-500 hover:to-purple-400 text-white rounded-xl w-10 h-10 flex items-center justify-center p-0 flex-shrink-0 cursor-pointer shadow-lg shadow-purple-500/20 transition-all duration-300"
               title="Create New Study Note"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-5 h-5" />
             </button>
           </div>
 
-          {/* Collapsible Sidebar Navigation Panel (Pinned, Recent, Folders) */}
-          <div className="p-3 border-b border-white/5 space-y-3 flex-shrink-0 max-h-[300px] overflow-y-auto scrollbar-none">
-            {/* Pinned Notes Collapsible Section */}
-            {notes.some(n => n.is_pinned) && (
-              <div className="space-y-1">
-                <button 
-                  onClick={() => setPinnedCollapsed(!pinnedCollapsed)}
-                  className="w-full flex items-center justify-between text-[9px] font-black uppercase text-indigo-400 tracking-wider hover:text-indigo-300"
-                >
-                  <span className="flex items-center gap-1">📌 Pinned Notes</span>
-                  <span>{pinnedCollapsed ? "+" : "-"}</span>
-                </button>
-                {!pinnedCollapsed && (
-                  <div className="space-y-0.5 pl-2">
-                    {notes.filter(n => n.is_pinned).slice(0, 3).map(note => (
-                      <div 
-                        key={note._id}
-                        onClick={() => handleSelectNote(note)}
-                        className={`px-2 py-1 rounded-lg text-xs truncate cursor-pointer transition-colors ${note._id === activeNoteId ? "bg-indigo-500/10 text-indigo-400 font-semibold" : "text-slate-400 hover:bg-slate-850/50"}`}
-                      >
-                        {note.title}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Recent Notes Collapsible Section */}
-            <div className="space-y-1">
-              <button 
-                onClick={() => setRecentCollapsed(!recentCollapsed)}
-                className="w-full flex items-center justify-between text-[9px] font-black uppercase text-slate-400 tracking-wider hover:text-slate-300"
+          <div className="flex border-b border-white/[0.06] px-2 py-1 gap-1 flex-shrink-0">
+            {['All', 'Pinned', 'Favorites'].map(tab => (
+              <button
+                key={tab}
+                className="flex-1 py-1.5 text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/[0.04] rounded-lg transition-colors"
+                onClick={() => setSelectedCategory(tab === 'All' ? 'All' : tab)}
               >
-                <span className="flex items-center gap-1">🕒 Recent Notes</span>
-                <span>{recentCollapsed ? "+" : "-"}</span>
+                {tab}
               </button>
-              {!recentCollapsed && (
-                <div className="space-y-0.5 pl-2">
-                  {notes.slice(0, 3).map(note => (
-                    <div 
-                      key={note._id}
-                      onClick={() => handleSelectNote(note)}
-                      className={`px-2 py-1 rounded-lg text-xs truncate cursor-pointer transition-colors ${note._id === activeNoteId ? "bg-indigo-500/10 text-indigo-400 font-semibold" : "text-slate-400 hover:bg-slate-850/50"}`}
-                    >
-                      {note.title}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Folders Collapsible Section */}
-            <div className="space-y-1">
-              <button 
-                onClick={() => setFoldersCollapsed(!foldersCollapsed)}
-                className="w-full flex items-center justify-between text-[9px] font-black uppercase text-slate-400 tracking-wider hover:text-slate-300"
-              >
-                <span className="flex items-center gap-1">📁 Folders</span>
-                <span>{foldersCollapsed ? "+" : "-"}</span>
-              </button>
-              {!foldersCollapsed && (
-                <div className="flex flex-wrap gap-1.5 pl-2 pt-1">
-                  {categories.map((cat) => (
-                    <button
-                      key={cat}
-                      onClick={() => setSelectedCategory(cat)}
-                      className={`px-2 py-0.5 rounded border text-[9px] font-extrabold uppercase transition-all cursor-pointer ${
-                        selectedCategory === cat
-                          ? "bg-indigo-600 border-indigo-650 text-white shadow-sm"
-                          : "bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-850"
-                      }`}
-                    >
-                      {cat}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            ))}
           </div>
 
-          {/* List of Note items */}
-          <div className="flex-grow overflow-y-auto p-2.5 space-y-1">
+          <div className="p-3 border-b border-white/[0.06] flex flex-wrap gap-2 flex-shrink-0 max-h-[150px] overflow-y-auto scrollbar-none">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-3 py-1 rounded-full border text-xs font-medium transition-all cursor-pointer ${
+                  selectedCategory === cat
+                    ? "bg-purple-500 border-purple-500 text-white"
+                    : "bg-transparent border-white/[0.06] text-slate-400 hover:border-white/20 hover:text-white"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex-grow overflow-y-auto p-3 space-y-2">
             {filteredNotes.length === 0 ? (
-              <div className="text-center py-12 text-[10px] text-slate-400">No notes found.</div>
+              <div className="text-center py-12 px-4">
+                <FileText className="w-8 h-8 text-slate-600 mx-auto mb-3" />
+                <p className="text-sm text-slate-400">No notes yet.<br/>Create your first note!</p>
+              </div>
             ) : (
               filteredNotes.map((note) => {
                 const isActive = note._id === activeNoteId;
@@ -743,32 +690,34 @@ export const Notes: React.FC = () => {
                   <div
                     key={note._id}
                     onClick={() => handleSelectNote(note)}
-                    className={`p-3 rounded-xl cursor-pointer border transition-all relative group ${
+                    className={`p-4 rounded-xl cursor-pointer border transition-all relative group ${
                       isActive
-                        ? "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm"
-                        : "border-transparent hover:bg-slate-100/50 dark:hover:bg-slate-850/30"
+                        ? "bg-purple-500/10 border-l-2 border-l-purple-500 border-y-transparent border-r-transparent shadow-[0_0_30px_rgba(139,92,246,0.1)]"
+                        : "bg-[#161625] border-white/[0.06] hover:border-purple-500/30"
                     }`}
                   >
-                    <div className="flex items-center gap-1.5">
-                      {note.is_pinned && <Pin className="w-3 h-3 text-indigo-500 flex-shrink-0" />}
-                      {note.is_favorite && <Star className="w-3 h-3 text-amber-400 fill-amber-400 flex-shrink-0" />}
-                      <h4 className={`text-xs truncate max-w-[130px] ${isActive ? "font-bold text-slate-850 dark:text-white" : "text-slate-600 dark:text-slate-400"}`}>
+                    <div className="flex items-center gap-2 mb-1.5">
+                      {note.is_pinned && <Pin className="w-3.5 h-3.5 text-purple-500 flex-shrink-0" />}
+                      {note.is_favorite && <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400 flex-shrink-0" />}
+                      <h4 className={`text-sm truncate font-semibold ${isActive ? "text-white" : "text-slate-200"}`}>
                         {note.title}
                       </h4>
                     </div>
-                    <p className="text-[10px] text-slate-400 truncate mt-1">
-                      {note.content.replace(/[#*`\n]/g, " ").substring(0, 45)}
+                    <p className="text-xs text-slate-400 truncate">
+                      {note.content.replace(/[#*`\n]/g, " ").substring(0, 50) || "Empty note..."}
                     </p>
-                    
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteNote(note._id);
-                      }}
-                      className="absolute right-2.5 bottom-2.5 p-1 rounded hover:bg-rose-500/10 text-slate-400 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
+                    <div className="mt-3 flex items-center justify-between text-[10px] text-slate-500">
+                      <span>{new Date(note.updated_at).toLocaleDateString()}</span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteNote(note._id);
+                        }}
+                        className="p-1.5 rounded-lg hover:bg-rose-500/10 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
                 );
               })
@@ -777,119 +726,102 @@ export const Notes: React.FC = () => {
         </div>
       )}
 
-      {/* 2. CENTER PANEL: Rich Editor & Preview Viewport */}
+      {/* CENTER PANEL */}
       {activeNote ? (
-        <div className={viewMode === "split" ? "w-[78%] flex flex-col min-w-0 bg-[#0B0B12]" : "flex-grow flex flex-col min-w-0 bg-[#0B0B12]"}>
+        <div className={viewMode === "split" ? "w-[calc(100%-520px)] flex flex-col min-w-0 bg-[#0a0a12]" : "flex-grow flex flex-col min-w-0 bg-[#0a0a12]"}>
           
-          {/* Main Top Header controls toolbar */}
           {!isStudyMode && (
-            <div className="px-6 py-3 border-b border-white/5 flex flex-wrap items-center justify-between gap-4 bg-[#12131A] flex-shrink-0 z-10">
-              <div className="flex items-center gap-3">
+            <div className="px-6 py-4 border-b border-white/[0.06] flex flex-wrap items-center justify-between gap-4 bg-[#0a0a12] flex-shrink-0">
+              <div className="flex items-center gap-4">
                 <input
                   type="text"
                   placeholder="Category"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800/40 border border-transparent focus:border-slate-250 text-[10px] font-semibold uppercase text-slate-500 w-24 outline-none"
+                  className="px-3 py-1.5 rounded-lg bg-[#0f0f1a] border border-white/[0.06] focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 text-xs font-semibold text-white outline-none w-28"
                 />
                 <input
                   type="text"
-                  placeholder="Subject Course"
+                  placeholder="Subject"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  className="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800/40 border border-transparent focus:border-slate-250 text-[10px] font-semibold uppercase text-slate-500 w-28 outline-none"
+                  className="px-3 py-1.5 rounded-lg bg-[#0f0f1a] border border-white/[0.06] focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 text-xs font-semibold text-white outline-none w-32"
                 />
-                <div className="flex gap-1.5 items-center">
+                <div className="flex gap-2 items-center">
                   <button
                     onClick={() => handleToggleFlag(activeNote._id, "is_pinned", activeNote.is_pinned)}
-                    className={`p-1.5 rounded-lg border transition-colors hover:bg-slate-50 ${
-                      activeNote.is_pinned ? "text-indigo-500 border-indigo-500/20 bg-indigo-500/5" : "text-slate-400"
+                    className={`p-2 rounded-lg border transition-colors ${
+                      activeNote.is_pinned ? "text-purple-400 border-purple-500/30 bg-purple-500/10" : "text-slate-400 border-white/[0.06] hover:bg-white/[0.04]"
                     }`}
                   >
-                    <Pin className="w-3.5 h-3.5" />
+                    <Pin className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleToggleFlag(activeNote._id, "is_favorite", activeNote.is_favorite)}
-                    className={`p-1.5 rounded-lg border transition-colors hover:bg-slate-50 ${
-                      activeNote.is_favorite ? "text-amber-400 fill-amber-400 border-amber-500/20 bg-amber-500/5" : "text-slate-400"
+                    className={`p-2 rounded-lg border transition-colors ${
+                      activeNote.is_favorite ? "text-amber-400 fill-amber-400 border-amber-500/30 bg-amber-500/10" : "text-slate-400 border-white/[0.06] hover:bg-white/[0.04]"
                     }`}
                   >
-                    <Star className="w-3.5 h-3.5" />
+                    <Star className="w-4 h-4" />
                   </button>
                 </div>
               </div>
 
-              {/* View splits switches & download */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 {saving ? (
-                  <span className="text-[9px] text-slate-400 flex items-center gap-1.5 animate-pulse">
-                    <Loader2 className="w-3 h-3 animate-spin text-indigo-500" /> Auto saving...
+                  <span className="text-xs text-slate-400 flex items-center gap-2">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-purple-500" /> Saving...
                   </span>
                 ) : (
-                  <span className="text-[9px] text-emerald-500 flex items-center gap-1">
+                  <span className="text-xs text-emerald-500 flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5" /> Saved
                   </span>
                 )}
 
-                <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-0.5 border">
-                  <button
-                    onClick={() => setViewMode("edit")}
-                    className={`px-2 py-1 rounded text-[9px] font-bold transition-all cursor-pointer ${
-                      viewMode === "edit" ? "bg-white dark:bg-slate-900 text-slate-800 dark:text-white shadow-sm" : "text-slate-500"
-                    }`}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => setViewMode("split")}
-                    className={`px-2 py-1 rounded text-[9px] font-bold transition-all cursor-pointer ${
-                      viewMode === "split" ? "bg-white dark:bg-slate-900 text-slate-800 dark:text-white shadow-sm" : "text-slate-500"
-                    }`}
-                  >
-                    Split
-                  </button>
-                  <button
-                    onClick={() => setViewMode("preview")}
-                    className={`px-2 py-1 rounded text-[9px] font-bold transition-all cursor-pointer ${
-                      viewMode === "preview" ? "bg-white dark:bg-slate-900 text-slate-800 dark:text-white shadow-sm" : "text-slate-500"
-                    }`}
-                  >
-                    Preview
-                  </button>
+                <div className="flex bg-[#0f0f1a] rounded-lg p-1 border border-white/[0.06]">
+                  {["edit", "split", "preview"].map((mode) => (
+                    <button
+                      key={mode}
+                      onClick={() => setViewMode(mode as any)}
+                      className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer capitalize ${
+                        viewMode === mode ? "bg-[#1a1a2e] text-white shadow-sm" : "text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      {mode}
+                    </button>
+                  ))}
                 </div>
 
                 <button
                   onClick={handleExportNote}
-                  className="p-1.5 rounded-lg border hover:bg-slate-50 text-slate-500"
+                  className="p-2 rounded-lg border border-white/[0.06] hover:bg-white/[0.04] text-slate-400 hover:text-white transition-colors"
                   title="Export Markdown"
                 >
-                  <Download className="w-3.5 h-3.5" />
+                  <Download className="w-4 h-4" />
                 </button>
 
-                {/* Distraction free trigger */}
                 <button
                   onClick={() => {
                     setIsStudyMode(true);
                     setFocusTimer(0);
                     setFocusTimerActive(true);
                   }}
-                  className="flex items-center gap-1 px-2.5 py-1.5 bg-slate-900 text-white rounded-lg text-[9px] font-extrabold uppercase hover:bg-slate-850"
+                  className="flex items-center gap-2 px-4 py-2 bg-white/[0.05] border border-white/[0.08] text-white rounded-xl text-xs font-semibold hover:bg-white/[0.08] transition-all"
                   title="Enter Distraction Free Study Mode"
                 >
-                  <Maximize2 className="w-3 h-3" /> Study Mode
+                  <Maximize2 className="w-4 h-4" /> Study Mode
                 </button>
               </div>
             </div>
           )}
 
-          {/* Tags manager */}
           {!isStudyMode && (
-            <div className="px-6 py-2 border-b border-slate-100 dark:border-slate-850 flex items-center flex-wrap gap-2 flex-shrink-0">
-              <Tag className="w-3 h-3 text-slate-400" />
+            <div className="px-6 py-3 border-b border-white/[0.06] flex items-center flex-wrap gap-2 flex-shrink-0 bg-[#0a0a12]">
+              <Tag className="w-4 h-4 text-slate-500" />
               {tags.map((tag) => (
-                <span key={tag} className="text-[9px] px-2 py-0.5 rounded-full bg-slate-50 dark:bg-slate-800 text-slate-500 border flex items-center gap-1">
+                <span key={tag} className="text-xs px-2.5 py-1 rounded-lg bg-[#161625] text-slate-300 border border-white/[0.06] flex items-center gap-1.5">
                   {tag}
-                  <button onClick={() => handleRemoveTag(tag)} className="hover:text-rose-500 focus:outline-none">×</button>
+                  <button onClick={() => handleRemoveTag(tag)} className="hover:text-rose-400 focus:outline-none transition-colors">×</button>
                 </span>
               ))}
               <input
@@ -898,51 +830,25 @@ export const Notes: React.FC = () => {
                 value={newTag}
                 onChange={(e) => setNewTag(e.target.value)}
                 onKeyDown={handleAddTag}
-                className="text-[9px] bg-transparent border-0 outline-none w-20 text-slate-500"
+                className="text-xs bg-transparent border-0 outline-none w-24 text-slate-400 placeholder:text-slate-600 focus:ring-0"
               />
             </div>
           )}
 
-          {/* Notion-style editing quick helper toolbar */}
-          {!isStudyMode && viewMode !== "preview" && (
-            <div className="px-6 py-1.5 border-b border-white/5 flex flex-wrap gap-2 bg-[#0B0B12] flex-shrink-0 select-none">
-              {[
-                { label: "H1", prefix: "# " },
-                { label: "H2", prefix: "## " },
-                { label: "H3", prefix: "### " },
-                { label: "Bold", prefix: "**", suffix: "**" },
-                { label: "Italic", prefix: "*", suffix: "*" },
-                { label: "List", prefix: "- " },
-                { label: "Quote", prefix: "> " },
-                { label: "Code", prefix: "```\n", suffix: "\n```" },
-                { label: "Table", prefix: "| Col 1 | Col 2 |\n|---|---|\n| Cell 1 | Cell 2 |" }
-              ].map((btn, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => insertMarkup(btn.prefix, btn.suffix)}
-                  className="px-2 py-1 bg-white border border-slate-200 dark:bg-slate-900 dark:border-slate-800 rounded-md text-[9px] font-bold text-slate-600 hover:bg-slate-50 cursor-pointer"
-                >
-                  {btn.label}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Editor Grid Container */}
           <div 
-            className="flex-grow flex divide-x divide-slate-200/50 dark:divide-slate-850 overflow-hidden relative"
-            style={viewMode === "split" ? { display: "grid", gridTemplateColumns: "minmax(450px, 1fr) minmax(450px, 1fr)" } : undefined}
+            className="flex-grow flex divide-x divide-white/[0.06] overflow-hidden relative"
+            style={viewMode === "split" ? { display: "grid", gridTemplateColumns: "1fr 1fr" } : undefined}
           >
             
-            {/* Split Screen left editor textarea */}
+            {/* Editor */}
             {(viewMode === "edit" || viewMode === "split") && !isStudyMode && (
-              <div className={viewMode === "split" ? "w-full min-w-[450px] h-full p-6 flex flex-col gap-3 overflow-hidden relative" : "flex-grow h-full p-6 flex flex-col gap-3 overflow-hidden relative"}>
+              <div className="h-full p-6 flex flex-col gap-4 overflow-hidden relative">
                 <input
                   type="text"
                   placeholder="Note Title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="text-sm font-extrabold bg-transparent border-0 outline-none w-full text-slate-900 dark:text-white focus:ring-0 placeholder-slate-400"
+                  className="text-2xl font-bold bg-transparent border-0 outline-none w-full text-white focus:ring-0 placeholder-slate-600"
                 />
                 <textarea
                   id="note-editor-textarea"
@@ -950,22 +856,21 @@ export const Notes: React.FC = () => {
                   value={content}
                   onChange={handleEditorChange}
                   onKeyDown={handleEditorKeyDown}
-                  className="flex-grow w-full bg-transparent border-0 outline-none resize-none text-[11px] font-mono text-slate-700 dark:text-slate-300 focus:ring-0 leading-relaxed overflow-y-auto"
+                  className="flex-grow w-full bg-transparent border-0 outline-none resize-none text-sm font-mono text-slate-300 focus:ring-0 leading-relaxed overflow-y-auto scrollbar-thin scrollbar-thumb-white/10"
                 />
 
                 {slashMenu?.show && (
-                  <div className="absolute left-6 bottom-16 z-20 bg-[#11121A] border border-white/10 rounded-2xl p-2 w-64 shadow-2xl max-h-52 overflow-y-auto">
-                    <div className="text-[8px] font-extrabold uppercase tracking-widest text-slate-500 px-3 py-1.5 border-b border-white/5 mb-1 select-none">
-                      Insert Component (Esc to dismiss)
+                  <div className="absolute left-6 bottom-16 z-20 bg-[#161625] border border-white/[0.06] rounded-2xl p-2 w-72 shadow-2xl max-h-64 overflow-y-auto">
+                    <div className="text-xs font-semibold text-slate-500 px-3 py-2 border-b border-white/[0.06] mb-1">
+                      Basic Blocks
                     </div>
                     {[
-                      { label: "Heading 1", description: "Insert a large section title", insert: "# " },
-                      { label: "Heading 2", description: "Insert a medium section title", insert: "## " },
-                      { label: "Checklist Item", description: "Insert a todo checkbox", insert: "- [ ] " },
-                      { label: "Bullet List", description: "Insert a bulleted point", insert: "- " },
-                      { label: "Code Block", description: "Insert a multi-line code block", insert: "```javascript\n\n```" },
-                      { label: "Data Table", description: "Insert a standard column table grid", insert: "| Col 1 | Col 2 |\n|---|---|\n| Cell 1 | Cell 2 |" },
-                      { label: "Image Block", description: "Insert an image link tag", insert: "![Alt Text](https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&w=400&q=80)" }
+                      { label: "Heading 1", description: "Large section heading", icon: "H1", insert: "# " },
+                      { label: "Heading 2", description: "Medium section heading", icon: "H2", insert: "## " },
+                      { label: "Checklist", description: "Track tasks with a todo list", icon: "✓", insert: "- [ ] " },
+                      { label: "Bullet List", description: "Create a simple bulleted list", icon: "•", insert: "- " },
+                      { label: "Code Block", description: "Insert formatted code", icon: "</>", insert: "```javascript\n\n```" },
+                      { label: "Quote", description: "Capture a quote", icon: "\"", insert: "> " }
                     ]
                       .filter(cmd => cmd.label.toLowerCase().includes(slashMenu.query.toLowerCase()))
                       .map((cmd, cmdIdx) => (
@@ -990,10 +895,15 @@ export const Notes: React.FC = () => {
                               }, 50);
                             }
                           }}
-                          className="w-full text-left px-3 py-2 hover:bg-indigo-500/10 hover:text-white rounded-xl transition-all flex flex-col cursor-pointer"
+                          className="w-full text-left px-3 py-2.5 hover:bg-purple-500/10 rounded-xl transition-all flex items-center gap-3 cursor-pointer group"
                         >
-                          <span className="text-[10px] font-bold text-slate-200">{cmd.label}</span>
-                          <span className="text-[8px] text-slate-500">{cmd.description}</span>
+                          <div className="w-8 h-8 rounded-lg bg-[#0f0f1a] border border-white/[0.06] flex items-center justify-center text-xs font-bold text-slate-400 group-hover:text-purple-400 group-hover:border-purple-500/30">
+                            {cmd.icon}
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-sm font-medium text-slate-200 group-hover:text-white">{cmd.label}</span>
+                            <span className="text-xs text-slate-500">{cmd.description}</span>
+                          </div>
                         </button>
                       ))}
                   </div>
@@ -1001,220 +911,146 @@ export const Notes: React.FC = () => {
               </div>
             )}
 
-            {/* Split Screen right previewer */}
+            {/* Previewer */}
             {(viewMode === "preview" || viewMode === "split") && !isStudyMode && (
               <div 
-                className={viewMode === "split" ? "w-full min-w-[450px] h-full p-6 overflow-y-auto bg-slate-50/20 dark:bg-slate-950/5" : "flex-grow h-full p-6 overflow-y-auto bg-slate-50/20 dark:bg-slate-950/5"}
-                style={viewMode === "split" ? { wordBreak: "break-word", overflowWrap: "anywhere", whiteSpace: "pre-wrap" } : undefined}
+                className="h-full p-8 overflow-y-auto bg-[#0a0a12]"
+                style={{ wordBreak: "break-word", overflowWrap: "anywhere", whiteSpace: "pre-wrap" }}
               >
                 {viewMode === "preview" && (
-                  <h1 className="text-base font-extrabold text-slate-900 dark:text-white border-b pb-2 mb-4">
+                  <h1 className="text-3xl font-bold text-white border-b border-white/[0.06] pb-4 mb-6">
                     {title}
                   </h1>
                 )}
-                <div className="prose dark:prose-invert max-w-none text-slate-700 dark:text-slate-400">
+                <div className="text-slate-300">
                   {parseMarkdownPreview(content)}
                 </div>
               </div>
             )}
 
-            {/* DISTRACTION-FREE STUDY MODE: Overlay fullscreen */}
+            {/* STUDY MODE */}
             {isStudyMode && (
-              <div className="absolute inset-0 bg-white dark:bg-slate-950 z-30 flex flex-col">
-                <div className="h-14 border-b px-8 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50">
+              <div className="absolute inset-0 bg-[#0a0a12] z-30 flex flex-col">
+                <div className="h-16 border-b border-white/[0.06] px-8 flex justify-between items-center bg-[#0c0c16]">
                   <div className="flex items-center gap-4">
                     <button
                       onClick={() => setIsStudyMode(false)}
-                      className="p-1 rounded bg-slate-200 dark:bg-slate-800 text-slate-600"
+                      className="p-2 rounded-lg bg-white/[0.05] border border-white/[0.08] text-slate-400 hover:text-white hover:bg-white/[0.08] transition-colors"
                     >
-                      <Minimize2 className="w-3.5 h-3.5" />
+                      <Minimize2 className="w-4 h-4" />
                     </button>
-                    <span className="text-xs font-bold truncate max-w-xs">{title}</span>
+                    <span className="text-sm font-medium text-white truncate max-w-md">{title}</span>
                   </div>
-                  <div className="flex items-center gap-4 text-xs font-mono text-slate-500">
-                    <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-indigo-500" /> Focus Time: {Math.floor(focusTimer / 60)}m {focusTimer % 60}s</span>
+                  <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-2 text-sm font-mono text-slate-400">
+                      <Clock className="w-4 h-4 text-purple-500" />
+                      <span>{Math.floor(focusTimer / 60).toString().padStart(2, '0')}:{focusTimer % 60 < 10 ? '0' : ''}{focusTimer % 60}</span>
+                    </div>
                     <button
                       onClick={() => setFocusTimerActive(!focusTimerActive)}
-                      className={`px-2 py-1 rounded text-[10px] font-bold ${
-                        focusTimerActive ? "bg-amber-500/10 text-amber-500" : "bg-indigo-600 text-white"
+                      className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+                        focusTimerActive ? "bg-amber-500/10 text-amber-500 border border-amber-500/20" : "bg-purple-600 text-white"
                       }`}
                     >
-                      {focusTimerActive ? "Pause" : "Resume"}
+                      {focusTimerActive ? "Pause Focus" : "Resume Focus"}
                     </button>
                   </div>
                 </div>
 
-                {/* Distraction free scroll read content */}
-                <div className="flex-grow overflow-y-auto max-w-2xl mx-auto w-full py-12 px-6 space-y-6">
-                  <h1 className="text-2xl font-black text-slate-900 dark:text-white border-b pb-4 mb-6">{title}</h1>
-                  <div className="prose dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 leading-relaxed font-sans select-text">
+                <div className="flex-grow overflow-y-auto max-w-3xl mx-auto w-full py-16 px-8">
+                  <h1 className="text-4xl font-bold text-white border-b border-white/[0.06] pb-6 mb-8">{title}</h1>
+                  <div className="text-lg text-slate-300 leading-relaxed font-sans">
                     {parseMarkdownPreview(content)}
                   </div>
                 </div>
               </div>
             )}
-
-            {/* AI editor float operation panel */}
-            {!isStudyMode && (
-              <div className="absolute right-4 top-4 z-20 flex flex-col gap-2">
-                <div className="flex items-center gap-1.5 p-1 bg-white dark:bg-slate-900 rounded-xl border shadow-lg">
-                  <button
-                    onClick={() => handleAIAction("explain")}
-                    className="p-2 rounded-lg hover:bg-slate-50 text-indigo-500 cursor-pointer"
-                    title="AI Explain Concepts"
-                    disabled={aiLoading}
-                  >
-                    <Sparkles className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleAIAction("simplify")}
-                    className="p-2 rounded-lg hover:bg-slate-50 text-emerald-500 cursor-pointer"
-                    title="AI Simplify Text"
-                    disabled={aiLoading}
-                  >
-                    <BookOpen className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleAIAction("examples")}
-                    className="p-2 rounded-lg hover:bg-slate-50 text-sky-500 cursor-pointer"
-                    title="AI Practical Examples"
-                    disabled={aiLoading}
-                  >
-                    <Compass className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* AI result console panel */}
-            {(aiLoading || aiOutput) && !isStudyMode && (
-              <div className="absolute bottom-4 left-4 right-4 bg-white/95 dark:bg-slate-900/95 border border-indigo-500/20 rounded-2xl shadow-xl p-4 max-h-[30vh] overflow-y-auto z-20 backdrop-blur-md">
-                <div className="flex items-center justify-between border-b pb-2 mb-2">
-                  <h4 className="text-[10px] font-bold text-indigo-500 flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 animate-spin" /> AI Notes Assistant
-                  </h4>
-                  <button onClick={() => setAiOutput(null)} className="text-xs text-slate-400 hover:text-slate-600">×</button>
-                </div>
-                {aiLoading ? (
-                  <div className="flex items-center gap-2 text-[10px] text-slate-400">
-                    <Loader2 className="w-4 h-4 animate-spin text-indigo-500" /> Analysing note structures...
-                  </div>
-                ) : (
-                  <div className="text-[10px] leading-relaxed text-slate-600 dark:text-slate-400 select-all font-mono whitespace-pre-wrap">
-                    {aiOutput}
-                  </div>
-                )}
-              </div>
-            )}
-
           </div>
         </div>
       ) : (
-        <div className="flex-grow flex flex-col items-center justify-center text-center space-y-4 max-w-md mx-auto">
-          <FileText className="w-12 h-12 text-slate-300" />
-          <div>
-            <h3 className="text-sm font-bold text-slate-800 dark:text-white">Create or Select a note</h3>
-            <p className="text-xs text-slate-450 mt-1">
-              Select an item from the sidebar outline or click create note to write markdown guides.
-            </p>
+        <div className="flex-grow flex flex-col items-center justify-center text-center p-8 bg-[#0a0a12]">
+          <div className="w-20 h-20 bg-[#161625] rounded-2xl border border-white/[0.06] flex items-center justify-center mb-6 shadow-xl">
+            <FileText className="w-10 h-10 text-slate-500" />
           </div>
+          <h3 className="text-xl font-bold text-white mb-2">Your Workspace</h3>
+          <p className="text-sm text-slate-400 max-w-sm mb-8">
+            Create a new note or select one from the sidebar to start writing in your distraction-free editor.
+          </p>
           <button
             onClick={handleCreateNote}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-md cursor-pointer"
+            className="bg-gradient-to-r from-violet-600 to-purple-500 hover:from-violet-500 hover:to-purple-400 text-white px-6 py-3 rounded-xl text-sm font-semibold shadow-lg shadow-purple-500/25 transition-all duration-300 flex items-center gap-2"
           >
-            Create Note
+            <Plus className="w-5 h-5" /> Create New Note
           </button>
         </div>
       )}
 
-      {/* 3. RIGHT SIDEBAR: Related Learning & Outlines timeline */}
+      {/* RIGHT SIDEBAR */}
       {activeNote && !isStudyMode && viewMode !== "split" && (
         <div 
-          style={{ width: `${rightWidth}px` }}
-          className="flex-shrink-0 border-l border-white/5 flex flex-col bg-[#11121A] overflow-hidden"
+          style={{ width: `260px` }}
+          className="flex-shrink-0 border-l border-white/[0.04] flex flex-col bg-[#0c0c16] overflow-hidden md:block hidden"
         >
-          {/* Header tabs */}
-          <div className="grid grid-cols-3 border-b border-slate-200/50 dark:border-slate-850 text-[9px] font-extrabold uppercase tracking-wider flex-shrink-0">
+          <div className="flex border-b border-white/[0.06] p-2 gap-1 flex-shrink-0 bg-[#0f0f1a]">
             {[
-              { id: "related", label: "Related" },
-              { id: "history", label: "History" },
-              { id: "mindmap", label: "Mind Map" }
+              { id: "related", icon: <Compass className="w-3.5 h-3.5" />, label: "Related" },
+              { id: "history", icon: <History className="w-3.5 h-3.5" />, label: "History" },
+              { id: "ai", icon: <Sparkles className="w-3.5 h-3.5" />, label: "AI Tools" }
             ].map(tab => (
               <button
                 key={tab.id}
-                onClick={() => {
-                  setActiveRightTab(tab.id as any);
-                  setPreviewVersion(null);
-                }}
-                className={`py-3 text-center border-b-2 transition-all cursor-pointer ${
+                onClick={() => setActiveRightTab(tab.id as any)}
+                className={`flex-1 flex flex-col items-center justify-center py-2 gap-1.5 rounded-lg transition-all text-[10px] font-semibold cursor-pointer ${
                   activeRightTab === tab.id
-                    ? "border-indigo-650 text-indigo-650 bg-slate-50/20 dark:bg-slate-850/20 font-black"
-                    : "border-transparent text-slate-450 hover:bg-slate-50/50"
+                    ? "bg-[#161625] text-purple-400 shadow-sm border border-white/[0.06]"
+                    : "text-slate-400 hover:bg-white/[0.04] hover:text-white border border-transparent"
                 }`}
               >
+                {tab.icon}
                 {tab.label}
               </button>
             ))}
           </div>
 
-          {/* Subpanel containers scroll */}
-          <div className="flex-grow overflow-y-auto p-4">
+          <div className="flex-grow overflow-y-auto p-5">
             
-            {/* SUBPANEL 1: Related Learning list */}
             {activeRightTab === "related" && (
-              <div className="space-y-4">
-                <span className="text-[9px] font-bold text-slate-400 uppercase block">Related Learning Connections</span>
-                
-                {/* Related Notes */}
-                <div className="space-y-2">
-                  <h5 className="text-[10px] font-extrabold uppercase text-slate-450">Related Notes</h5>
+              <div className="space-y-6">
+                <div className="space-y-3">
+                  <h5 className="text-xs font-semibold text-slate-300 flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-purple-500" /> Related Notes
+                  </h5>
                   {relatedItems.notes.length === 0 ? (
-                    <span className="text-[9px] text-slate-400 block italic">No similar notes.</span>
+                    <p className="text-xs text-slate-500 bg-[#161625] p-3 rounded-xl border border-white/[0.06]">No similar notes found.</p>
                   ) : (
                     relatedItems.notes.map(n => (
                       <button
                         key={n._id}
                         onClick={() => api.get(`/api/notes/${n._id}`).then(res => handleSelectNote(res.data))}
-                        className="w-full text-left p-2.5 rounded-xl bg-slate-900/40 hover:bg-indigo-500/10 border border-white/5 hover:border-indigo-500/30 text-[10.5px] text-slate-300 hover:text-white flex items-center justify-between transition-all cursor-pointer"
+                        className="w-full text-left p-3 rounded-xl bg-[#161625] border border-white/[0.06] hover:border-purple-500/30 hover:bg-purple-500/5 text-xs text-slate-300 hover:text-white flex flex-col gap-1.5 transition-all"
                       >
-                        <span className="truncate">{n.title}</span>
-                        <ArrowRight className="w-3 h-3 text-indigo-500" />
+                        <span className="font-medium truncate">{n.title}</span>
+                        <span className="text-[10px] text-slate-500 flex items-center justify-between">
+                          {n.category} <ArrowRight className="w-3 h-3 text-purple-400" />
+                        </span>
                       </button>
                     ))
                   )}
                 </div>
 
-                {/* Related PDFs */}
-                <div className="space-y-2">
-                  <h5 className="text-[10px] font-extrabold uppercase text-slate-450">Related PDFs</h5>
+                <div className="space-y-3">
+                  <h5 className="text-xs font-semibold text-slate-300 flex items-center gap-2">
+                    <BookOpen className="w-4 h-4 text-blue-500" /> Source Materials
+                  </h5>
                   {relatedItems.pdfs.length === 0 ? (
-                    <span className="text-[9px] text-slate-400 block italic">No matching textbooks.</span>
+                    <p className="text-xs text-slate-500 bg-[#161625] p-3 rounded-xl border border-white/[0.06]">No linked documents.</p>
                   ) : (
                     relatedItems.pdfs.map(p => (
                       <div
                         key={p._id}
-                        className="w-full text-left p-2.5 rounded-xl bg-slate-900/40 border border-white/5 text-[10.5px] text-slate-300 flex items-center justify-between"
+                        className="w-full text-left p-3 rounded-xl bg-[#161625] border border-white/[0.06] text-xs text-slate-300 flex items-center justify-between cursor-pointer hover:border-blue-500/30"
                       >
                         <span className="truncate">{p.title}</span>
-                        <BookOpen className="w-3.5 h-3.5 text-indigo-550" />
-                      </div>
-                    ))
-                  )}
-                </div>
-
-                {/* Related Chats */}
-                <div className="space-y-2">
-                  <h5 className="text-[10px] font-extrabold uppercase text-slate-450">Related AI Chats</h5>
-                  {relatedItems.chats.length === 0 ? (
-                    <span className="text-[9px] text-slate-400 block italic">No matching conversations.</span>
-                  ) : (
-                    relatedItems.chats.map(c => (
-                      <div
-                        key={c._id}
-                        className="w-full text-left p-2.5 rounded-xl bg-slate-900/40 border border-white/5 text-[10.5px] text-slate-300 flex items-center justify-between"
-                      >
-                        <span className="truncate">{c.title}</span>
-                        <Compass className="w-3.5 h-3.5 text-indigo-550" />
                       </div>
                     ))
                   )}
@@ -1222,43 +1058,40 @@ export const Notes: React.FC = () => {
               </div>
             )}
 
-            {/* SUBPANEL 2: Version History Timeline */}
             {activeRightTab === "history" && (
-              <div className="space-y-4">
-                <span className="text-[9px] font-bold text-slate-400 uppercase block">Revision History Timeline</span>
-                
+              <div className="space-y-4 relative">
                 {previewVersion ? (
-                  <div className="p-3 border rounded-xl bg-slate-50/50 space-y-3">
-                    <div className="flex items-center justify-between border-b pb-1.5">
-                      <span className="text-[9px] font-bold text-slate-400">Snapshot Preview</span>
-                      <button onClick={() => setPreviewVersion(null)} className="text-xs text-slate-400 hover:text-slate-600">×</button>
+                  <div className="p-4 rounded-xl bg-[#161625] border border-purple-500/30 space-y-3 shadow-lg shadow-purple-500/5">
+                    <div className="flex items-center justify-between border-b border-white/[0.06] pb-2">
+                      <span className="text-xs font-semibold text-purple-400">Snapshot Preview</span>
+                      <button onClick={() => setPreviewVersion(null)} className="text-slate-400 hover:text-white">×</button>
                     </div>
-                    <p className="text-[9px] text-slate-500 max-h-32 overflow-y-auto font-mono whitespace-pre-wrap bg-white p-2 border rounded">
+                    <div className="text-[10px] text-slate-400 max-h-48 overflow-y-auto font-mono whitespace-pre-wrap bg-[#0a0a12] p-3 rounded-lg border border-white/[0.06]">
                       {previewVersion.content}
-                    </p>
+                    </div>
                     <button
                       onClick={() => handleRestoreVersion(previewVersion.version_id)}
-                      className="w-full py-1.5 bg-indigo-600 text-white rounded text-[9px] font-bold uppercase"
+                      className="w-full py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-semibold transition-colors"
                     >
-                      Restore this Version
+                      Restore Version
                     </button>
                   </div>
                 ) : (
-                  <div className="space-y-2">
+                  <div className="relative border-l border-white/[0.1] ml-3 space-y-6 py-2">
                     {activeVersionHistory.length === 0 ? (
-                      <div className="text-center py-6 text-[9px] text-slate-400">No edits recorded yet. Auto save logs history.</div>
+                      <div className="text-center py-6 text-xs text-slate-500 -ml-3">No history available yet.</div>
                     ) : (
                       activeVersionHistory.map((ver, idx) => (
                         <div
                           key={ver.version_id}
                           onClick={() => setPreviewVersion(ver)}
-                          className="p-2.5 rounded-lg border border-slate-100 hover:border-indigo-500/25 bg-slate-50/20 hover:bg-slate-50 cursor-pointer flex justify-between items-center transition-all"
+                          className="relative pl-5 cursor-pointer group"
                         >
-                          <div>
-                            <h6 className="text-[10px] font-bold text-slate-700">{ver.change_summary}</h6>
-                            <span className="text-[8px] text-slate-400 block mt-0.5">{new Date(ver.updated_at).toLocaleString()}</span>
+                          <div className="absolute w-2.5 h-2.5 bg-[#0a0a12] border-2 border-purple-500 rounded-full -left-[5px] top-1 group-hover:bg-purple-500 transition-colors" />
+                          <div className="p-3 rounded-xl bg-[#161625] border border-white/[0.06] group-hover:border-purple-500/30 transition-all">
+                            <h6 className="text-xs font-semibold text-slate-200 group-hover:text-purple-400 transition-colors">{ver.change_summary}</h6>
+                            <span className="text-[10px] text-slate-500 block mt-1">{new Date(ver.updated_at).toLocaleString()}</span>
                           </div>
-                          <History className="w-3.5 h-3.5 text-indigo-500" />
                         </div>
                       ))
                     )}
@@ -1267,68 +1100,55 @@ export const Notes: React.FC = () => {
               </div>
             )}
 
-            {/* SUBPANEL 3: SVG Interactive Mind Maps */}
-            {activeRightTab === "mindmap" && (
+            {activeRightTab === "ai" && (
               <div className="space-y-4">
-                <span className="text-[9px] font-bold text-slate-400 uppercase block">SVG Mind Map Node Tree</span>
-                
-                {/* SVG Visual Canvas */}
-                <div className="p-4 border rounded-2xl bg-slate-900 border-slate-800 flex justify-center items-center shadow-inner relative overflow-hidden h-72">
-                  <svg className="w-full h-full" viewBox="0 0 300 220">
-                    <circle cx="150" cy="30" r="14" fill="#6366f1" className="cursor-pointer" onClick={() => setMindMapExpanded(["Root"])} />
-                    <text x="150" y="33" fill="#ffffff" fontSize="7" fontWeight="bold" textAnchor="middle" pointerEvents="none">ROOT</text>
-
-                    {mindMapExpanded.includes("Root") && (
-                      <>
-                        <line x1="150" y1="44" x2="80" y2="90" stroke="#4f46e5" strokeWidth="1.5" />
-                        <line x1="150" y1="44" x2="220" y2="90" stroke="#4f46e5" strokeWidth="1.5" />
-
-                        {/* Level 1 Nodes */}
-                        <circle cx="80" cy="100" r="12" fill="#10b981" className="cursor-pointer" onClick={() => setMindMapExpanded(["Root", "A"])} />
-                        <text x="80" y="103" fill="#ffffff" fontSize="6" fontWeight="bold" textAnchor="middle" pointerEvents="none">General</text>
-
-                        <circle cx="220" cy="100" r="12" fill="#10b981" className="cursor-pointer" onClick={() => setMindMapExpanded(["Root", "B"])} />
-                        <text x="220" y="103" fill="#ffffff" fontSize="6" fontWeight="bold" textAnchor="middle" pointerEvents="none">Details</text>
-                      </>
-                    )}
-
-                    {mindMapExpanded.includes("A") && (
-                      <>
-                        <line x1="80" y1="112" x2="45" y2="160" stroke="#059669" strokeWidth="1" />
-                        <line x1="80" y1="112" x2="115" y2="160" stroke="#059669" strokeWidth="1" />
-
-                        <rect x="25" y="160" width="38" height="12" rx="3" fill="#374151" />
-                        <text x="44" y="168" fill="#d1d5db" fontSize="5" textAnchor="middle">Revision</text>
-
-                        <rect x="95" y="160" width="38" height="12" rx="3" fill="#374151" />
-                        <text x="114" y="168" fill="#d1d5db" fontSize="5" textAnchor="middle">Summary</text>
-                      </>
-                    )}
-
-                    {mindMapExpanded.includes("B") && (
-                      <>
-                        <line x1="220" y1="112" x2="185" y2="160" stroke="#059669" strokeWidth="1" />
-                        <line x1="220" y1="112" x2="255" y2="160" stroke="#059669" strokeWidth="1" />
-
-                        <rect x="165" y="160" width="38" height="12" rx="3" fill="#374151" />
-                        <text x="184" y="168" fill="#d1d5db" fontSize="5" textAnchor="middle">Keywords</text>
-
-                        <rect x="235" y="160" width="38" height="12" rx="3" fill="#374151" />
-                        <text x="254" y="168" fill="#d1d5db" fontSize="5" textAnchor="middle">Questions</text>
-                      </>
-                    )}
-                  </svg>
-                  
-                  <button
-                    onClick={() => addToast("Exported Map", "Visual node map exported successfully.", "success")}
-                    className="absolute bottom-2 right-2 p-1 bg-slate-800 hover:bg-slate-700 rounded text-slate-400"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                  </button>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { id: "summarize", label: "Summarize", icon: <BookOpen className="w-4 h-4 mb-1" /> },
+                    { id: "expand", label: "Expand", icon: <Maximize2 className="w-4 h-4 mb-1" /> },
+                    { id: "explain", label: "Explain", icon: <HelpCircle className="w-4 h-4 mb-1" /> },
+                    { id: "quiz", label: "Quiz Me", icon: <CheckCircle2 className="w-4 h-4 mb-1" /> }
+                  ].map(action => (
+                    <button
+                      key={action.id}
+                      onClick={() => handleAIAction(action.id)}
+                      disabled={aiLoading}
+                      className="p-3 bg-[#161625] border border-white/[0.06] hover:border-purple-500/50 hover:bg-purple-500/10 rounded-xl text-xs font-medium text-slate-300 hover:text-purple-400 flex flex-col items-center justify-center transition-all disabled:opacity-50"
+                    >
+                      {action.icon}
+                      {action.label}
+                    </button>
+                  ))}
                 </div>
+
+                {(aiLoading || aiOutput) && (
+                  <div className="mt-6 border-t border-white/[0.06] pt-4">
+                    <h5 className="text-xs font-semibold text-white flex items-center gap-2 mb-3">
+                      <Sparkles className="w-4 h-4 text-purple-500" /> AI Assistant Output
+                    </h5>
+                    
+                    {aiLoading ? (
+                      <div className="flex flex-col items-center justify-center py-8 gap-3 bg-[#161625] rounded-xl border border-white/[0.06]">
+                        <Loader2 className="w-6 h-6 animate-spin text-purple-500" />
+                        <span className="text-xs text-slate-400">Processing with AI...</span>
+                      </div>
+                    ) : (
+                      <div className="bg-[#161625] rounded-xl border border-purple-500/30 p-4 shadow-lg shadow-purple-500/5 relative group">
+                        <button 
+                          onClick={() => handleCopyText(aiOutput || "")}
+                          className="absolute top-2 right-2 p-1.5 rounded-md bg-white/[0.05] hover:bg-white/[0.1] text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                        </button>
+                        <div className="text-xs text-slate-300 leading-relaxed font-sans whitespace-pre-wrap">
+                          {aiOutput}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
-
           </div>
         </div>
       )}

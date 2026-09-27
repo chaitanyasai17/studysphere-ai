@@ -863,13 +863,13 @@ export const PDFModule: React.FC = () => {
     });
 
   return (
-    <div className="h-[calc(100vh-8.5rem)] flex border border-white/5 bg-[#12131A] rounded-3xl overflow-hidden shadow-xl w-full">
+    <div className="h-[calc(100vh-8.5rem)] flex border border-white/[0.06] bg-[#161625] rounded-3xl overflow-hidden shadow-xl w-full">
       
       {/* LEFT SIDEBAR: Library & Document outlines */}
-      <div className="w-[280px] flex-shrink-0 border-r border-white/5 flex flex-col bg-[#11121A] overflow-hidden select-none">
+      <div className="w-[280px] flex-shrink-0 border-r border-white/[0.06] flex flex-col bg-[#11121A] overflow-hidden select-none">
         
         {/* Upload Action */}
-        <div className="p-3.5 border-b border-white/5 flex-shrink-0 space-y-2">
+        <div className="p-3.5 border-b border-white/[0.06] flex-shrink-0 space-y-2">
           <input
             ref={fileInputRef}
             type="file"
@@ -892,7 +892,7 @@ export const PDFModule: React.FC = () => {
         </div>
 
         {/* Library Filters */}
-        <div className="p-2 border-b border-white/5 space-y-2 flex-shrink-0">
+        <div className="p-2 border-b border-white/[0.06] space-y-2 flex-shrink-0">
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-500" />
             <input
@@ -900,14 +900,14 @@ export const PDFModule: React.FC = () => {
               placeholder="Search library..."
               value={searchBookQuery}
               onChange={(e) => setSearchBookQuery(e.target.value)}
-              className="w-full pl-8 pr-2 py-1 text-[10px] bg-[#181922] border border-white/5 rounded-lg text-white outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full pl-8 pr-2 py-1 text-sm bg-[#0f0f1a] border border-white/[0.06] rounded-lg text-white outline-none focus:ring-1 focus:ring-indigo-500"
             />
           </div>
           <div className="flex gap-2 items-center justify-between text-[9px]">
             <button
               onClick={() => setFilterFav(!filterFav)}
               className={`flex items-center gap-1 px-2 py-1 rounded border transition-all cursor-pointer ${
-                filterFav ? "border-indigo-500/30 bg-indigo-500/10 text-indigo-400" : "border-white/5 text-slate-400"
+                filterFav ? "border-indigo-500/30 bg-indigo-500/10 text-purple-400" : "border-white/[0.06] text-slate-400"
               }`}
             >
               <Star className="w-2.5 h-2.5 fill-current" /> Favorites
@@ -915,7 +915,7 @@ export const PDFModule: React.FC = () => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="bg-[#181922] border border-white/5 rounded px-1.5 py-0.5 text-slate-400 outline-none text-[9px] cursor-pointer"
+              className="bg-[#0f0f1a] border border-white/[0.06] rounded px-1.5 py-0.5 text-slate-400 outline-none text-[9px] cursor-pointer"
             >
               <option value="recent">Recent</option>
               <option value="title">Title</option>
@@ -926,7 +926,7 @@ export const PDFModule: React.FC = () => {
         </div>
 
         {/* Library Store List */}
-        <div className="p-2 border-b border-white/5 max-h-[350px] overflow-y-auto space-y-2.5 flex-shrink-0 scrollbar-none">
+        <div className="p-2 border-b border-white/[0.06] max-h-[350px] overflow-y-auto space-y-2.5 flex-shrink-0 scrollbar-none">
           {filteredPdfs.length === 0 ? (
             <div className="text-center py-4 text-[9px] text-slate-500">Library empty matching query.</div>
           ) : (
@@ -942,8 +942,8 @@ export const PDFModule: React.FC = () => {
                   }}
                   className={`group p-3 rounded-[20px] border transition-all cursor-pointer relative flex flex-col gap-2 select-none ${
                     isActive
-                      ? "bg-[#181922] border-indigo-500/30 shadow-[0_10px_30px_rgba(125,85,255,0.1)] text-white"
-                      : "border-transparent bg-[#161720]/40 text-slate-400 hover:bg-[#181922] hover:border-indigo-500/10"
+                      ? "bg-[#0f0f1a] border-indigo-500/30 shadow-[0_10px_30px_rgba(125,85,255,0.1)] text-white"
+                      : "border-transparent bg-[#161720]/40 text-slate-400 hover:bg-[#0f0f1a] hover:border-indigo-500/10"
                   }`}
                 >
                   {/* Title & Selection */}
@@ -956,8 +956,8 @@ export const PDFModule: React.FC = () => {
                         onChange={() => {}}
                         className="w-3 h-3 accent-indigo-500 rounded cursor-pointer flex-shrink-0"
                       />
-                      <FileText className={`w-3.5 h-3.5 flex-shrink-0 ${isActive ? "text-indigo-400" : "text-slate-500"}`} />
-                      <span className="text-[10px] font-bold truncate max-w-[130px] text-white" title={pdf.title}>
+                      <FileText className={`w-3.5 h-3.5 flex-shrink-0 ${isActive ? "text-purple-400" : "text-slate-500"}`} />
+                      <span className="text-sm font-bold truncate max-w-[130px] text-white" title={pdf.title}>
                         {pdf.title}
                       </span>
                     </div>
@@ -1001,20 +1001,20 @@ export const PDFModule: React.FC = () => {
                   </div>
 
                   {/* Actions overlay visible on hover */}
-                  <div className="flex items-center gap-1 bg-[#12131A]/90 p-1 rounded-lg border border-white/5 absolute right-2.5 top-2.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex items-center gap-1 bg-[#161625]/90 p-1 rounded-lg border border-white/[0.06] absolute right-2.5 top-2.5 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleRenamePDF(pdf._id);
                       }}
-                      className="p-1 rounded hover:bg-white/5 text-slate-400 hover:text-indigo-400"
+                      className="p-1 rounded hover:bg-white/5 text-slate-400 hover:text-purple-400"
                       title="Rename"
                     >
                       <Edit2 className="w-2.5 h-2.5" />
                     </button>
                     <button
                       onClick={(e) => handleDuplicatePDF(pdf._id, e)}
-                      className="p-1 rounded hover:bg-white/5 text-slate-400 hover:text-indigo-400"
+                      className="p-1 rounded hover:bg-white/5 text-slate-400 hover:text-purple-400"
                       title="Duplicate"
                     >
                       <Copy className="w-2.5 h-2.5" />
@@ -1034,7 +1034,7 @@ export const PDFModule: React.FC = () => {
         </div>
 
         {/* Adobe tab selector */}
-        <div className="flex border-b border-white/5 bg-slate-950/40 p-1 justify-around select-none flex-shrink-0">
+        <div className="flex border-b border-white/[0.06] bg-slate-950/40 p-1 justify-around select-none flex-shrink-0">
           {[
             { id: "outline", label: "Outline", icon: FolderOpen },
             { id: "pages", label: "Pages", icon: Layers },
@@ -1049,7 +1049,7 @@ export const PDFModule: React.FC = () => {
                 title={tab.label}
                 className={`p-2 rounded-xl transition-all cursor-pointer flex items-center justify-center ${
                   isSelected 
-                    ? "bg-indigo-650 text-white shadow" 
+                    ? "bg-purple-600 text-white shadow" 
                     : "text-slate-400 hover:text-white hover:bg-slate-800/20"
                 }`}
               >
@@ -1071,8 +1071,8 @@ export const PDFModule: React.FC = () => {
                         <button
                           key={idx}
                           onClick={() => handlePageNavigate(item.page)}
-                          className={`w-full text-left p-2 rounded-lg text-[10px] font-medium transition-all flex items-center justify-between hover:bg-white/5 cursor-pointer ${
-                            currentPageNum === item.page ? "text-indigo-400 bg-indigo-500/5 font-extrabold" : "text-slate-400"
+                          className={`w-full text-left p-2 rounded-lg text-sm font-medium transition-all flex items-center justify-between hover:bg-white/5 cursor-pointer ${
+                            currentPageNum === item.page ? "text-purple-400 bg-indigo-500/5 font-extrabold" : "text-slate-400"
                           }`}
                         >
                           <span className="truncate max-w-[170px]">{item.title}</span>
@@ -1085,7 +1085,7 @@ export const PDFModule: React.FC = () => {
                       <p className="text-[9px] text-slate-500">No outline extracted from PDF bookmarks.</p>
                       <button
                         onClick={handleGenerateAIOutline}
-                        className="px-3 py-1.5 bg-indigo-650 hover:bg-indigo-700 text-white rounded-lg text-[9px] font-bold uppercase cursor-pointer"
+                        className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-[9px] font-bold uppercase cursor-pointer"
                       >
                         Generate AI Outline
                       </button>
@@ -1105,10 +1105,10 @@ export const PDFModule: React.FC = () => {
                           className={`p-3 rounded-xl border flex flex-col items-center gap-1.5 transition-all cursor-pointer hover:border-indigo-500/30 ${
                             isCurrent
                               ? "border-indigo-500 bg-indigo-500/5 text-white font-extrabold"
-                              : "border-white/5 bg-[#12131A] text-slate-400"
+                              : "border-white/[0.06] bg-[#161625] text-slate-400"
                           }`}
                         >
-                          <div className="w-16 h-20 rounded bg-slate-900/40 flex items-center justify-center text-[10px] font-mono border border-white/5 shadow-inner">
+                          <div className="w-16 h-20 rounded bg-slate-900/40 flex items-center justify-center text-sm font-mono border border-white/[0.06] shadow-inner">
                             p. {pageNum}
                           </div>
                           <span className="text-[9px] font-bold">Page {pageNum}</span>
@@ -1125,12 +1125,12 @@ export const PDFModule: React.FC = () => {
                         <button
                           key={page}
                           onClick={() => handlePageNavigate(page)}
-                          className={`w-full text-left p-2 rounded-lg text-[10px] font-medium transition-all flex items-center justify-between hover:bg-white/5 cursor-pointer ${
-                            currentPageNum === page ? "text-indigo-400 bg-indigo-500/5 font-extrabold" : "text-slate-400"
+                          className={`w-full text-left p-2 rounded-lg text-sm font-medium transition-all flex items-center justify-between hover:bg-white/5 cursor-pointer ${
+                            currentPageNum === page ? "text-purple-400 bg-indigo-500/5 font-extrabold" : "text-slate-400"
                           }`}
                         >
                           <span>Page {page} Bookmark</span>
-                          <Bookmark className="w-3 h-3 text-indigo-500 fill-indigo-500" />
+                          <Bookmark className="w-3 h-3 text-purple-500 fill-indigo-500" />
                         </button>
                       ))}
                     </div>
@@ -1150,9 +1150,9 @@ export const PDFModule: React.FC = () => {
                             <button
                               key={idx}
                               onClick={() => handleGoToCitation(activePdfId, page)}
-                              className="w-full text-left p-2.5 rounded-xl bg-slate-900/40 hover:bg-indigo-500/10 border border-white/5 hover:border-indigo-500/30 text-[10.5px] text-slate-300 hover:text-white flex flex-col gap-1 transition-all cursor-pointer"
+                              className="w-full text-left p-2.5 rounded-xl bg-slate-900/40 hover:bg-indigo-500/10 border border-white/[0.06] hover:border-indigo-500/30 text-[10.5px] text-slate-300 hover:text-white flex flex-col gap-1 transition-all cursor-pointer"
                             >
-                              <div className="flex justify-between items-center w-full font-bold text-[9px] text-indigo-400">
+                              <div className="flex justify-between items-center w-full font-bold text-[9px] text-purple-400">
                                 <span>CITATION #{idx + 1}</span>
                                 <span>p. {page}</span>
                               </div>
@@ -1179,7 +1179,7 @@ export const PDFModule: React.FC = () => {
         
         {/* Connection status overlay */}
         {!isOnline && (
-          <div className="bg-amber-500/10 border-b border-amber-500/25 px-4 py-1.5 text-[10px] text-amber-405 flex items-center justify-between z-25 font-bold">
+          <div className="bg-amber-500/10 border-b border-amber-500/25 px-4 py-1.5 text-sm text-amber-405 flex items-center justify-between z-25 font-bold">
             <span className="flex items-center gap-1.5">
               <AlertCircle className="w-3.5 h-3.5" /> Working Offline — changes will sync once internet restores
             </span>
@@ -1191,18 +1191,18 @@ export const PDFModule: React.FC = () => {
         {activePdfId ? (
           <>
             {/* Viewport Toolbar controls */}
-            <div className="px-5 py-3 border-b border-white/5 bg-[#12131A] backdrop-blur-md flex flex-wrap items-center justify-between gap-3 flex-shrink-0 z-10 select-none">
+            <div className="px-5 py-3 border-b border-white/[0.06] bg-[#161625] backdrop-blur-md flex flex-wrap items-center justify-between gap-3 flex-shrink-0 z-10 select-none">
               
               {/* Document Name */}
               <div className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-indigo-500" />
+                <BookOpen className="w-4 h-4 text-purple-500" />
                 <h4 className="text-[11px] font-bold text-white truncate max-w-[200px]" title={activePdf?.title}>
                   {activePdf?.title}
                 </h4>
               </div>
 
               {/* Zoom Controls */}
-              <div className="flex items-center gap-1.5 bg-[#181922] p-1 rounded-xl border border-white/5">
+              <div className="flex items-center gap-1.5 bg-[#0f0f1a] p-1 rounded-xl border border-white/[0.06]">
                 <button
                   onClick={() => setZoomLevel((z) => Math.max(0.5, z - 0.15))}
                   className="p-1.5 rounded hover:bg-white/5 text-slate-400 hover:text-white cursor-pointer transition-all"
@@ -1236,7 +1236,7 @@ export const PDFModule: React.FC = () => {
               </div>
 
               {/* Rotate and Export Controls */}
-              <div className="flex items-center gap-1 bg-[#181922] p-1 rounded-xl border border-white/5">
+              <div className="flex items-center gap-1 bg-[#0f0f1a] p-1 rounded-xl border border-white/[0.06]">
                 <button
                   onClick={() => setRotation((r) => (r + 90) % 360)}
                   className="p-1.5 rounded hover:bg-white/5 text-slate-400 hover:text-white cursor-pointer"
@@ -1270,11 +1270,11 @@ export const PDFModule: React.FC = () => {
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handlePDFTextSearch()}
-                    className="premium-input pl-8 pr-4 w-32 focus:w-44 transition-all h-8 text-[10px]"
+                    className="premium-input pl-8 pr-4 w-32 focus:w-44 transition-all h-8 text-sm"
                   />
                 </div>
                 {searchMatches.length > 0 && (
-                  <span className="text-[8px] font-mono text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded-lg border border-indigo-500/20 font-black">
+                  <span className="text-[8px] font-mono text-purple-400 bg-indigo-500/10 px-1.5 py-0.5 rounded-lg border border-indigo-500/20 font-black">
                     {searchMatches.length} Matches
                   </span>
                 )}
@@ -1285,8 +1285,8 @@ export const PDFModule: React.FC = () => {
                 onClick={() => handleToggleBookmark(currentPageNum)}
                 className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
                   bookmarks.includes(currentPageNum)
-                    ? "text-indigo-500 border-indigo-500/25 bg-indigo-500/5 shadow-inner"
-                    : "text-slate-400 border-white/5 hover:bg-white/5"
+                    ? "text-purple-500 border-indigo-500/25 bg-indigo-500/5 shadow-inner"
+                    : "text-slate-400 border-white/[0.06] hover:bg-white/5"
                 }`}
                 title="Bookmark Page"
               >
@@ -1296,16 +1296,16 @@ export const PDFModule: React.FC = () => {
             </div>
 
             {/* Document stats analytics bar */}
-            <div className="px-5 py-2 bg-slate-900/10 border-b border-white/5 flex flex-wrap items-center justify-between text-[9px] text-slate-400 gap-2 flex-shrink-0 font-medium select-none">
+            <div className="px-5 py-2 bg-slate-900/10 border-b border-white/[0.06] flex flex-wrap items-center justify-between text-[9px] text-slate-400 gap-2 flex-shrink-0 font-medium select-none">
               <div className="flex items-center gap-4">
-                <span className="flex items-center gap-1"><Clock className="w-3 h-3 text-indigo-500" /> est: {estTime} min study</span>
+                <span className="flex items-center gap-1"><Clock className="w-3 h-3 text-purple-500" /> est: {estTime} min study</span>
                 <span className="flex items-center gap-1 font-mono">Page: {currentPageNum} of {pageCount}</span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="font-bold">Completion:</span>
                 <div className="w-20 h-1.5 bg-slate-800 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-indigo-650 rounded-full transition-all duration-300"
+                    className="h-full bg-purple-600 rounded-full transition-all duration-300"
                     style={{ width: `${readingProgress.completion_pct}%` }}
                   />
                 </div>
@@ -1317,11 +1317,11 @@ export const PDFModule: React.FC = () => {
             {jobStatus && (
               <div className="mx-5 my-2.5 p-3.5 bg-slate-900/40 border border-indigo-500/10 rounded-xl flex items-center justify-between gap-4 animate-fade-in backdrop-blur-md">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-extrabold animate-pulse">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-purple-400 font-extrabold animate-pulse">
                     ⚡
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[10px] font-black text-white uppercase tracking-wider flex items-center gap-1.5">
+                    <span className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-1.5">
                       AI Indexing in Background
                       <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-ping" />
                     </span>
@@ -1342,7 +1342,7 @@ export const PDFModule: React.FC = () => {
                           style={{ width: `${jobProgress}%` }}
                         />
                       </div>
-                      <span className="text-[9px] font-mono font-black text-indigo-400">{jobProgress}%</span>
+                      <span className="text-[9px] font-mono font-black text-purple-400">{jobProgress}%</span>
                     </div>
                     <span className="text-[7px] text-slate-500 uppercase tracking-widest font-black">
                       Est. Remaining: {Math.max(2, Math.round((100 - jobProgress) * 0.4))}s
@@ -1355,7 +1355,7 @@ export const PDFModule: React.FC = () => {
             {/* Canvas Viewport Renderer - Multi-Page Scroll */}
             <div 
               ref={viewportRef} 
-              className="flex-grow overflow-y-auto p-4 flex flex-col items-center bg-[#12131A] gap-6 scroll-smooth select-none"
+              className="flex-grow overflow-y-auto p-4 flex flex-col items-center bg-[#161625] gap-6 scroll-smooth select-none"
             >
               {pdfDoc ? (
                 Array.from({ length: pageCount }).map((_, idx) => {
@@ -1390,7 +1390,7 @@ export const PDFModule: React.FC = () => {
             </div>
 
             {/* Bottom Search navigation + Page navigation */}
-            <div className="py-3 px-5 border-t border-white/5 flex flex-wrap items-center justify-between bg-[#12131A] flex-shrink-0 gap-3 select-none">
+            <div className="py-3 px-5 border-t border-white/[0.06] flex flex-wrap items-center justify-between bg-[#161625] flex-shrink-0 gap-3 select-none">
               
               {/* Search result navigator */}
               {searchMatches.length > 0 ? (
@@ -1403,7 +1403,7 @@ export const PDFModule: React.FC = () => {
                         setActiveMatchIndex(prev);
                         handlePageNavigate(searchMatches[prev].page);
                       }}
-                      className="p-1 border border-white/5 rounded bg-[#181922] text-slate-400 hover:text-white cursor-pointer"
+                      className="p-1 border border-white/[0.06] rounded bg-[#0f0f1a] text-slate-400 hover:text-white cursor-pointer"
                     >
                       <ChevronLeft className="w-2.5 h-2.5" />
                     </button>
@@ -1413,7 +1413,7 @@ export const PDFModule: React.FC = () => {
                         setActiveMatchIndex(next);
                         handlePageNavigate(searchMatches[next].page);
                       }}
-                      className="p-1 border border-white/5 rounded bg-[#181922] text-slate-400 hover:text-white cursor-pointer"
+                      className="p-1 border border-white/[0.06] rounded bg-[#0f0f1a] text-slate-400 hover:text-white cursor-pointer"
                     >
                       <ChevronRight className="w-2.5 h-2.5" />
                     </button>
@@ -1428,7 +1428,7 @@ export const PDFModule: React.FC = () => {
                 <button
                   disabled={currentPageNum === 1}
                   onClick={() => handlePageNavigate(currentPageNum - 1)}
-                  className="flex items-center gap-1 px-3 py-1.5 border border-white/5 rounded-xl text-[9px] font-extrabold uppercase text-slate-400 bg-[#181922] hover:text-white disabled:opacity-50 cursor-pointer"
+                  className="flex items-center gap-1 px-3 py-1.5 border border-white/[0.06] rounded-xl text-[9px] font-extrabold uppercase text-slate-400 bg-[#0f0f1a] hover:text-white disabled:opacity-50 cursor-pointer"
                 >
                   <ChevronLeft className="w-3.5 h-3.5" /> Prev
                 </button>
@@ -1443,14 +1443,14 @@ export const PDFModule: React.FC = () => {
                       const val = parseInt(e.target.value);
                       if (val >= 1 && val <= pageCount) handlePageNavigate(val);
                     }}
-                    className="w-12 text-center py-1 rounded border border-white/5 text-[10px] outline-none font-bold bg-[#0B0B12] text-white"
+                    className="w-12 text-center py-1 rounded border border-white/[0.06] text-sm outline-none font-bold bg-[#0B0B12] text-white"
                   />
                   <span className="text-[9px] text-slate-400 font-bold">of {pageCount}</span>
                 </div>
                 <button
                   disabled={currentPageNum === pageCount}
                   onClick={() => handlePageNavigate(currentPageNum + 1)}
-                  className="flex items-center gap-1 px-3 py-1.5 border border-white/5 rounded-xl text-[9px] font-extrabold uppercase text-slate-400 bg-[#181922] hover:text-white disabled:opacity-50 cursor-pointer"
+                  className="flex items-center gap-1 px-3 py-1.5 border border-white/[0.06] rounded-xl text-[9px] font-extrabold uppercase text-slate-400 bg-[#0f0f1a] hover:text-white disabled:opacity-50 cursor-pointer"
                 >
                   Next <ChevronRight className="w-3.5 h-3.5" />
                 </button>
@@ -1459,11 +1459,11 @@ export const PDFModule: React.FC = () => {
             </div>
           </>
         ) : (
-          <div className="flex-grow flex flex-col items-center justify-center p-6 bg-[#12131A]">
+          <div className="flex-grow flex flex-col items-center justify-center p-6 bg-[#161625]">
             {pdfs.length > 0 ? (
-              <div className="text-center space-y-5 max-w-sm mx-auto w-full p-8 border border-white/5 bg-[#181922] rounded-3xl shadow-2xl select-none">
+              <div className="text-center space-y-5 max-w-sm mx-auto w-full p-8 border border-white/[0.06] bg-[#0f0f1a] rounded-3xl shadow-2xl select-none">
                 <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 mx-auto shadow-inner animate-bounce">
-                  <BookOpen className="w-8 h-8 text-indigo-500" />
+                  <BookOpen className="w-8 h-8 text-purple-500" />
                 </div>
                 <div>
                   <h3 className="text-sm font-black text-white uppercase tracking-wider">Select a Textbook</h3>
@@ -1475,7 +1475,7 @@ export const PDFModule: React.FC = () => {
             ) : (
               /* Drag & drop upload box when library is empty */
               <div 
-                className={`flex flex-col items-center justify-center text-center space-y-5 max-w-md mx-auto w-full p-10 border border-white/5 bg-[#181922] rounded-3xl transition-all select-none ${
+                className={`flex flex-col items-center justify-center text-center space-y-5 max-w-md mx-auto w-full p-10 border border-white/[0.06] bg-[#0f0f1a] rounded-3xl transition-all select-none ${
                   dragActive 
                     ? "border-indigo-500/50 bg-indigo-500/5 shadow-[0_0_20px_rgba(99,102,241,0.15)]" 
                     : "shadow-2xl"
@@ -1486,7 +1486,7 @@ export const PDFModule: React.FC = () => {
                 onDrop={handleDrop}
               >
                 <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 shadow-inner">
-                  <FolderOpen className={`w-8 h-8 transition-all duration-300 ${dragActive ? "text-indigo-400 scale-110" : "text-indigo-500"}`} />
+                  <FolderOpen className={`w-8 h-8 transition-all duration-300 ${dragActive ? "text-purple-400 scale-110" : "text-purple-500"}`} />
                 </div>
                 <div>
                   <h3 className="text-sm font-black text-white uppercase tracking-wider">Upload Textbook Material</h3>
@@ -1508,10 +1508,10 @@ export const PDFModule: React.FC = () => {
 
       {/* RIGHT SIDEBAR: AI Study Dashboard */}
       {activePdfId && (
-        <div className="w-[480px] flex-shrink-0 border-l border-white/5 flex bg-[#11121A] overflow-hidden">
+        <div className="w-[480px] flex-shrink-0 border-l border-white/[0.06] flex bg-[#11121A] overflow-hidden">
           
           {/* Vertical icon strip navigation */}
-          <div className="w-[50px] border-r border-white/5 flex flex-col items-center py-4 gap-4 bg-[#0B0B12] select-none">
+          <div className="w-[50px] border-r border-white/[0.06] flex flex-col items-center py-4 gap-4 bg-[#0B0B12] select-none">
             {[
               { id: "overview", label: "Study Hub Overview", icon: Info },
               { id: "summary", label: "Summary Outline", icon: FileText },
@@ -1533,13 +1533,13 @@ export const PDFModule: React.FC = () => {
                   onClick={() => setActiveRightTab(tab.id as any)}
                   className={`p-2.5 rounded-xl transition-all cursor-pointer group relative ${
                     isActive
-                      ? "bg-indigo-500/10 text-indigo-400 font-extrabold border border-indigo-500/25"
+                      ? "bg-indigo-500/10 text-purple-400 font-extrabold border border-indigo-500/25"
                       : "text-slate-400 hover:text-white hover:bg-white/5"
                   }`}
                   title={tab.label}
                 >
                   <Icon className="w-4 h-4" />
-                  <span className="absolute left-[54px] top-1/2 -translate-y-1/2 bg-[#181922] border border-white/5 text-white text-[8px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 whitespace-nowrap shadow z-20">
+                  <span className="absolute left-[54px] top-1/2 -translate-y-1/2 bg-[#0f0f1a] border border-white/[0.06] text-white text-[8px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 whitespace-nowrap shadow z-20">
                     {tab.label}
                   </span>
                 </button>
@@ -1551,11 +1551,11 @@ export const PDFModule: React.FC = () => {
           <div className="flex-grow flex flex-col overflow-hidden">
             
             {/* Tab header title */}
-            <div className="px-5 py-3.5 border-b border-white/5 flex items-center justify-between bg-slate-950/15 flex-shrink-0 select-none">
-              <span className="text-[10px] font-black uppercase tracking-wider text-white">
+            <div className="px-5 py-3.5 border-b border-white/[0.06] flex items-center justify-between bg-slate-950/15 flex-shrink-0 select-none">
+              <span className="text-sm font-black uppercase tracking-wider text-white">
                 {activeRightTab.replace("_", " ")}
               </span>
-              <span className="text-[9px] font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full font-black">
+              <span className="text-[9px] font-mono text-purple-400 bg-indigo-500/10 px-2 py-0.5 rounded-full font-black">
                 Study Hub
               </span>
             </div>
@@ -1565,17 +1565,17 @@ export const PDFModule: React.FC = () => {
               
               {!["overview", "ai_tutor", "notes"].includes(activeRightTab) && (!aiAnalysis || Object.keys(aiAnalysis).length === 0) ? (
                 <div className="flex flex-col items-center justify-center py-20 text-center gap-4 animate-fade-in select-none">
-                  <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-xl animate-float-robot text-indigo-400">
+                  <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-xl animate-float-robot text-purple-400">
                     🔮
                   </div>
                   <div className="space-y-1">
-                    <span className="text-[10px] font-black text-white uppercase tracking-wider block">AI Analysis In Progress</span>
+                    <span className="text-sm font-black text-white uppercase tracking-wider block">AI Analysis In Progress</span>
                     <span className="text-[8px] font-bold text-slate-450 uppercase leading-relaxed block max-w-[200px] mx-auto">
                       This features tab becomes active as soon as background semantic indexing completes.
                     </span>
                   </div>
                   {jobStatus && (
-                    <div className="w-32 h-1 bg-slate-900 rounded-full overflow-hidden border border-white/5">
+                    <div className="w-32 h-1 bg-slate-900 rounded-full overflow-hidden border border-white/[0.06]">
                       <div 
                         className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"
                         style={{ width: `${jobProgress}%` }}
@@ -1589,7 +1589,7 @@ export const PDFModule: React.FC = () => {
                   {activeRightTab === "overview" && (
                 <div className="space-y-4">
                   {/* Drawing Vector Toolbar */}
-                  <div className="p-4 bg-[#181922] border border-white/5 rounded-2xl space-y-3">
+                  <div className="p-4 bg-[#0f0f1a] border border-white/[0.06] rounded-2xl space-y-3">
                     <span className="text-[9px] font-bold text-slate-400 uppercase block tracking-wider">Vector Drawing Toolbar</span>
                     <div className="grid grid-cols-4 gap-2">
                       {[
@@ -1612,7 +1612,7 @@ export const PDFModule: React.FC = () => {
                             }
                           }}
                           className={`py-1 rounded text-[8px] font-extrabold uppercase transition-all cursor-pointer ${
-                            drawMode === tool.id ? "bg-indigo-650 text-white animate-pulse" : "bg-[#12131A] text-slate-400 border border-white/5 hover:text-white"
+                            drawMode === tool.id ? "bg-purple-600 text-white animate-pulse" : "bg-[#161625] text-slate-400 border border-white/[0.06] hover:text-white"
                           }`}
                         >
                           {tool.label}
@@ -1660,7 +1660,7 @@ export const PDFModule: React.FC = () => {
                         <button
                           key={act.id}
                           onClick={() => handleTriggerAIAction(act.label)}
-                          className="p-3 bg-[#181922] hover:bg-indigo-500/10 border border-white/5 hover:border-indigo-500/25 rounded-xl text-[10px] text-left transition-all cursor-pointer font-bold text-slate-300"
+                          className="p-3 bg-[#0f0f1a] hover:bg-indigo-500/10 border border-white/[0.06] hover:border-indigo-500/25 rounded-xl text-sm text-left transition-all cursor-pointer font-bold text-slate-300"
                         >
                           ✨ {act.label}
                         </button>
@@ -1668,9 +1668,9 @@ export const PDFModule: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="p-4 bg-[#181922] border border-white/5 rounded-2xl space-y-3 select-none">
+                  <div className="p-4 bg-[#0f0f1a] border border-white/[0.06] rounded-2xl space-y-3 select-none">
                     <h5 className="text-[11px] font-extrabold text-white">Syllabus Overview</h5>
-                    <div className="grid grid-cols-2 gap-3 text-[10px] text-slate-400">
+                    <div className="grid grid-cols-2 gap-3 text-sm text-slate-400">
                       <div><span className="font-bold text-slate-500">Title:</span> {aiAnalysis?.title || activePdf?.title}</div>
                       <div><span className="font-bold text-slate-500">Pages Count:</span> {pageCount}</div>
                       <div><span className="font-bold text-slate-500">Study Goal:</span> {estTime} min read</div>
@@ -1681,12 +1681,12 @@ export const PDFModule: React.FC = () => {
                   {/* Learning Objectives */}
                   {aiAnalysis?.learning_objectives && (
                     <div className="space-y-2 select-none">
-                      <h6 className="text-[10px] font-bold uppercase tracking-wider text-slate-450">Learning Objectives</h6>
+                      <h6 className="text-sm font-bold uppercase tracking-wider text-slate-450">Learning Objectives</h6>
                       <div className="space-y-1.5">
                         {aiAnalysis.learning_objectives.map((obj: string, i: number) => (
                           <div key={i} className="flex gap-2 p-3 bg-indigo-500/5 border border-indigo-500/10 rounded-xl items-start">
                             <span className="w-4 h-4 rounded-full bg-indigo-500 text-white flex items-center justify-center text-[8px] font-bold flex-shrink-0 mt-0.5">{i+1}</span>
-                            <p className="text-[10px] text-slate-400 leading-relaxed font-medium">{obj}</p>
+                            <p className="text-sm text-slate-400 leading-relaxed font-medium">{obj}</p>
                           </div>
                         ))}
                       </div>
@@ -1695,16 +1695,16 @@ export const PDFModule: React.FC = () => {
 
                   {/* Outline TOC */}
                   <div className="space-y-2 select-none">
-                    <h6 className="text-[10px] font-bold uppercase tracking-wider text-slate-450">Table of Contents</h6>
-                    <div className="border border-white/5 rounded-2xl bg-[#181922] overflow-hidden divide-y divide-white/5">
+                    <h6 className="text-sm font-bold uppercase tracking-wider text-slate-450">Table of Contents</h6>
+                    <div className="border border-white/[0.06] rounded-2xl bg-[#0f0f1a] overflow-hidden divide-y divide-white/5">
                       {outline.map((item, idx) => (
                         <button
                           key={idx}
                           onClick={() => handlePageNavigate(item.page)}
-                          className="w-full px-4 py-2.5 text-left text-[10px] hover:bg-white/5 transition-all flex items-center justify-between font-medium text-slate-400 cursor-pointer"
+                          className="w-full px-4 py-2.5 text-left text-sm hover:bg-white/5 transition-all flex items-center justify-between font-medium text-slate-400 cursor-pointer"
                         >
                           <span className="truncate">{item.title}</span>
-                          <span className="font-mono text-indigo-400 bg-indigo-500/5 px-1.5 py-0.5 rounded">p.{item.page}</span>
+                          <span className="font-mono text-purple-400 bg-indigo-500/5 px-1.5 py-0.5 rounded">p.{item.page}</span>
                         </button>
                       ))}
                     </div>
@@ -1715,19 +1715,19 @@ export const PDFModule: React.FC = () => {
               {/* Tab 2: SUMMARY */}
               {activeRightTab === "summary" && (
                 <div className="space-y-4">
-                  <div className="p-4 bg-[#181922] border border-white/5 rounded-2xl shadow-sm space-y-2">
+                  <div className="p-4 bg-[#0f0f1a] border border-white/[0.06] rounded-2xl shadow-sm space-y-2">
                     <h5 className="text-[11px] font-extrabold text-white">Executive Summary</h5>
-                    <p className="text-[10px] leading-relaxed text-slate-400">
+                    <p className="text-sm leading-relaxed text-slate-400">
                       {aiAnalysis?.executive_summary || "Document summary pending analysis."}
                     </p>
                   </div>
 
                   {aiAnalysis?.main_ideas && (
-                    <div className="p-4 bg-[#181922] border border-white/5 rounded-2xl space-y-2">
+                    <div className="p-4 bg-[#0f0f1a] border border-white/[0.06] rounded-2xl space-y-2">
                       <h5 className="text-[11px] font-extrabold text-white">Core Main Ideas</h5>
-                      <ul className="space-y-1.5 list-disc list-inside text-[10px] text-slate-400 leading-relaxed font-medium">
+                      <ul className="space-y-1.5 list-disc list-inside text-sm text-slate-400 leading-relaxed font-medium">
                         {aiAnalysis.main_ideas.map((idea: string, i: number) => (
-                          <li key={i} className="marker:text-indigo-500">{idea}</li>
+                          <li key={i} className="marker:text-purple-500">{idea}</li>
                         ))}
                       </ul>
                     </div>
@@ -1736,10 +1736,10 @@ export const PDFModule: React.FC = () => {
                   {aiAnalysis?.key_takeaways && (
                     <div className="p-4 bg-indigo-500/5 border border-indigo-500/10 rounded-2xl space-y-2">
                       <h5 className="text-[11px] font-extrabold text-indigo-200">Critical Takeaways</h5>
-                      <ul className="space-y-1.5 text-[10px] text-indigo-300 font-medium">
+                      <ul className="space-y-1.5 text-sm text-indigo-300 font-medium">
                         {aiAnalysis.key_takeaways.map((takeaway: string, i: number) => (
                           <li key={i} className="flex gap-2 items-start">
-                            <span className="text-indigo-500 font-bold mt-0.5">•</span>
+                            <span className="text-purple-500 font-bold mt-0.5">•</span>
                             <span>{takeaway}</span>
                           </li>
                         ))}
@@ -1754,15 +1754,15 @@ export const PDFModule: React.FC = () => {
                 <div className="space-y-3">
                   {aiAnalysis?.key_concepts && aiAnalysis.key_concepts.length > 0 ? (
                     aiAnalysis.key_concepts.map((conceptObj: any, i: number) => (
-                      <div key={i} className="p-4 border border-white/5 rounded-2xl bg-[#181922] shadow-sm space-y-1.5">
-                        <h6 className="text-[10px] font-black text-indigo-400 uppercase tracking-wider">{conceptObj.concept}</h6>
-                        <p className="text-[10px] text-slate-400 leading-relaxed">
+                      <div key={i} className="p-4 border border-white/[0.06] rounded-2xl bg-[#0f0f1a] shadow-sm space-y-1.5">
+                        <h6 className="text-sm font-black text-purple-400 uppercase tracking-wider">{conceptObj.concept}</h6>
+                        <p className="text-sm text-slate-400 leading-relaxed">
                           {conceptObj.explanation}
                         </p>
                       </div>
                     ))
                   ) : (
-                    <div className="text-center py-8 text-[10px] text-slate-500">Key concepts list not populated.</div>
+                    <div className="text-center py-8 text-sm text-slate-500">Key concepts list not populated.</div>
                   )}
                 </div>
               )}
@@ -1771,18 +1771,18 @@ export const PDFModule: React.FC = () => {
               {activeRightTab === "definitions" && (
                 <div className="space-y-3">
                   {aiAnalysis?.important_definitions && aiAnalysis.important_definitions.length > 0 ? (
-                    <div className="border border-white/5 rounded-2xl bg-[#181922] divide-y divide-white/5 overflow-hidden shadow-sm">
+                    <div className="border border-white/[0.06] rounded-2xl bg-[#0f0f1a] divide-y divide-white/5 overflow-hidden shadow-sm">
                       {aiAnalysis.important_definitions.map((defObj: any, i: number) => (
                         <div key={i} className="p-4 space-y-1 hover:bg-white/5">
-                          <span className="text-[10px] font-black text-white uppercase font-mono tracking-wide block">{defObj.term}</span>
-                          <p className="text-[10px] text-slate-400 leading-relaxed">
+                          <span className="text-sm font-black text-white uppercase font-mono tracking-wide block">{defObj.term}</span>
+                          <p className="text-sm text-slate-400 leading-relaxed">
                             {defObj.definition}
                           </p>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-8 text-[10px] text-slate-500">Definitions glossary is empty.</div>
+                    <div className="text-center py-8 text-sm text-slate-500">Definitions glossary is empty.</div>
                   )}
                 </div>
               )}
@@ -1792,13 +1792,13 @@ export const PDFModule: React.FC = () => {
                 <div className="space-y-2.5">
                   {aiAnalysis?.important_points && aiAnalysis.important_points.length > 0 ? (
                     aiAnalysis.important_points.map((pt: string, i: number) => (
-                      <div key={i} className="p-3 bg-[#181922] border border-white/5 rounded-xl shadow-sm flex items-start gap-2.5">
-                        <span className="w-5 h-5 rounded-lg bg-indigo-500/10 text-indigo-400 font-extrabold text-[9px] flex items-center justify-center flex-shrink-0 mt-0.5">{i+1}</span>
-                        <p className="text-[10px] text-slate-400 leading-relaxed font-semibold">{pt}</p>
+                      <div key={i} className="p-3 bg-[#0f0f1a] border border-white/[0.06] rounded-xl shadow-sm flex items-start gap-2.5">
+                        <span className="w-5 h-5 rounded-lg bg-indigo-500/10 text-purple-400 font-extrabold text-[9px] flex items-center justify-center flex-shrink-0 mt-0.5">{i+1}</span>
+                        <p className="text-sm text-slate-400 leading-relaxed font-semibold">{pt}</p>
                       </div>
                     ))
                   ) : (
-                    <div className="text-center py-8 text-[10px] text-slate-500">No important points extracted.</div>
+                    <div className="text-center py-8 text-sm text-slate-500">No important points extracted.</div>
                   )}
                 </div>
               )}
@@ -1811,7 +1811,7 @@ export const PDFModule: React.FC = () => {
                       const nodeId = `chap_${i}`;
                       const isExpanded = mindMapExpandedNodes.includes(nodeId);
                       return (
-                        <div key={i} className="border border-white/5 rounded-2xl bg-[#181922] shadow-sm overflow-hidden">
+                        <div key={i} className="border border-white/[0.06] rounded-2xl bg-[#0f0f1a] shadow-sm overflow-hidden">
                           <button
                             onClick={() => toggleMindMapNode(nodeId)}
                             className="w-full p-4 text-left font-black text-[10.5px] uppercase flex items-center justify-between text-white hover:bg-white/5 cursor-pointer"
@@ -1829,7 +1829,7 @@ export const PDFModule: React.FC = () => {
                           </button>
                           
                           {isExpanded && (
-                            <div className="p-4 border-t border-white/5 bg-[#12131A]/40 space-y-4 text-[10px]">
+                            <div className="p-4 border-t border-white/[0.06] bg-[#161625]/40 space-y-4 text-sm">
                               
                               <div className="space-y-1">
                                 <span className="font-extrabold uppercase text-[8px] text-slate-500 tracking-wider">Summary</span>
@@ -1848,9 +1848,9 @@ export const PDFModule: React.FC = () => {
                               {chap.definitions && chap.definitions.length > 0 && (
                                 <div className="space-y-1.5">
                                   <span className="font-extrabold uppercase text-[8px] text-slate-500 tracking-wider">Glossary</span>
-                                  <div className="divide-y divide-white/5 border border-white/5 rounded-xl overflow-hidden bg-[#181922]">
+                                  <div className="divide-y divide-white/5 border border-white/[0.06] rounded-xl overflow-hidden bg-[#0f0f1a]">
                                     {chap.definitions.map((d: any, idx: number) => (
-                                      <div key={idx} className="p-2 hover:bg-[#12131A]">
+                                      <div key={idx} className="p-2 hover:bg-[#161625]">
                                         <span className="font-black text-slate-355 text-[9px] uppercase font-mono block">{d.term}</span>
                                         <span className="text-slate-500 font-medium">{d.definition}</span>
                                       </div>
@@ -1873,7 +1873,7 @@ export const PDFModule: React.FC = () => {
                               {chap.formulae && chap.formulae.length > 0 && (
                                 <div className="space-y-1">
                                   <span className="font-extrabold uppercase text-[8px] text-slate-500 tracking-wider">Formulae</span>
-                                  <div className="space-y-1 font-mono text-[9px] bg-slate-950 text-indigo-400 p-2 rounded-xl border border-white/5">
+                                  <div className="space-y-1 font-mono text-[9px] bg-slate-950 text-purple-400 p-2 rounded-xl border border-white/[0.06]">
                                     {chap.formulae.map((eq: string, idx: number) => (
                                       <div key={idx} className="text-center">{eq}</div>
                                     ))}
@@ -1886,7 +1886,7 @@ export const PDFModule: React.FC = () => {
                       );
                     })
                   ) : (
-                    <div className="text-center py-8 text-[10px] text-slate-500">Chapters list is empty.</div>
+                    <div className="text-center py-8 text-sm text-slate-500">Chapters list is empty.</div>
                   )}
                 </div>
               )}
@@ -1915,10 +1915,10 @@ export const PDFModule: React.FC = () => {
                           {/* FRONT SIDE */}
                           <div 
                             style={{ backfaceVisibility: "hidden" }}
-                            className="absolute inset-0 w-full h-full p-6 border border-white/5 rounded-2xl bg-[#181922] flex flex-col justify-between shadow-md"
+                            className="absolute inset-0 w-full h-full p-6 border border-white/[0.06] rounded-2xl bg-[#0f0f1a] flex flex-col justify-between shadow-md"
                           >
-                            <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                              <span className="text-[8px] font-black uppercase text-indigo-400 tracking-widest">Active Recall</span>
+                            <div className="flex justify-between items-center border-b border-white/[0.06] pb-2">
+                              <span className="text-[8px] font-black uppercase text-purple-400 tracking-widest">Active Recall</span>
                               <Sparkles className="w-3.5 h-3.5 text-indigo-505 animate-pulse" />
                             </div>
                             <div className="flex-grow flex items-center justify-center text-center">
@@ -1935,9 +1935,9 @@ export const PDFModule: React.FC = () => {
                               backfaceVisibility: "hidden",
                               transform: "rotateY(180deg)"
                             }}
-                            className="absolute inset-0 w-full h-full p-6 border border-white/5 rounded-2xl bg-[#181922] flex flex-col justify-between shadow-md"
+                            className="absolute inset-0 w-full h-full p-6 border border-white/[0.06] rounded-2xl bg-[#0f0f1a] flex flex-col justify-between shadow-md"
                           >
-                            <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                            <div className="flex justify-between items-center border-b border-white/[0.06] pb-2">
                               <span className="text-[8px] font-black uppercase text-emerald-400 tracking-widest">Answer Glossary</span>
                               <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
                             </div>
@@ -1953,7 +1953,7 @@ export const PDFModule: React.FC = () => {
                       </div>
 
                       {/* Card deck navigator */}
-                      <div className="flex items-center justify-between w-full max-w-sm border-t border-white/5 pt-4 select-none">
+                      <div className="flex items-center justify-between w-full max-w-sm border-t border-white/[0.06] pt-4 select-none">
                         <span className="text-[9px] font-mono font-bold text-slate-500">Card {currentCardIndex + 1} of {flashcards.length}</span>
                         <div className="flex gap-2">
                           <button
@@ -1962,7 +1962,7 @@ export const PDFModule: React.FC = () => {
                               setCurrentCardIndex(currentCardIndex - 1);
                               setIsCardFlipped(false);
                             }}
-                            className="px-3 py-1.5 border border-white/5 rounded-xl text-[9px] font-extrabold uppercase bg-[#181922] text-slate-400 hover:text-white disabled:opacity-55 cursor-pointer"
+                            className="px-3 py-1.5 border border-white/[0.06] rounded-xl text-[9px] font-extrabold uppercase bg-[#0f0f1a] text-slate-400 hover:text-white disabled:opacity-55 cursor-pointer"
                           >
                             Prev
                           </button>
@@ -1972,7 +1972,7 @@ export const PDFModule: React.FC = () => {
                               setCurrentCardIndex(currentCardIndex + 1);
                               setIsCardFlipped(false);
                             }}
-                            className="px-3 py-1.5 border border-white/5 rounded-xl text-[9px] font-extrabold uppercase bg-[#181922] text-slate-400 hover:text-white disabled:opacity-55 cursor-pointer"
+                            className="px-3 py-1.5 border border-white/[0.06] rounded-xl text-[9px] font-extrabold uppercase bg-[#0f0f1a] text-slate-400 hover:text-white disabled:opacity-55 cursor-pointer"
                           >
                             Next
                           </button>
@@ -1980,12 +1980,12 @@ export const PDFModule: React.FC = () => {
                       </div>
 
                       {/* Flashcard creation sync */}
-                      <div className="w-full max-w-sm p-4 bg-[#181922] border border-white/5 rounded-2xl text-center space-y-2.5 select-none">
+                      <div className="w-full max-w-sm p-4 bg-[#0f0f1a] border border-white/[0.06] rounded-2xl text-center space-y-2.5 select-none">
                         <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400 block">Cross-Module Integration</span>
-                        <p className="text-[10px] text-slate-500">Save this recall deck directly into your StudySphere Flashcards collection.</p>
+                        <p className="text-sm text-slate-500">Save this recall deck directly into your StudySphere Flashcards collection.</p>
                         <button
                           onClick={handleGenerateFlashcardHighlight}
-                          className="w-full premium-button-primary h-9 text-[10px] font-black uppercase tracking-wider cursor-pointer"
+                          className="w-full premium-button-primary h-9 text-sm font-black uppercase tracking-wider cursor-pointer"
                         >
                           Sync Recall Deck
                         </button>
@@ -1993,7 +1993,7 @@ export const PDFModule: React.FC = () => {
 
                     </div>
                   ) : (
-                    <div className="text-center py-8 text-[10px] text-slate-500">Study deck cards not generated.</div>
+                    <div className="text-center py-8 text-sm text-slate-500">Study deck cards not generated.</div>
                   )}
                 </div>
               )}
@@ -2002,14 +2002,14 @@ export const PDFModule: React.FC = () => {
               {activeRightTab === "quiz" && (
                 <div className="space-y-4">
                   {/* Quiz Generation Inputs */}
-                  <div className="p-4 bg-[#181922] border border-white/5 rounded-2xl space-y-3 select-none">
+                  <div className="p-4 bg-[#0f0f1a] border border-white/[0.06] rounded-2xl space-y-3 select-none">
                     <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400 block">Quiz Generator</span>
-                    <div className="flex gap-2 items-center justify-between text-[10px]">
+                    <div className="flex gap-2 items-center justify-between text-sm">
                       <span className="text-slate-500 font-bold">Difficulty:</span>
                       <select
                         value={quizDifficulty}
                         onChange={(e) => setQuizDifficulty(e.target.value as any)}
-                        className="bg-[#12131A] border border-white/5 rounded px-2 py-1 text-slate-300 outline-none cursor-pointer"
+                        className="bg-[#161625] border border-white/[0.06] rounded px-2 py-1 text-slate-300 outline-none cursor-pointer"
                       >
                         <option value="easy">Easy</option>
                         <option value="medium">Medium</option>
@@ -2019,7 +2019,7 @@ export const PDFModule: React.FC = () => {
                     </div>
                     <button
                       onClick={handleGenerateQuizTextbook}
-                      className="w-full premium-button-primary h-9 text-[10px] font-black uppercase cursor-pointer"
+                      className="w-full premium-button-primary h-9 text-sm font-black uppercase cursor-pointer"
                     >
                       Generate Quiz Deck
                     </button>
@@ -2027,10 +2027,10 @@ export const PDFModule: React.FC = () => {
 
                   {quizQuestions.length > 0 ? (
                     !quizCompleted ? (
-                      <div className="p-4 border border-white/5 rounded-2xl bg-[#181922] shadow-sm space-y-4">
-                        <div className="flex items-center justify-between border-b border-white/5 pb-2 select-none">
+                      <div className="p-4 border border-white/[0.06] rounded-2xl bg-[#0f0f1a] shadow-sm space-y-4">
+                        <div className="flex items-center justify-between border-b border-white/[0.06] pb-2 select-none">
                           <span className="text-[9px] font-mono font-bold text-slate-500">Question {currentQuestionIndex + 1} of {quizQuestions.length}</span>
-                          <span className="text-[9px] font-mono font-extrabold text-indigo-400 bg-indigo-500/5 px-2 py-0.5 rounded">Score: {quizScore}</span>
+                          <span className="text-[9px] font-mono font-extrabold text-purple-400 bg-indigo-500/5 px-2 py-0.5 rounded">Score: {quizScore}</span>
                         </div>
 
                         <h5 className="text-[11.5px] font-black text-white leading-relaxed">
@@ -2042,17 +2042,17 @@ export const PDFModule: React.FC = () => {
                             const isSelected = selectedOption === opt;
                             const isCorrect = opt === quizQuestions[currentQuestionIndex]?.correct_answer;
                             
-                            let optionStyle = "border-white/5 hover:bg-[#12131A]";
+                            let optionStyle = "border-white/[0.06] hover:bg-[#161625]";
                             if (showQuizFeedback) {
                               if (isCorrect) {
                                 optionStyle = "bg-emerald-500/10 text-emerald-400 border-emerald-500/35 font-extrabold";
                               } else if (isSelected) {
                                 optionStyle = "bg-rose-500/10 text-rose-400 border-rose-500/35 font-extrabold";
                               } else {
-                                optionStyle = "opacity-55 border-white/5";
+                                optionStyle = "opacity-55 border-white/[0.06]";
                               }
                             } else if (isSelected) {
-                              optionStyle = "border-indigo-500 bg-indigo-500/5 text-indigo-400 font-extrabold";
+                              optionStyle = "border-indigo-500 bg-indigo-500/5 text-purple-400 font-extrabold";
                             }
 
                             return (
@@ -2060,7 +2060,7 @@ export const PDFModule: React.FC = () => {
                                 key={idx}
                                 disabled={showQuizFeedback}
                                 onClick={() => setSelectedOption(opt)}
-                                className={`w-full text-left p-3 rounded-xl border text-[10px] transition-all flex items-center justify-between cursor-pointer ${optionStyle}`}
+                                className={`w-full text-left p-3 rounded-xl border text-sm transition-all flex items-center justify-between cursor-pointer ${optionStyle}`}
                               >
                                 <span>{opt}</span>
                                 {showQuizFeedback && isCorrect && <CheckCircle className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0 ml-2" />}
@@ -2070,8 +2070,8 @@ export const PDFModule: React.FC = () => {
                         </div>
 
                         {showQuizFeedback && (
-                          <div className="p-3.5 bg-[#12131A] border border-white/5 rounded-xl text-[9.5px] space-y-1.5 font-medium text-slate-400">
-                            <span className="font-black text-indigo-400 uppercase block">AI Explanation:</span>
+                          <div className="p-3.5 bg-[#161625] border border-white/[0.06] rounded-xl text-[9.5px] space-y-1.5 font-medium text-slate-400">
+                            <span className="font-black text-purple-400 uppercase block">AI Explanation:</span>
                             <p className="leading-relaxed">
                               {quizQuestions[currentQuestionIndex]?.explanation}
                             </p>
@@ -2087,7 +2087,7 @@ export const PDFModule: React.FC = () => {
                                 if (isCorrect) setQuizScore(quizScore + 1);
                                 setShowQuizFeedback(true);
                               }}
-                              className="px-4 py-2 bg-indigo-650 hover:bg-indigo-700 text-white rounded-xl text-[10px] font-bold uppercase transition-all disabled:opacity-50 cursor-pointer shadow-sm"
+                              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-sm font-bold uppercase transition-all disabled:opacity-50 cursor-pointer shadow-sm"
                             >
                               Submit Answer
                             </button>
@@ -2105,7 +2105,7 @@ export const PDFModule: React.FC = () => {
                                   }
                                 }
                               }}
-                              className="px-4 py-2 bg-indigo-655 hover:bg-indigo-700 text-white rounded-xl text-[10px] font-bold uppercase transition-all cursor-pointer shadow-sm"
+                              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-sm font-bold uppercase transition-all cursor-pointer shadow-sm"
                             >
                               {currentQuestionIndex < quizQuestions.length - 1 ? "Next Question" : "Complete Quiz"}
                             </button>
@@ -2114,13 +2114,13 @@ export const PDFModule: React.FC = () => {
 
                       </div>
                     ) : (
-                      <div className="p-6 border border-white/5 rounded-2xl bg-[#181922] shadow-sm text-center space-y-4 select-none">
+                      <div className="p-6 border border-white/[0.06] rounded-2xl bg-[#0f0f1a] shadow-sm text-center space-y-4 select-none">
                         <CheckCircle className="w-10 h-10 text-emerald-500 mx-auto" />
                         <div>
                           <h4 className="text-xs font-black text-white uppercase tracking-wider">Quiz Completed!</h4>
-                          <p className="text-[10px] text-slate-500 mt-1">Excellent practice for placements preparations.</p>
+                          <p className="text-sm text-slate-500 mt-1">Excellent practice for placements preparations.</p>
                         </div>
-                        <div className="p-4 bg-[#12131A] border border-white/5 rounded-2xl max-w-xs mx-auto">
+                        <div className="p-4 bg-[#161625] border border-white/[0.06] rounded-2xl max-w-xs mx-auto">
                           <span className="text-[8px] font-bold uppercase tracking-wider text-slate-500 block">Accuracy rating</span>
                           <span className="text-xl font-mono font-extrabold text-indigo-405 block mt-1">
                             {quizScore} / {quizQuestions.length} ({Math.round((quizScore / quizQuestions.length) * 100)}%)
@@ -2134,14 +2134,14 @@ export const PDFModule: React.FC = () => {
                             setQuizScore(0);
                             setQuizCompleted(false);
                           }}
-                          className="px-4 py-2 border border-white/5 rounded-xl text-[9px] font-extrabold uppercase bg-[#12131A] text-slate-400 hover:text-white transition-all cursor-pointer shadow-sm"
+                          className="px-4 py-2 border border-white/[0.06] rounded-xl text-[9px] font-extrabold uppercase bg-[#161625] text-slate-400 hover:text-white transition-all cursor-pointer shadow-sm"
                         >
                           Restart Quiz
                         </button>
                       </div>
                     )
                   ) : (
-                    <div className="text-center py-8 text-[10px] text-slate-500">Practice quiz is not generated.</div>
+                    <div className="text-center py-8 text-sm text-slate-500">Practice quiz is not generated.</div>
                   )}
                 </div>
               )}
@@ -2154,7 +2154,7 @@ export const PDFModule: React.FC = () => {
                     <span className="text-[8px] text-slate-500">radial outline nodes</span>
                   </div>
 
-                  <div className="p-4 border border-white/5 rounded-2xl bg-slate-950 flex justify-center items-center shadow-inner relative overflow-hidden h-[340px]">
+                  <div className="p-4 border border-white/[0.06] rounded-2xl bg-slate-950 flex justify-center items-center shadow-inner relative overflow-hidden h-[340px]">
                     {aiAnalysis?.study_tools?.mind_map ? (
                       <svg className="w-full h-full" viewBox="0 0 320 280">
                         {aiAnalysis.study_tools.mind_map.subtopics?.map((sub: any, idx: number) => {
@@ -2237,9 +2237,9 @@ export const PDFModule: React.FC = () => {
               {/* Tab 10: TUTOR */}
               {activeRightTab === "tutor" && (
                 <div className="h-[460px] flex flex-col justify-between">
-                  <div className="px-3.5 py-1.5 bg-[#181922] border border-white/5 rounded-xl flex items-center justify-between text-[9px] text-slate-400 select-none flex-shrink-0 font-bold mb-3">
+                  <div className="px-3.5 py-1.5 bg-[#0f0f1a] border border-white/[0.06] rounded-xl flex items-center justify-between text-[9px] text-slate-400 select-none flex-shrink-0 font-bold mb-3">
                     <span>Searching context:</span>
-                    <span className="text-indigo-400 bg-indigo-500/5 px-2 py-0.5 rounded-full font-black">
+                    <span className="text-purple-400 bg-indigo-500/5 px-2 py-0.5 rounded-full font-black">
                       {selectedPdfIds.length} {selectedPdfIds.length === 1 ? "document" : "documents"} selected
                     </span>
                   </div>
@@ -2249,7 +2249,7 @@ export const PDFModule: React.FC = () => {
                     {chatMessages.length === 0 ? (
                       <div className="text-center py-12 space-y-3 select-none">
                         <HelpCircle className="w-9 h-9 text-slate-550 mx-auto" />
-                        <p className="text-[10px] text-slate-500 max-w-[260px] mx-auto leading-relaxed">
+                        <p className="text-sm text-slate-500 max-w-[260px] mx-auto leading-relaxed">
                           Query textbook equations or concepts. The AI Tutor answers strictly from PDF context with source page citations.
                         </p>
                       </div>
@@ -2257,14 +2257,14 @@ export const PDFModule: React.FC = () => {
                       chatMessages.map((msg, idx) => (
                         <div key={idx} className={`flex gap-3.5 ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
                           <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-[9px] font-bold flex-shrink-0 select-none ${
-                            msg.role === "assistant" ? "bg-indigo-500/10 text-indigo-400" : "bg-[#181922] text-white border border-white/5"
+                            msg.role === "assistant" ? "bg-indigo-500/10 text-purple-400" : "bg-[#0f0f1a] text-white border border-white/[0.06]"
                           }`}>
                             {msg.role === "assistant" ? "AI" : "ME"}
                           </div>
                           
                           <div className="flex flex-col gap-1.5 max-w-[82%]">
-                            <div className={`p-3 rounded-2xl text-[10px] leading-relaxed whitespace-pre-wrap shadow-sm border ${
-                              msg.role === "assistant" ? "bg-[#181922] text-slate-300 border-white/5" : "bg-indigo-600 text-white border-transparent"
+                            <div className={`p-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap shadow-sm border ${
+                              msg.role === "assistant" ? "bg-[#0f0f1a] text-slate-300 border-white/[0.06]" : "bg-indigo-600 text-white border-transparent"
                             }`}>
                               {msg.content}
                             </div>
@@ -2280,12 +2280,12 @@ export const PDFModule: React.FC = () => {
                                   )}
                                   <button
                                     onClick={() => handleGoToCitation(selectedPdfIds[0], Number(msg.page_number))}
-                                    className="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 text-[8px] font-extrabold uppercase font-mono cursor-pointer transition-all flex items-center gap-1 select-none"
+                                    className="px-2 py-0.5 rounded bg-indigo-500/10 text-purple-400 hover:bg-indigo-500/20 text-[8px] font-extrabold uppercase font-mono cursor-pointer transition-all flex items-center gap-1 select-none"
                                   >
                                     Go to page {msg.page_number}
                                   </button>
                                   {msg.chapter_name && (
-                                    <span className="px-2 py-0.5 rounded bg-[#181922] border border-white/5 text-slate-400 text-[8px] font-bold uppercase truncate max-w-[120px]">
+                                    <span className="px-2 py-0.5 rounded bg-[#0f0f1a] border border-white/[0.06] text-slate-400 text-[8px] font-bold uppercase truncate max-w-[120px]">
                                       {msg.chapter_name}
                                     </span>
                                   )}
@@ -2303,10 +2303,10 @@ export const PDFModule: React.FC = () => {
                     )}
                     {chatLoading && (
                       <div className="flex gap-3.5 items-center select-none">
-                        <div className="w-7 h-7 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center animate-spin">
+                        <div className="w-7 h-7 rounded-lg bg-indigo-500/10 text-purple-400 flex items-center justify-center animate-spin">
                           <Sparkles className="w-3.5 h-3.5" />
                         </div>
-                        <div className="p-3 bg-[#181922] border border-white/5 rounded-2xl flex gap-1 items-center">
+                        <div className="p-3 bg-[#0f0f1a] border border-white/[0.06] rounded-2xl flex gap-1 items-center">
                           <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-bounce" />
                           <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-bounce" style={{ animationDelay: "150ms" }} />
                         </div>
@@ -2315,18 +2315,18 @@ export const PDFModule: React.FC = () => {
                     <div ref={chatScrollRef} />
                   </div>
 
-                  <form onSubmit={handleAskPDF} className="flex gap-2 pt-3.5 border-t border-white/5 flex-shrink-0 mt-3.5">
+                  <form onSubmit={handleAskPDF} className="flex gap-2 pt-3.5 border-t border-white/[0.06] flex-shrink-0 mt-3.5">
                     <input
                       type="text"
                       placeholder="Query PDF context..."
                       value={chatInput}
                       onChange={(e) => setChatInput(e.target.value)}
-                      className="flex-grow px-3 py-2 rounded-xl border border-white/5 bg-[#0B0B12] text-[10px] text-white outline-none font-medium focus:ring-1 focus:ring-indigo-500"
+                      className="flex-grow px-3 py-2 rounded-xl border border-white/[0.06] bg-[#0B0B12] text-sm text-white outline-none font-medium focus:ring-1 focus:ring-indigo-500"
                     />
                     <button
                       type="submit"
                       disabled={!chatInput.trim() || selectedPdfIds.length === 0 || chatLoading}
-                      className="p-2 bg-indigo-650 hover:bg-indigo-700 disabled:bg-slate-800 text-white rounded-xl cursor-pointer"
+                      className="p-2 bg-purple-600 hover:bg-purple-700 disabled:bg-slate-800 text-white rounded-xl cursor-pointer"
                     >
                       <Send className="w-3.5 h-3.5" />
                     </button>
@@ -2349,7 +2349,7 @@ export const PDFModule: React.FC = () => {
                       </button>
                       <button
                         onClick={handleSaveNotesWorkspace}
-                        className="px-2.5 py-1 bg-indigo-655 hover:bg-indigo-700 text-white text-[9px] font-extrabold uppercase rounded-lg cursor-pointer"
+                        className="px-2.5 py-1 bg-purple-600 hover:bg-purple-700 text-white text-[9px] font-extrabold uppercase rounded-lg cursor-pointer"
                       >
                         Save Notes
                       </button>
@@ -2362,7 +2362,7 @@ export const PDFModule: React.FC = () => {
                       <select
                         value={noteCategory}
                         onChange={(e) => setNoteCategory(e.target.value)}
-                        className="w-full p-2.5 border border-white/5 rounded-lg text-[10px] outline-none bg-[#0b0b12] text-white font-bold cursor-pointer"
+                        className="w-full p-2.5 border border-white/[0.06] rounded-lg text-sm outline-none bg-[#0b0b12] text-white font-bold cursor-pointer"
                       >
                         <option value="Chapter Summaries">Chapter Summaries</option>
                         <option value="Revision Questions">Revision Questions</option>
@@ -2376,7 +2376,7 @@ export const PDFModule: React.FC = () => {
                         rows={13}
                         value={noteContent}
                         onChange={(e) => setNoteContent(e.target.value)}
-                        className="w-full p-3.5 border border-white/5 rounded-xl text-[10px] outline-none font-mono resize-none bg-[#0b0b12] text-slate-350"
+                        className="w-full p-3.5 border border-white/[0.06] rounded-xl text-sm outline-none font-mono resize-none bg-[#0b0b12] text-slate-350"
                         placeholder="Type bullet notes or equations..."
                       />
                     </div>
@@ -2789,7 +2789,7 @@ const PDFPageNode: React.FC<{
     <div 
       id={`pdf-page-container-${pageNum}`}
       ref={containerRef}
-      className="relative border border-white/5 rounded-2xl overflow-hidden bg-[#181922] shadow-lg flex-shrink-0 animate-fade-in"
+      className="relative border border-white/[0.06] rounded-2xl overflow-hidden bg-[#0f0f1a] shadow-lg flex-shrink-0 animate-fade-in"
       style={{ width: pageSize.width, height: pageSize.height }}
     >
       {!isNear && (
@@ -2801,7 +2801,7 @@ const PDFPageNode: React.FC<{
       {isNear && (
         <>
           {!isVisible && (
-            <div className="absolute inset-0 flex items-center justify-center text-slate-500 font-mono text-[10px]">
+            <div className="absolute inset-0 flex items-center justify-center text-slate-500 font-mono text-sm">
               Page {pageNum} (Scroll to render)
             </div>
           )}
@@ -3098,7 +3098,7 @@ const PDFPageNode: React.FC<{
           })}
 
           {/* Floating page index indicator tag */}
-          <span className="absolute bottom-3.5 right-3.5 bg-slate-950/80 border border-white/5 text-[9px] font-mono text-slate-405 font-bold px-2 py-0.5 rounded z-20 pointer-events-none">
+          <span className="absolute bottom-3.5 right-3.5 bg-slate-950/80 border border-white/[0.06] text-[9px] font-mono text-slate-405 font-bold px-2 py-0.5 rounded z-20 pointer-events-none">
             p. {pageNum}
           </span>
         </>

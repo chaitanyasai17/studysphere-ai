@@ -453,7 +453,7 @@ export const AdminPanel: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0B0B0F]">
+      <div className="min-h-screen flex items-center justify-center bg-[#0a0a12]">
         <div className="flex flex-col items-center gap-6 select-none animate-pulse">
           <div className="w-16 h-16 rounded-2xl bg-purple-600/10 border border-purple-500/20 flex items-center justify-center text-3xl animate-bounce">
             🛡️
@@ -473,13 +473,13 @@ export const AdminPanel: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0B0F] font-sans text-[#D5D7DE] flex overflow-hidden">
+    <div className="min-h-screen bg-[#0a0a12] font-sans text-white flex overflow-hidden">
       
       {/* 1. SIDEBAR NAVIGATION */}
       <motion.aside
         animate={{ width: isSidebarCollapsed ? 80 : 280 }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
-        className="flex-shrink-0 bg-[#0F0F16] border-r border-white/5 flex flex-col p-5 select-none z-30 justify-between relative shadow-2xl"
+        className="flex-shrink-0 bg-[#0f0f1a] border-r border-white/[0.06] flex flex-col p-5 select-none z-30 justify-between relative shadow-2xl"
       >
         <div className="space-y-8">
           {/* Brand header */}
@@ -532,7 +532,7 @@ export const AdminPanel: React.FC = () => {
                       className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer relative group ${
                         isActive
                           ? "bg-purple-600/10 border border-purple-500/20 text-white shadow-sm"
-                          : "border border-transparent text-[#A5A8B2] hover:text-white hover:bg-white/5"
+                          : "border border-transparent text-[#94A3B8] hover:text-white hover:bg-white/5"
                       }`}
                     >
                       {isActive && (
@@ -542,7 +542,7 @@ export const AdminPanel: React.FC = () => {
                           transition={{ type: "spring", stiffness: 300, damping: 30 }}
                         />
                       )}
-                      <span className={`${isActive ? "text-purple-400" : "text-[#A5A8B2] group-hover:text-white"}`}>
+                      <span className={`${isActive ? "text-purple-400" : "text-[#94A3B8] group-hover:text-white"}`}>
                         {React.cloneElement(t.icon, { className: "w-5 h-5" })}
                       </span>
                       {!isSidebarCollapsed && <span>{t.label}</span>}
@@ -570,7 +570,7 @@ export const AdminPanel: React.FC = () => {
                       className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer relative group ${
                         isActive
                           ? "bg-purple-600/10 border border-purple-500/20 text-white shadow-sm"
-                          : "border border-transparent text-[#A5A8B2] hover:text-white hover:bg-white/5"
+                          : "border border-transparent text-[#94A3B8] hover:text-white hover:bg-white/5"
                       }`}
                     >
                       {isActive && (
@@ -580,7 +580,7 @@ export const AdminPanel: React.FC = () => {
                           transition={{ type: "spring", stiffness: 300, damping: 30 }}
                         />
                       )}
-                      <span className={`${isActive ? "text-purple-400" : "text-[#A5A8B2] group-hover:text-white"}`}>
+                      <span className={`${isActive ? "text-purple-400" : "text-[#94A3B8] group-hover:text-white"}`}>
                         {React.cloneElement(t.icon, { className: "w-5 h-5" })}
                       </span>
                       {!isSidebarCollapsed && <span>{t.label}</span>}
@@ -609,7 +609,7 @@ export const AdminPanel: React.FC = () => {
                       className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer relative group ${
                         isActive
                           ? "bg-purple-600/10 border border-purple-500/20 text-white shadow-sm"
-                          : "border border-transparent text-[#A5A8B2] hover:text-white hover:bg-white/5"
+                          : "border border-transparent text-[#94A3B8] hover:text-white hover:bg-white/5"
                       }`}
                     >
                       {isActive && (
@@ -619,7 +619,7 @@ export const AdminPanel: React.FC = () => {
                           transition={{ type: "spring", stiffness: 300, damping: 30 }}
                         />
                       )}
-                      <span className={`${isActive ? "text-purple-400" : "text-[#A5A8B2] group-hover:text-white"}`}>
+                      <span className={`${isActive ? "text-purple-400" : "text-[#94A3B8] group-hover:text-white"}`}>
                         {React.cloneElement(t.icon, { className: "w-5 h-5" })}
                       </span>
                       {!isSidebarCollapsed && <span>{t.label}</span>}
@@ -647,7 +647,7 @@ export const AdminPanel: React.FC = () => {
                       className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer relative group ${
                         isActive
                           ? "bg-purple-600/10 border border-purple-500/20 text-white shadow-sm"
-                          : "border border-transparent text-[#A5A8B2] hover:text-white hover:bg-white/5"
+                          : "border border-transparent text-[#94A3B8] hover:text-white hover:bg-white/5"
                       }`}
                     >
                       {isActive && (
@@ -657,7 +657,7 @@ export const AdminPanel: React.FC = () => {
                           transition={{ type: "spring", stiffness: 300, damping: 30 }}
                         />
                       )}
-                      <span className={`${isActive ? "text-purple-400" : "text-[#A5A8B2] group-hover:text-white"}`}>
+                      <span className={`${isActive ? "text-purple-400" : "text-[#94A3B8] group-hover:text-white"}`}>
                         {React.cloneElement(t.icon, { className: "w-5 h-5" })}
                       </span>
                       {!isSidebarCollapsed && <span>{t.label}</span>}
@@ -670,14 +670,14 @@ export const AdminPanel: React.FC = () => {
         </div>
 
         {/* Sidebar Footer */}
-        <div className="mt-8 border-t border-white/5 pt-4 space-y-4">
+        <div className="mt-8 border-t border-white/[0.06] pt-4 space-y-4">
           <div className="flex items-center gap-3 px-2">
             <div className="w-10 h-10 rounded-xl bg-purple-600/15 border border-purple-500/30 flex items-center justify-center text-sm font-bold text-purple-300">
               {user?.name.charAt(0).toUpperCase()}
             </div>
             {!isSidebarCollapsed && (
               <div className="min-w-0">
-                <h4 className="text-sm font-semibold text-[#E8EAF0] truncate leading-none mb-1">{user?.name}</h4>
+                <h4 className="text-sm font-semibold text-[#E2E8F0] truncate leading-none mb-1">{user?.name}</h4>
                 <span className="text-[11px] font-mono text-purple-400 font-bold block leading-none">
                   {user?.role.toUpperCase()}
                 </span>
@@ -703,35 +703,35 @@ export const AdminPanel: React.FC = () => {
         <div className="absolute bottom-[-20%] left-[10%] w-[400px] h-[400px] bg-pink-600/5 rounded-full blur-[140px] pointer-events-none" />
 
         {/* TOP NAVIGATION BAR */}
-        <header className="h-[72px] border-b border-white/5 bg-[#0B0B0F]/80 backdrop-blur-md px-8 flex items-center justify-between flex-shrink-0 z-20 sticky top-0 select-none">
+        <header className="h-[72px] border-b border-white/[0.06] bg-[#0a0a12]/80 backdrop-blur-md px-8 flex items-center justify-between flex-shrink-0 z-20 sticky top-0 select-none">
           <div className="flex items-center gap-3">
             <span className="text-xs font-mono uppercase tracking-widest text-[#8E93A1]">
               Console /
             </span>
-            <span className="text-[15px] font-bold text-[#E8EAF0] capitalize tracking-wide">{activeTab} View</span>
+            <span className="text-[15px] font-bold text-[#E2E8F0] capitalize tracking-wide">{activeTab} View</span>
           </div>
 
           <div className="flex items-center gap-6">
             {/* Global Search box */}
-            <div className="flex items-center gap-3 bg-[#13131F]/40 border border-white/5 focus-within:border-purple-500/40 rounded-xl px-3 py-2 w-72 transition-colors">
+            <div className="flex items-center gap-3 bg-[#0f0f1a]/40 border border-white/[0.06] focus-within:border-purple-500/40 rounded-xl px-3 py-2 w-72 transition-colors">
               <Search className="w-4 h-4 text-[#8E93A1]" />
               <input
                 type="text"
                 placeholder="Global search operations..."
                 value={globalSearch}
                 onChange={(e) => setGlobalSearch(e.target.value)}
-                className="bg-transparent border-none text-xs outline-none text-[#E8EAF0] w-full placeholder-slate-600"
+                className="bg-transparent border-none text-xs outline-none text-[#E2E8F0] w-full placeholder-slate-600"
               />
             </div>
 
             {/* Production Badge */}
-            <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[10px] font-bold uppercase tracking-wider font-mono">
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-sm font-bold uppercase tracking-wider font-mono">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
               Production
             </div>
 
             {/* Notifications */}
-            <button className="p-2 border border-white/5 bg-slate-900/30 hover:bg-slate-900/60 text-[#8E93A1] hover:text-white rounded-xl cursor-pointer relative">
+            <button className="p-2 border border-white/[0.06] bg-slate-900/30 hover:bg-slate-900/60 text-[#8E93A1] hover:text-white rounded-xl cursor-pointer relative">
               <Bell className="w-4 h-4" />
               <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-pink-500" />
             </button>
@@ -766,12 +766,12 @@ export const AdminPanel: React.FC = () => {
                   <div className="flex justify-between items-center">
                     <div>
                       <h1 className="text-[40px] font-bold text-white leading-tight">Dashboard Hub</h1>
-                      <p className="text-sm font-normal text-[#A5A8B2] mt-1">Core platform indices and system indicators</p>
+                      <p className="text-sm font-normal text-[#94A3B8] mt-1">Core platform indices and system indicators</p>
                     </div>
                     <button
                       onClick={() => loadAllPortalData(true)}
                       disabled={refreshing}
-                      className="flex items-center gap-2 px-4 py-2.5 bg-[#14141F] border border-white/10 hover:border-purple-500/30 text-[#D5D7DE] rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer disabled:opacity-50"
+                      className="flex items-center gap-2 px-4 py-2.5 bg-[#161625] border border-white/[0.06] hover:border-purple-500/30 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer disabled:opacity-50"
                     >
                       <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
                       Sync Live Data
@@ -788,9 +788,9 @@ export const AdminPanel: React.FC = () => {
                       { title: "Revenue flow", val: dashboard.metrics.revenue, desc: "Subscription average", icon: <DollarSign className="text-emerald-450" /> },
                       { title: "API Usage", val: `${dashboard.charts.ai_requests_today} calls`, desc: "Gemini server loads", icon: <Activity className="text-purple-400" /> }
                     ].map((kpi, idx) => (
-                      <div key={idx} className="p-5 border border-white/5 bg-[#12121A]/50 backdrop-blur-xl rounded-[20px] flex flex-col justify-between shadow-lg hover:border-purple-500/20 hover:shadow-purple-500/5 transition-all group">
+                      <div key={idx} className="p-5 border border-white/[0.06] bg-[#161625]/50 backdrop-blur-xl rounded-[20px] flex flex-col justify-between shadow-lg hover:border-purple-500/20 hover:shadow-purple-500/5 transition-all group">
                         <div className="flex justify-between items-center">
-                          <span className="text-[15px] font-medium text-[#D5D7DE]">{kpi.title}</span>
+                          <span className="text-[15px] font-medium text-white">{kpi.title}</span>
                           <span className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center text-xs group-hover:bg-purple-500/10 transition-colors">
                             {kpi.icon}
                           </span>
@@ -798,7 +798,7 @@ export const AdminPanel: React.FC = () => {
                         <div className="my-3">
                           <h2 className="text-[32px] font-black text-white font-mono leading-none">{kpi.val}</h2>
                         </div>
-                        <span className="text-[13px] text-[#A5A8B2] block font-medium">{kpi.desc}</span>
+                        <span className="text-[13px] text-[#94A3B8] block font-medium">{kpi.desc}</span>
                       </div>
                     ))}
                   </div>
@@ -813,12 +813,12 @@ export const AdminPanel: React.FC = () => {
                       { title: "Flashcards", val: dashboard.metrics.flashcards_created, label: "Flashcards" },
                       { title: "Notes Created", val: dashboard.metrics.notes_created, label: "Notes Created" }
                     ].map((m, idx) => (
-                      <div key={idx} className="p-4 border border-white/5 bg-[#0F0F16]/50 rounded-[16px] flex items-center justify-between shadow-md hover:border-purple-500/10 transition-colors">
+                      <div key={idx} className="p-4 border border-white/[0.06] bg-[#0f0f1a]/50 rounded-[16px] flex items-center justify-between shadow-md hover:border-purple-500/10 transition-colors">
                         <div>
                           <span className="text-[13px] font-medium text-[#8E93A1] block leading-none">{m.title}</span>
                           <h4 className="text-lg font-bold text-slate-200 mt-2 font-mono">{m.val}</h4>
                         </div>
-                        <span className="text-[10px] text-[#A5A8B2] block bg-white/5 px-2 py-0.5 rounded border border-white/5 uppercase font-bold font-mono">
+                        <span className="text-sm text-[#94A3B8] block bg-white/5 px-2 py-0.5 rounded border border-white/[0.06] uppercase font-bold font-mono">
                           {m.label}
                         </span>
                       </div>
@@ -829,9 +829,9 @@ export const AdminPanel: React.FC = () => {
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     
                     {/* Area Chart: DAU */}
-                    <div className="lg:col-span-2 p-6 border border-white/5 bg-[#12121A]/50 backdrop-blur-xl rounded-[22px] space-y-4 shadow-xl">
-                      <div className="flex justify-between items-center border-b border-white/5 pb-3">
-                        <span className="text-lg font-semibold text-[#E8EAF0] flex items-center gap-2">
+                    <div className="lg:col-span-2 p-6 border border-white/[0.06] bg-[#161625]/50 backdrop-blur-xl rounded-[22px] space-y-4 shadow-xl">
+                      <div className="flex justify-between items-center border-b border-white/[0.06] pb-3">
+                        <span className="text-lg font-semibold text-[#E2E8F0] flex items-center gap-2">
                           <TrendingUp className="w-4 h-4 text-purple-400" /> Daily Active Scholars (DAU)
                         </span>
                         <span className="text-[13px] text-[#8E93A1] uppercase font-mono">Live query feed</span>
@@ -857,9 +857,9 @@ export const AdminPanel: React.FC = () => {
                     </div>
 
                     {/* Bar Chart: Weekly Growth */}
-                    <div className="p-6 border border-white/5 bg-[#12121A]/50 backdrop-blur-xl rounded-[22px] space-y-4 shadow-xl">
-                      <div className="flex justify-between items-center border-b border-white/5 pb-3">
-                        <span className="text-lg font-semibold text-[#E8EAF0] flex items-center gap-2">
+                    <div className="p-6 border border-white/[0.06] bg-[#161625]/50 backdrop-blur-xl rounded-[22px] space-y-4 shadow-xl">
+                      <div className="flex justify-between items-center border-b border-white/[0.06] pb-3">
+                        <span className="text-lg font-semibold text-[#E2E8F0] flex items-center gap-2">
                           <Layers className="w-4 h-4 text-pink-400" /> Weekly Platform growth
                         </span>
                         <span className="text-[13px] text-[#8E93A1] uppercase font-mono">Aggregation</span>
@@ -888,8 +888,8 @@ export const AdminPanel: React.FC = () => {
                       { title: "Host Storage capacity", val: dashboard.metrics.disk_usage, color: "from-indigo-500 to-blue-500", desc: "disk partition footprints" },
                       { title: "System status", val: dashboard.metrics.server_status, color: "from-emerald-500 to-teal-500", desc: "API Web Server status" }
                     ].map((h, i) => (
-                      <div key={i} className="p-6 border border-white/5 bg-[#12121A]/50 backdrop-blur-xl rounded-[22px] space-y-4 shadow-lg">
-                        <span className="text-[15px] font-medium text-[#D5D7DE] block">{h.title}</span>
+                      <div key={i} className="p-6 border border-white/[0.06] bg-[#161625]/50 backdrop-blur-xl rounded-[22px] space-y-4 shadow-lg">
+                        <span className="text-[15px] font-medium text-white block">{h.title}</span>
                         <div className="flex items-center justify-between">
                           <span className="text-xl font-black text-white font-mono">{h.val}</span>
                           <span className="text-[13px] text-[#8E93A1] block font-mono">{h.desc}</span>
@@ -912,14 +912,14 @@ export const AdminPanel: React.FC = () => {
                   <div className="flex justify-between items-center">
                     <div>
                       <h1 className="text-[40px] font-bold text-white tracking-tight">Users & RBAC</h1>
-                      <p className="text-sm font-normal text-[#A5A8B2] mt-1">Manage user account permissions, security logs, and access credentials</p>
+                      <p className="text-sm font-normal text-[#94A3B8] mt-1">Manage user account permissions, security logs, and access credentials</p>
                     </div>
                   </div>
 
                   {/* Filters Bar */}
-                  <div className="flex flex-col sm:flex-row justify-between gap-4 p-4 border border-white/5 bg-[#12121A]/50 rounded-[20px]">
+                  <div className="flex flex-col sm:flex-row justify-between gap-4 p-4 border border-white/[0.06] bg-[#161625]/50 rounded-[20px]">
                     <div className="flex flex-wrap items-center gap-3">
-                      <div className="flex items-center gap-2.5 bg-black/20 border border-white/5 focus-within:border-purple-500/20 rounded-xl px-3.5 py-2 w-72 transition-colors">
+                      <div className="flex items-center gap-2.5 bg-black/20 border border-white/[0.06] focus-within:border-purple-500/20 rounded-xl px-3.5 py-2 w-72 transition-colors">
                         {userTableLoading ? (
                           <Loader2 className="w-4 h-4 text-purple-400 animate-spin" />
                         ) : (
@@ -933,7 +933,7 @@ export const AdminPanel: React.FC = () => {
                             setUserPage(1);
                           }}
                           placeholder="Search account name, email..."
-                          className="bg-transparent border-none text-xs outline-none text-[#E8EAF0] w-full placeholder-slate-600"
+                          className="bg-transparent border-none text-xs outline-none text-[#E2E8F0] w-full placeholder-slate-600"
                         />
                       </div>
 
@@ -943,7 +943,7 @@ export const AdminPanel: React.FC = () => {
                           setUserRoleFilter(e.target.value);
                           setUserPage(1);
                         }}
-                        className="px-3.5 py-2 border border-white/10 bg-black/40 rounded-xl text-xs text-[#D5D7DE] outline-none cursor-pointer hover:border-white/20"
+                        className="px-3.5 py-2 border border-white/[0.06] bg-black/40 rounded-xl text-xs text-white outline-none cursor-pointer hover:border-white/20"
                       >
                         <option value="">All Roles</option>
                         <option value="student">Student / User</option>
@@ -959,7 +959,7 @@ export const AdminPanel: React.FC = () => {
                           setUserStatusFilter(e.target.value);
                           setUserPage(1);
                         }}
-                        className="px-3.5 py-2 border border-white/10 bg-black/40 rounded-xl text-xs text-[#D5D7DE] outline-none cursor-pointer hover:border-white/20"
+                        className="px-3.5 py-2 border border-white/[0.06] bg-black/40 rounded-xl text-xs text-white outline-none cursor-pointer hover:border-white/20"
                       >
                         <option value="">All Statuses</option>
                         <option value="active">Active</option>
@@ -977,7 +977,7 @@ export const AdminPanel: React.FC = () => {
                           setUserStatusFilter("");
                           setUserPage(1);
                         }}
-                        className="px-3 py-2 bg-slate-900 border border-white/10 hover:bg-slate-800 text-[#D5D7DE] rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+                        className="px-3 py-2 bg-slate-900 border border-white/[0.06] hover:bg-slate-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
                       >
                         Clear Filters
                       </button>
@@ -985,11 +985,11 @@ export const AdminPanel: React.FC = () => {
                   </div>
 
                   {/* Users Table / Enterprise Data Grid */}
-                  <div className="border border-white/5 bg-[#12121A]/50 backdrop-blur-xl rounded-[22px] overflow-hidden shadow-2xl">
+                  <div className="border border-white/[0.06] bg-[#161625]/50 backdrop-blur-xl rounded-[22px] overflow-hidden shadow-2xl">
                     <div className="overflow-x-auto">
                       <table className="w-full text-left border-collapse text-xs">
                         <thead>
-                          <tr className="border-b border-white/5 text-[#D5D7DE] font-semibold text-[13px] uppercase tracking-wider bg-slate-950/20">
+                          <tr className="border-b border-white/[0.06] text-white font-semibold text-[13px] uppercase tracking-wider bg-slate-950/20">
                             <th className="p-4 py-4.5 cursor-pointer hover:text-white transition-colors" onClick={() => {
                               setUserSortField("name");
                               setUserSortOrder(userSortOrder === "asc" ? "desc" : "asc");
@@ -1017,7 +1017,7 @@ export const AdminPanel: React.FC = () => {
                           ) : (
                             paginatedUsers.map(u => (
                               <tr key={u.id} className="hover:bg-white/5 transition-colors group">
-                                <td className="p-4 font-semibold text-[#E8EAF0]">
+                                <td className="p-4 font-semibold text-[#E2E8F0]">
                                   <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-full bg-purple-500/10 border border-purple-500/20 flex items-center justify-center font-bold text-xs text-purple-300">
                                       {u.name.charAt(0).toUpperCase()}
@@ -1025,16 +1025,16 @@ export const AdminPanel: React.FC = () => {
                                     <span>{u.name}</span>
                                   </div>
                                 </td>
-                                <td className="p-4 text-[#A5A8B2] font-mono">{u.email}</td>
+                                <td className="p-4 text-[#94A3B8] font-mono">{u.email}</td>
                                 <td className="p-4">
                                   <div className="flex gap-2">
-                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border uppercase ${
+                                    <span className={`text-sm font-bold px-2 py-0.5 rounded-full border uppercase ${
                                       u.is_verified ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/40" : "bg-amber-500/20 text-amber-400 border-amber-500/40"
                                     }`}>
                                       {u.is_verified ? "Verified" : "Unverified"}
                                     </span>
                                     {u.is_suspended && (
-                                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border uppercase bg-rose-500/20 text-rose-450 border-rose-500/40">
+                                      <span className="text-sm font-bold px-2 py-0.5 rounded-full border uppercase bg-rose-500/20 text-rose-450 border-rose-500/40">
                                         Suspended
                                       </span>
                                     )}
@@ -1044,7 +1044,7 @@ export const AdminPanel: React.FC = () => {
                                   <select
                                     value={u.role}
                                     onChange={(e) => handleAssignRole(u.id, e.target.value as any)}
-                                    className="p-1.5 border border-white/10 bg-black/40 rounded-xl text-[10px] font-bold text-indigo-400 outline-none cursor-pointer capitalize hover:border-white/20"
+                                    className="p-1.5 border border-white/[0.06] bg-black/40 rounded-xl text-sm font-bold text-indigo-400 outline-none cursor-pointer capitalize hover:border-white/20"
                                   >
                                     <option value="student">Student / User</option>
                                     <option value="admin">Admin</option>
@@ -1057,7 +1057,7 @@ export const AdminPanel: React.FC = () => {
                                   <div className="flex justify-end gap-2">
                                     <button
                                       onClick={() => handleToggleSuspend(u.id, u.is_suspended)}
-                                      className={`px-3 py-1.5 text-[10px] font-bold rounded-xl border transition-all cursor-pointer ${
+                                      className={`px-3 py-1.5 text-sm font-bold rounded-xl border transition-all cursor-pointer ${
                                         u.is_suspended
                                           ? "bg-emerald-500/20 border-emerald-500/40 hover:bg-emerald-500/30 text-emerald-400 shadow-sm"
                                           : "bg-amber-500/20 border-amber-500/40 hover:bg-amber-500/30 text-amber-400 shadow-sm"
@@ -1068,7 +1068,7 @@ export const AdminPanel: React.FC = () => {
                                     
                                     <button
                                       onClick={() => setResettingUser(u)}
-                                      className="px-3 py-1.5 text-[10px] font-bold bg-purple-500/20 border border-purple-500/40 hover:bg-purple-500/30 text-purple-300 rounded-xl cursor-pointer transition-all shadow-sm"
+                                      className="px-3 py-1.5 text-sm font-bold bg-purple-500/20 border border-purple-500/40 hover:bg-purple-500/30 text-purple-300 rounded-xl cursor-pointer transition-all shadow-sm"
                                     >
                                       Reset PW
                                     </button>
@@ -1095,7 +1095,7 @@ export const AdminPanel: React.FC = () => {
                     </div>
 
                     {/* Pagination Bar */}
-                    <div className="p-4 border-t border-white/5 flex items-center justify-between bg-slate-950/20">
+                    <div className="p-4 border-t border-white/[0.06] flex items-center justify-between bg-slate-950/20">
                       <span className="text-xs text-[#8E93A1] font-mono">
                         Showing {(userPage - 1) * usersPerPage + 1} - {Math.min(userPage * usersPerPage, sortedUsers.length)} of {sortedUsers.length} entries
                       </span>
@@ -1103,7 +1103,7 @@ export const AdminPanel: React.FC = () => {
                         <button
                           onClick={() => setUserPage(prev => Math.max(1, prev - 1))}
                           disabled={userPage === 1}
-                          className="px-3.5 py-1.5 border border-white/10 bg-slate-900 text-[#D5D7DE] hover:text-white rounded-xl text-xs font-bold disabled:opacity-50 cursor-pointer"
+                          className="px-3.5 py-1.5 border border-white/[0.06] bg-slate-900 text-white hover:text-white rounded-xl text-xs font-bold disabled:opacity-50 cursor-pointer"
                         >
                           Prev
                         </button>
@@ -1113,7 +1113,7 @@ export const AdminPanel: React.FC = () => {
                         <button
                           onClick={() => setUserPage(prev => Math.min(totalUserPages, prev + 1))}
                           disabled={userPage === totalUserPages}
-                          className="px-3.5 py-1.5 border border-white/10 bg-slate-900 text-[#D5D7DE] hover:text-white rounded-xl text-xs font-bold disabled:opacity-50 cursor-pointer"
+                          className="px-3.5 py-1.5 border border-white/[0.06] bg-slate-900 text-white hover:text-white rounded-xl text-xs font-bold disabled:opacity-50 cursor-pointer"
                         >
                           Next
                         </button>
@@ -1124,8 +1124,8 @@ export const AdminPanel: React.FC = () => {
                   {/* Password Reset Modal */}
                   {resettingUser && (
                     <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50 select-none backdrop-blur-sm">
-                      <div className="w-full max-w-md p-6 border border-white/10 bg-[#0F0F16] rounded-[24px] space-y-6 shadow-2xl">
-                        <div className="flex justify-between items-center border-b border-white/5 pb-3">
+                      <div className="w-full max-w-md p-6 border border-white/[0.06] bg-[#0f0f1a] rounded-[24px] space-y-6 shadow-2xl">
+                        <div className="flex justify-between items-center border-b border-white/[0.06] pb-3">
                           <h3 className="text-lg font-bold text-white tracking-tight">
                             Reset Password for {resettingUser.name}
                           </h3>
@@ -1138,7 +1138,7 @@ export const AdminPanel: React.FC = () => {
                               value={newPasswordVal}
                               onChange={(e) => setNewPasswordVal(e.target.value)}
                               placeholder="At least 6 characters"
-                              className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white text-xs outline-none focus:ring-2 focus:ring-purple-600 transition-all"
+                              className="w-full px-4 py-3 bg-black/40 border border-white/[0.06] rounded-xl text-white text-xs outline-none focus:ring-2 focus:ring-purple-600 transition-all"
                               required
                             />
                           </div>
@@ -1149,7 +1149,7 @@ export const AdminPanel: React.FC = () => {
                                 setResettingUser(null);
                                 setNewPasswordVal("");
                               }}
-                              className="px-4 py-2 bg-slate-900 border border-white/10 text-[#D5D7DE] hover:text-white rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer"
+                              className="px-4 py-2 bg-slate-900 border border-white/[0.06] text-white hover:text-white rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer"
                             >
                               Cancel
                             </button>
@@ -1175,12 +1175,12 @@ export const AdminPanel: React.FC = () => {
                   <div className="flex justify-between items-center">
                     <div>
                       <h1 className="text-[40px] font-bold text-white tracking-tight">Content Control</h1>
-                      <p className="text-sm font-normal text-[#A5A8B2] mt-1">Audit, download, and clean student-generated artifacts and materials</p>
+                      <p className="text-sm font-normal text-[#94A3B8] mt-1">Audit, download, and clean student-generated artifacts and materials</p>
                     </div>
                   </div>
 
                   {/* Subtabs for content types */}
-                  <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                  <div className="flex justify-between items-center border-b border-white/[0.06] pb-2">
                     <div className="flex gap-2">
                       {[
                         { id: "pdfs", label: "PDF Library", count: content.pdfs.length },
@@ -1195,7 +1195,7 @@ export const AdminPanel: React.FC = () => {
                           className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer transition-all border ${
                             contentTab === tab.id
                               ? "bg-purple-600/10 border-purple-500/30 text-white"
-                              : "border-transparent text-[#8E93A1] hover:text-[#D5D7DE] hover:bg-white/5"
+                              : "border-transparent text-[#8E93A1] hover:text-white hover:bg-white/5"
                           }`}
                         >
                           {tab.label} ({tab.count})
@@ -1204,14 +1204,14 @@ export const AdminPanel: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2 bg-black/20 border border-white/10 focus-within:border-purple-500/20 rounded-xl px-3 py-1.5 w-64 transition-colors">
+                      <div className="flex items-center gap-2 bg-black/20 border border-white/[0.06] focus-within:border-purple-500/20 rounded-xl px-3 py-1.5 w-64 transition-colors">
                         <Search className="w-3.5 h-3.5 text-[#8E93A1]" />
                         <input
                           type="text"
                           value={contentSearch}
                           onChange={(e) => setContentSearch(e.target.value)}
                           placeholder={`Search ${contentTab}...`}
-                          className="bg-transparent border-none text-xs outline-none text-[#E8EAF0] w-full placeholder-slate-600"
+                          className="bg-transparent border-none text-xs outline-none text-[#E2E8F0] w-full placeholder-slate-600"
                         />
                       </div>
                     </div>
@@ -1220,18 +1220,18 @@ export const AdminPanel: React.FC = () => {
                   {/* Grid view of Content cards */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredContent.length === 0 ? (
-                      <div className="col-span-full py-20 border border-dashed border-white/10 bg-[#12121A]/20 rounded-[24px] flex flex-col items-center justify-center gap-4 text-center">
+                      <div className="col-span-full py-20 border border-dashed border-white/[0.06] bg-[#161625]/20 rounded-[24px] flex flex-col items-center justify-center gap-4 text-center">
                         <div className="w-16 h-16 rounded-full bg-slate-900 flex items-center justify-center text-3xl">
                           📂
                         </div>
                         <div>
-                          <h4 className="text-[#E8EAF0] font-bold uppercase text-sm tracking-wider">No Content Records</h4>
+                          <h4 className="text-[#E2E8F0] font-bold uppercase text-sm tracking-wider">No Content Records</h4>
                           <p className="text-[#8E93A1] text-xs mt-1">There are no generated files matching this category</p>
                         </div>
                       </div>
                     ) : (
                       filteredContent.map((item, idx) => (
-                        <div key={item.id || idx} className="p-5 border border-white/10 bg-[#12121A]/50 rounded-[20px] shadow-lg flex flex-col justify-between hover:border-purple-500/20 transition-all group">
+                        <div key={item.id || idx} className="p-5 border border-white/[0.06] bg-[#161625]/50 rounded-[20px] shadow-lg flex flex-col justify-between hover:border-purple-500/20 transition-all group">
                           <div>
                             <div className="flex justify-between items-start mb-3">
                               <span className="p-2.5 rounded-xl bg-purple-500/10 text-purple-400 group-hover:bg-purple-500/25 transition-colors">
@@ -1245,7 +1245,7 @@ export const AdminPanel: React.FC = () => {
                                       action: () => handleDeleteContent(contentTab, item.id)
                                     });
                                   }}
-                                  className="p-1.5 rounded-lg border border-rose-500/30 hover:border-rose-500 bg-rose-500/10 hover:bg-rose-500/25 text-[#A5A8B2] hover:text-white cursor-pointer transition-colors"
+                                  className="p-1.5 rounded-lg border border-rose-500/30 hover:border-rose-500 bg-rose-500/10 hover:bg-rose-500/25 text-[#94A3B8] hover:text-white cursor-pointer transition-colors"
                                   title="Delete Permanent"
                                 >
                                   <Trash2 className="w-4 h-4" />
@@ -1254,11 +1254,11 @@ export const AdminPanel: React.FC = () => {
                             </div>
 
                             <div className="space-y-1">
-                              <h4 className="text-[15px] font-bold text-[#E8EAF0] truncate group-hover:text-purple-450 transition-colors" title={item.filename || item.title}>
+                              <h4 className="text-[15px] font-bold text-[#E2E8F0] truncate group-hover:text-purple-450 transition-colors" title={item.filename || item.title}>
                                 {item.filename || item.title}
                               </h4>
                               {item.owner && (
-                                <span className="text-sm text-[#A5A8B2] block">Owner: {item.owner}</span>
+                                <span className="text-sm text-[#94A3B8] block">Owner: {item.owner}</span>
                               )}
                               <span className="text-[13px] text-[#8E93A1] block font-mono">
                                 ID: {item.id}
@@ -1266,7 +1266,7 @@ export const AdminPanel: React.FC = () => {
                             </div>
                           </div>
 
-                          <div className="border-t border-white/5 pt-3.5 mt-4 flex items-center justify-between text-[13px] text-[#8E93A1] font-mono">
+                          <div className="border-t border-white/[0.06] pt-3.5 mt-4 flex items-center justify-between text-[13px] text-[#8E93A1] font-mono">
                             {contentTab === "pdfs" && item.size && (
                               <span>{(item.size / 1024 / 1024).toFixed(2)} MB</span>
                             )}
@@ -1292,11 +1292,11 @@ export const AdminPanel: React.FC = () => {
                   <div className="flex justify-between items-center">
                     <div>
                       <h1 className="text-[40px] font-bold text-white tracking-tight">AI Operations Center</h1>
-                      <p className="text-sm font-normal text-[#A5A8B2] mt-1">Monitor token consumption, latency peaks, models routing, and Prompt Cache ratios</p>
+                      <p className="text-sm font-normal text-[#94A3B8] mt-1">Monitor token consumption, latency peaks, models routing, and Prompt Cache ratios</p>
                     </div>
                     <button
                       onClick={() => loadAllPortalData(true)}
-                      className="flex items-center gap-2 px-4 py-2 bg-slate-900 border border-white/10 hover:bg-slate-800 text-[#D5D7DE] rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer"
+                      className="flex items-center gap-2 px-4 py-2 bg-slate-900 border border-white/[0.06] hover:bg-slate-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer"
                     >
                       <RefreshCw className="w-4 h-4" /> Refresh Status
                     </button>
@@ -1311,13 +1311,13 @@ export const AdminPanel: React.FC = () => {
                       { title: "Average Latency", val: "1.24s", sub: "Calculated query return", color: "text-emerald-405", pct: "92%" },
                       { title: "Failed Requests", val: "0 calls", sub: "Rate throttles aborted", color: "text-rose-400", pct: "100%" }
                     ].map((k, idx) => (
-                      <div key={idx} className="p-5 border border-white/5 bg-[#12121A]/50 rounded-[20px] shadow-lg flex flex-col justify-between hover:border-purple-500/20 transition-colors">
-                        <span className="text-[15px] font-medium text-[#D5D7DE] block">{k.title}</span>
+                      <div key={idx} className="p-5 border border-white/[0.06] bg-[#161625]/50 rounded-[20px] shadow-lg flex flex-col justify-between hover:border-purple-500/20 transition-colors">
+                        <span className="text-[15px] font-medium text-white block">{k.title}</span>
                         <div className="my-3">
                           <h2 className={`text-2xl font-black ${k.color} font-mono`}>{k.val}</h2>
                         </div>
                         <div className="space-y-1">
-                          <span className="text-[13px] text-[#A5A8B2] block leading-none">{k.sub}</span>
+                          <span className="text-[13px] text-[#94A3B8] block leading-none">{k.sub}</span>
                           <div className="h-1 bg-white/5 rounded-full overflow-hidden mt-1">
                             <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" style={{ width: k.pct }} />
                           </div>
@@ -1330,9 +1330,9 @@ export const AdminPanel: React.FC = () => {
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     
                     {/* Latency History */}
-                    <div className="lg:col-span-2 p-6 border border-white/5 bg-[#12121A]/50 backdrop-blur-xl rounded-[22px] space-y-4">
-                      <div className="flex justify-between items-center border-b border-white/5 pb-3">
-                        <span className="text-lg font-semibold text-[#E8EAF0] flex items-center gap-1.5">
+                    <div className="lg:col-span-2 p-6 border border-white/[0.06] bg-[#161625]/50 backdrop-blur-xl rounded-[22px] space-y-4">
+                      <div className="flex justify-between items-center border-b border-white/[0.06] pb-3">
+                        <span className="text-lg font-semibold text-[#E2E8F0] flex items-center gap-1.5">
                           <Activity className="w-4 h-4 text-purple-400" /> Response times latency (ms)
                         </span>
                         <span className="text-[13px] text-[#8E93A1] uppercase font-mono">Real-time metrics</span>
@@ -1352,9 +1352,9 @@ export const AdminPanel: React.FC = () => {
                     </div>
 
                     {/* Model Distribution */}
-                    <div className="p-6 border border-white/5 bg-[#12121A]/50 backdrop-blur-xl rounded-[22px] space-y-4 flex flex-col justify-between">
-                      <div className="flex justify-between items-center border-b border-white/5 pb-3">
-                        <span className="text-lg font-semibold text-[#E8EAF0]">
+                    <div className="p-6 border border-white/[0.06] bg-[#161625]/50 backdrop-blur-xl rounded-[22px] space-y-4 flex flex-col justify-between">
+                      <div className="flex justify-between items-center border-b border-white/[0.06] pb-3">
+                        <span className="text-lg font-semibold text-[#E2E8F0]">
                           Model Distribution
                         </span>
                         <span className="text-[13px] text-[#8E93A1] uppercase font-mono">Routing</span>
@@ -1383,15 +1383,15 @@ export const AdminPanel: React.FC = () => {
                         </ResponsiveContainer>
                       </div>
 
-                      <div className="space-y-1.5 pt-2 border-t border-white/5">
+                      <div className="space-y-1.5 pt-2 border-t border-white/[0.06]">
                         <div className="flex justify-between text-xs">
-                          <span className="text-[#A5A8B2] flex items-center gap-1.5">
+                          <span className="text-[#94A3B8] flex items-center gap-1.5">
                             <span className="w-2.5 h-2.5 rounded-full bg-purple-500" /> gemini-flash-lite
                           </span>
                           <span className="font-bold text-white font-mono">85%</span>
                         </div>
                         <div className="flex justify-between text-xs">
-                          <span className="text-[#A5A8B2] flex items-center gap-1.5">
+                          <span className="text-[#94A3B8] flex items-center gap-1.5">
                             <span className="w-2.5 h-2.5 rounded-full bg-pink-500" /> gemini-1.5-pro
                           </span>
                           <span className="font-bold text-white font-mono">15%</span>
@@ -1411,22 +1411,22 @@ export const AdminPanel: React.FC = () => {
                   <div className="flex justify-between items-center">
                     <div>
                       <h1 className="text-[40px] font-bold text-white tracking-tight">System Status</h1>
-                      <p className="text-sm font-normal text-[#A5A8B2] mt-1">Live core infrastructure checks, memory capacity, and database read status</p>
+                      <p className="text-sm font-normal text-[#94A3B8] mt-1">Live core infrastructure checks, memory capacity, and database read status</p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Hardware resource loads */}
-                    <div className="p-6 border border-white/5 bg-[#12121A]/50 backdrop-blur-xl rounded-[22px] space-y-6 shadow-xl">
-                      <span className="text-lg font-semibold text-[#E8EAF0] block border-b border-white/5 pb-3">
+                    <div className="p-6 border border-white/[0.06] bg-[#161625]/50 backdrop-blur-xl rounded-[22px] space-y-6 shadow-xl">
+                      <span className="text-lg font-semibold text-[#E2E8F0] block border-b border-white/[0.06] pb-3">
                         Hardware CPU / Memory Load gauges
                       </span>
 
                       <div className="space-y-5">
                         <div className="space-y-2">
                           <div className="flex justify-between text-xs">
-                            <span className="text-[#D5D7DE] text-[15px] font-medium">CPU Core Utilizations:</span>
-                            <span className="font-mono font-bold text-[#E8EAF0] text-[15px]">{dashboard.metrics.cpu_usage}</span>
+                            <span className="text-white text-[15px] font-medium">CPU Core Utilizations:</span>
+                            <span className="font-mono font-bold text-[#E2E8F0] text-[15px]">{dashboard.metrics.cpu_usage}</span>
                           </div>
                           <div className="h-2 bg-white/5 rounded-full overflow-hidden">
                             <div className="h-full bg-purple-500" style={{ width: dashboard.metrics.cpu_usage }} />
@@ -1436,8 +1436,8 @@ export const AdminPanel: React.FC = () => {
 
                         <div className="space-y-2">
                           <div className="flex justify-between text-xs">
-                            <span className="text-[#D5D7DE] text-[15px] font-medium">Virtual RAM Allocated:</span>
-                            <span className="font-mono font-bold text-[#E8EAF0] text-[15px]">{dashboard.metrics.memory_usage}</span>
+                            <span className="text-white text-[15px] font-medium">Virtual RAM Allocated:</span>
+                            <span className="font-mono font-bold text-[#E2E8F0] text-[15px]">{dashboard.metrics.memory_usage}</span>
                           </div>
                           <div className="h-2 bg-white/5 rounded-full overflow-hidden">
                             <div className="h-full bg-pink-500" style={{ width: dashboard.metrics.memory_usage }} />
@@ -1447,8 +1447,8 @@ export const AdminPanel: React.FC = () => {
 
                         <div className="space-y-2">
                           <div className="flex justify-between text-xs">
-                            <span className="text-[#D5D7DE] text-[15px] font-medium">Host SSD Disk Space:</span>
-                            <span className="font-mono font-bold text-[#E8EAF0] text-[15px]">{dashboard.metrics.disk_usage}</span>
+                            <span className="text-white text-[15px] font-medium">Host SSD Disk Space:</span>
+                            <span className="font-mono font-bold text-[#E2E8F0] text-[15px]">{dashboard.metrics.disk_usage}</span>
                           </div>
                           <div className="h-2 bg-white/5 rounded-full overflow-hidden">
                             <div className="h-full bg-indigo-500" style={{ width: dashboard.metrics.disk_usage }} />
@@ -1459,8 +1459,8 @@ export const AdminPanel: React.FC = () => {
                     </div>
 
                     {/* Services Monitoring */}
-                    <div className="p-6 border border-white/5 bg-[#12121A]/50 backdrop-blur-xl rounded-[22px] space-y-5 shadow-xl">
-                      <span className="text-lg font-semibold text-[#E8EAF0] block border-b border-white/5 pb-3">
+                    <div className="p-6 border border-white/[0.06] bg-[#161625]/50 backdrop-blur-xl rounded-[22px] space-y-5 shadow-xl">
+                      <span className="text-lg font-semibold text-[#E2E8F0] block border-b border-white/[0.06] pb-3">
                         Subsystems API health state
                       </span>
 
@@ -1472,12 +1472,12 @@ export const AdminPanel: React.FC = () => {
                           { name: "Redis cache memory", desc: "Session tracking store", status: redisStatus, theme: "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" },
                           { name: "Judge0 sandbox compiler", desc: "Coding practice runner", status: "ONLINE", theme: "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" }
                         ].map((srv, idx) => (
-                          <div key={idx} className="flex items-center justify-between border-b border-white/5 pb-2.5 last:border-0 last:pb-0">
+                          <div key={idx} className="flex items-center justify-between border-b border-white/[0.06] pb-2.5 last:border-0 last:pb-0">
                             <div>
-                              <strong className="text-[#E8EAF0] block text-[15px] font-semibold">{srv.name}</strong>
-                              <span className="text-[13px] text-[#A5A8B2] block mt-0.5">{srv.desc}</span>
+                              <strong className="text-[#E2E8F0] block text-[15px] font-semibold">{srv.name}</strong>
+                              <span className="text-[13px] text-[#94A3B8] block mt-0.5">{srv.desc}</span>
                             </div>
-                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${srv.theme}`}>
+                            <span className={`text-sm font-bold px-2 py-0.5 rounded-full border ${srv.theme}`}>
                               {srv.status}
                             </span>
                           </div>
@@ -1486,32 +1486,32 @@ export const AdminPanel: React.FC = () => {
                     </div>
 
                     {/* Background jobs queue */}
-                    <div className="p-6 border border-white/5 bg-[#12121A]/50 backdrop-blur-xl rounded-[22px] space-y-5 shadow-xl">
-                      <span className="text-lg font-semibold text-[#E8EAF0] block border-b border-white/5 pb-3">
+                    <div className="p-6 border border-white/[0.06] bg-[#161625]/50 backdrop-blur-xl rounded-[22px] space-y-5 shadow-xl">
+                      <span className="text-lg font-semibold text-[#E2E8F0] block border-b border-white/[0.06] pb-3">
                         Active cron & background workers
                       </span>
 
                       <div className="space-y-3 pt-1">
-                        <div className="p-3 bg-black/20 border border-white/5 rounded-xl space-y-1">
-                          <strong className="text-[11px] font-bold text-[#E8EAF0] uppercase block">Scheduler cron queue</strong>
-                          <span className="text-[13px] text-[#A5A8B2]">No scheduled report summaries pending.</span>
+                        <div className="p-3 bg-black/20 border border-white/[0.06] rounded-xl space-y-1">
+                          <strong className="text-[11px] font-bold text-[#E2E8F0] uppercase block">Scheduler cron queue</strong>
+                          <span className="text-[13px] text-[#94A3B8]">No scheduled report summaries pending.</span>
                         </div>
 
-                        <div className="p-3 bg-black/20 border border-white/5 rounded-xl space-y-1">
-                          <strong className="text-[11px] font-bold text-[#E8EAF0] uppercase block">Active Worker Thread</strong>
+                        <div className="p-3 bg-black/20 border border-white/[0.06] rounded-xl space-y-1">
+                          <strong className="text-[11px] font-bold text-[#E2E8F0] uppercase block">Active Worker Thread</strong>
                           <div className="flex justify-between items-center text-[13px]">
-                            <span className="text-[#A5A8B2]">Status: Running</span>
+                            <span className="text-[#94A3B8]">Status: Running</span>
                             <span className="font-mono text-purple-400 font-bold">{activeJobsCount} threads</span>
                           </div>
                         </div>
 
-                        <div className="p-3 bg-black/20 border border-white/5 rounded-xl space-y-1.5">
-                          <strong className="text-[11px] font-bold text-[#E8EAF0] uppercase block">Diagnostics details</strong>
-                          <div className="flex justify-between text-[13px] font-mono text-[#A5A8B2]">
+                        <div className="p-3 bg-black/20 border border-white/[0.06] rounded-xl space-y-1.5">
+                          <strong className="text-[11px] font-bold text-[#E2E8F0] uppercase block">Diagnostics details</strong>
+                          <div className="flex justify-between text-[13px] font-mono text-[#94A3B8]">
                             <span>Ping Latency:</span>
                             <span className="text-emerald-405 font-bold">{networkLatency} ms</span>
                           </div>
-                          <div className="flex justify-between text-[13px] font-mono text-[#A5A8B2]">
+                          <div className="flex justify-between text-[13px] font-mono text-[#94A3B8]">
                             <span>Socket pools:</span>
                             <span>12 connections</span>
                           </div>
@@ -1531,20 +1531,20 @@ export const AdminPanel: React.FC = () => {
                   <div className="flex justify-between items-center">
                     <div>
                       <h1 className="text-[40px] font-bold text-white tracking-tight">Security Audit Logs</h1>
-                      <p className="text-sm font-normal text-[#A5A8B2] mt-1">Chronological record of system modifications, logins, and API triggers</p>
+                      <p className="text-sm font-normal text-[#94A3B8] mt-1">Chronological record of system modifications, logins, and API triggers</p>
                     </div>
                     <button
                       onClick={exportLogsToCSV}
-                      className="flex items-center gap-2 px-4 py-2.5 bg-slate-900 border border-white/10 hover:bg-slate-800 hover:border-purple-500/20 text-[#D5D7DE] rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer"
+                      className="flex items-center gap-2 px-4 py-2.5 bg-slate-900 border border-white/[0.06] hover:bg-slate-800 hover:border-purple-500/20 text-white rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer"
                     >
                       <Download className="w-4 h-4" /> Export CSV Sheet
                     </button>
                   </div>
 
                   {/* Audit filters */}
-                  <div className="flex justify-between items-center p-4 border border-white/5 bg-[#12121A]/50 rounded-[20px] gap-4">
+                  <div className="flex justify-between items-center p-4 border border-white/[0.06] bg-[#161625]/50 rounded-[20px] gap-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2.5 bg-black/20 border border-white/5 focus-within:border-purple-500/20 rounded-xl px-3 py-1.5 w-64 transition-colors">
+                      <div className="flex items-center gap-2.5 bg-black/20 border border-white/[0.06] focus-within:border-purple-500/20 rounded-xl px-3 py-1.5 w-64 transition-colors">
                         <Search className="w-3.5 h-3.5 text-[#8E93A1]" />
                         <input
                           type="text"
@@ -1554,7 +1554,7 @@ export const AdminPanel: React.FC = () => {
                             setLogPage(1);
                           }}
                           placeholder="Search user, IP..."
-                          className="bg-transparent border-none text-xs outline-none text-[#E8EAF0] w-full placeholder-slate-600"
+                          className="bg-transparent border-none text-xs outline-none text-[#E2E8F0] w-full placeholder-slate-600"
                         />
                       </div>
 
@@ -1564,7 +1564,7 @@ export const AdminPanel: React.FC = () => {
                           setLogActionFilter(e.target.value);
                           setLogPage(1);
                         }}
-                        className="px-3 py-1.5 border border-white/10 bg-black/30 rounded-xl text-xs text-[#D5D7DE] outline-none cursor-pointer hover:border-white/20"
+                        className="px-3 py-1.5 border border-white/[0.06] bg-black/30 rounded-xl text-xs text-white outline-none cursor-pointer hover:border-white/20"
                       >
                         <option value="">All Actions</option>
                         <option value="login">Login</option>
@@ -1575,17 +1575,17 @@ export const AdminPanel: React.FC = () => {
                       </select>
                     </div>
 
-                    <span className="text-xs text-[#D5D7DE] font-mono uppercase font-bold">
+                    <span className="text-xs text-white font-mono uppercase font-bold">
                       {filteredLogs.length} total events matching
                     </span>
                   </div>
 
                   {/* Audit Trail list table */}
-                  <div className="border border-white/5 bg-[#12121A]/50 backdrop-blur-xl rounded-[22px] overflow-hidden shadow-2xl">
+                  <div className="border border-white/[0.06] bg-[#161625]/50 backdrop-blur-xl rounded-[22px] overflow-hidden shadow-2xl">
                     <div className="overflow-x-auto">
                       <table className="w-full text-left border-collapse text-xs font-mono">
                         <thead>
-                          <tr className="border-b border-white/5 text-[#D5D7DE] font-semibold text-[13px] uppercase tracking-wider bg-slate-950/20">
+                          <tr className="border-b border-white/[0.06] text-white font-semibold text-[13px] uppercase tracking-wider bg-slate-950/20">
                             <th className="p-4 py-4">User Name</th>
                             <th className="p-4 py-4">System action logged</th>
                             <th className="p-4 py-4">IP Address</th>
@@ -1593,7 +1593,7 @@ export const AdminPanel: React.FC = () => {
                             <th className="p-4 py-4 text-right pr-6">Timestamp</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-white/5 text-[#D5D7DE]">
+                        <tbody className="divide-y divide-white/5 text-white">
                           {paginatedLogs.length === 0 ? (
                             <tr>
                               <td colSpan={5} className="p-8 text-center text-[#8E93A1] italic">
@@ -1605,11 +1605,11 @@ export const AdminPanel: React.FC = () => {
                               <tr key={log.id} className="hover:bg-white/5 transition-colors">
                                 <td className="p-4 font-bold text-purple-400">{log.user_name}</td>
                                 <td className="p-4">
-                                  <span className="px-2 py-0.5 rounded bg-white/10 border border-white/20 font-mono text-[10px] text-[#E8EAF0]">
+                                  <span className="px-2 py-0.5 rounded bg-white/10 border border-white/20 font-mono text-sm text-[#E2E8F0]">
                                     {log.action}
                                   </span>
                                 </td>
-                                <td className="p-4 text-[#A5A8B2]">{log.ip_address}</td>
+                                <td className="p-4 text-[#94A3B8]">{log.ip_address}</td>
                                 <td className="p-4 text-[#8E93A1] truncate max-w-[240px]" title={log.user_agent}>
                                   {log.user_agent}
                                 </td>
@@ -1624,7 +1624,7 @@ export const AdminPanel: React.FC = () => {
                     </div>
 
                     {/* Logs Pagination */}
-                    <div className="p-4 border-t border-white/5 flex items-center justify-between bg-slate-950/20">
+                    <div className="p-4 border-t border-white/[0.06] flex items-center justify-between bg-slate-950/20">
                       <span className="text-xs text-[#8E93A1] font-mono">
                         Showing {(logPage - 1) * logsPerPage + 1} - {Math.min(logPage * logsPerPage, filteredLogs.length)} of {filteredLogs.length} logs
                       </span>
@@ -1632,7 +1632,7 @@ export const AdminPanel: React.FC = () => {
                         <button
                           onClick={() => setLogPage(prev => Math.max(1, prev - 1))}
                           disabled={logPage === 1}
-                          className="px-3.5 py-1.5 border border-white/10 bg-slate-900 text-[#D5D7DE] hover:text-white rounded-xl text-xs font-bold disabled:opacity-50 cursor-pointer"
+                          className="px-3.5 py-1.5 border border-white/[0.06] bg-slate-900 text-white hover:text-white rounded-xl text-xs font-bold disabled:opacity-50 cursor-pointer"
                         >
                           Prev
                         </button>
@@ -1642,7 +1642,7 @@ export const AdminPanel: React.FC = () => {
                         <button
                           onClick={() => setLogPage(prev => Math.min(totalLogPages, prev + 1))}
                           disabled={logPage === totalLogPages}
-                          className="px-3.5 py-1.5 border border-white/10 bg-slate-900 text-[#D5D7DE] hover:text-white rounded-xl text-xs font-bold disabled:opacity-50 cursor-pointer"
+                          className="px-3.5 py-1.5 border border-white/[0.06] bg-slate-900 text-white hover:text-white rounded-xl text-xs font-bold disabled:opacity-50 cursor-pointer"
                         >
                           Next
                         </button>
@@ -1658,53 +1658,53 @@ export const AdminPanel: React.FC = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 select-text">
                   
                   {/* Site Configurations */}
-                  <div className="p-6 border border-white/5 bg-[#12121A]/50 backdrop-blur-xl rounded-[22px] space-y-6 shadow-xl">
-                    <span className="text-lg font-semibold text-[#E8EAF0] block border-b border-white/5 pb-3">
+                  <div className="p-6 border border-white/[0.06] bg-[#161625]/50 backdrop-blur-xl rounded-[22px] space-y-6 shadow-xl">
+                    <span className="text-lg font-semibold text-[#E2E8F0] block border-b border-white/[0.06] pb-3">
                       Enterprise site configuration settings
                     </span>
                     
                     <form onSubmit={handleSaveSettings} className="space-y-4">
                       <div className="space-y-1.5">
-                        <label className="text-[15px] font-medium text-[#D5D7DE] uppercase tracking-wider">Site Brand Name</label>
+                        <label className="text-[15px] font-medium text-white uppercase tracking-wider">Site Brand Name</label>
                         <input
                           type="text"
                           value={siteName}
                           onChange={(e) => setSiteName(e.target.value)}
-                          className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white text-xs outline-none focus:ring-2 focus:ring-purple-600 transition-all"
+                          className="w-full px-4 py-3 bg-black/40 border border-white/[0.06] rounded-xl text-white text-xs outline-none focus:ring-2 focus:ring-purple-600 transition-all"
                           required
                         />
                       </div>
 
-                      <div className="flex items-center justify-between p-4 bg-black/25 border border-white/5 rounded-2xl">
+                      <div className="flex items-center justify-between p-4 bg-black/25 border border-white/[0.06] rounded-2xl">
                         <div>
                           <span className="text-xs font-bold text-slate-200 block">Maintenance mode advisory</span>
-                          <p className="text-[10px] text-[#A5A8B2] mt-1">Suspend student logins for database operations</p>
+                          <p className="text-sm text-[#94A3B8] mt-1">Suspend student logins for database operations</p>
                         </div>
                         <input
                           type="checkbox"
                           checked={maintenanceMode}
                           onChange={(e) => setMaintenanceMode(e.target.checked)}
-                          className="w-4 h-4 text-purple-600 cursor-pointer rounded bg-black border-white/10"
+                          className="w-4 h-4 text-purple-600 cursor-pointer rounded bg-black border-white/[0.06]"
                         />
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="text-[15px] font-medium text-[#D5D7DE] uppercase tracking-wider">SMTP SMTP Mailer Account</label>
+                        <label className="text-[15px] font-medium text-white uppercase tracking-wider">SMTP SMTP Mailer Account</label>
                         <input
                           type="text"
                           value={smtpUser}
                           onChange={(e) => setSmtpUser(e.target.value)}
-                          className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white text-xs outline-none focus:ring-2 focus:ring-purple-600 transition-all"
+                          className="w-full px-4 py-3 bg-black/40 border border-white/[0.06] rounded-xl text-white text-xs outline-none focus:ring-2 focus:ring-purple-600 transition-all"
                           required
                         />
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="text-[15px] font-medium text-[#D5D7DE] uppercase tracking-wider">Gemini LLM model configuration</label>
+                        <label className="text-[15px] font-medium text-white uppercase tracking-wider">Gemini LLM model configuration</label>
                         <select
                           value={geminiModel}
                           onChange={(e) => setGeminiModel(e.target.value)}
-                          className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-xs text-slate-300 outline-none cursor-pointer focus:ring-2 focus:ring-purple-600"
+                          className="w-full px-4 py-3 bg-black/40 border border-white/[0.06] rounded-xl text-xs text-slate-300 outline-none cursor-pointer focus:ring-2 focus:ring-purple-600"
                         >
                           <option value="gemini-flash-lite-latest">gemini-flash-lite-latest (Default)</option>
                           <option value="gemini-1.5-pro">gemini-1.5-pro</option>
@@ -1721,7 +1721,7 @@ export const AdminPanel: React.FC = () => {
                     </form>
 
                     {/* Danger zone inside Settings card */}
-                    <div className="border-t border-white/5 pt-6 space-y-4">
+                    <div className="border-t border-white/[0.06] pt-6 space-y-4">
                       <span className="text-xs font-bold text-rose-400 uppercase tracking-wider block">Danger Zone operations</span>
                       <div className="grid grid-cols-2 gap-4">
                         <button
@@ -1767,31 +1767,31 @@ export const AdminPanel: React.FC = () => {
                   </div>
 
                   {/* Broadcast global announcements */}
-                  <div className="p-6 border border-white/5 bg-[#12121A]/50 backdrop-blur-xl rounded-[22px] space-y-6 shadow-xl flex flex-col justify-between">
+                  <div className="p-6 border border-white/[0.06] bg-[#161625]/50 backdrop-blur-xl rounded-[22px] space-y-6 shadow-xl flex flex-col justify-between">
                     <div>
-                      <span className="text-lg font-semibold text-[#E8EAF0] block border-b border-white/5 pb-3">
+                      <span className="text-lg font-semibold text-[#E2E8F0] block border-b border-white/[0.06] pb-3">
                         Broadcast global scholar notification
                       </span>
                       
                       <form onSubmit={handleBroadcast} className="space-y-4 pt-2">
                         <div className="space-y-1.5">
-                          <label className="text-[15px] font-medium text-[#D5D7DE] uppercase tracking-wider">Advisory Title</label>
+                          <label className="text-[15px] font-medium text-white uppercase tracking-wider">Advisory Title</label>
                           <input
                             type="text"
                             value={broadcastTitle}
                             onChange={(e) => setBroadcastTitle(e.target.value)}
-                            className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white text-xs outline-none focus:ring-2 focus:ring-purple-600 transition-all"
+                            className="w-full px-4 py-3 bg-black/40 border border-white/[0.06] rounded-xl text-white text-xs outline-none focus:ring-2 focus:ring-purple-600 transition-all"
                             required
                           />
                         </div>
 
                         <div className="space-y-1.5">
-                          <label className="text-[15px] font-medium text-[#D5D7DE] uppercase tracking-wider">Advisory Message Content</label>
+                          <label className="text-[15px] font-medium text-white uppercase tracking-wider">Advisory Message Content</label>
                           <textarea
                             value={broadcastMessage}
                             onChange={(e) => setBroadcastMessage(e.target.value)}
                             placeholder="Type markdown advisory to alert active users..."
-                            className="w-full h-48 px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white text-xs outline-none focus:ring-2 focus:ring-purple-600 resize-none leading-relaxed transition-all"
+                            className="w-full h-48 px-4 py-3 bg-black/40 border border-white/[0.06] rounded-xl text-white text-xs outline-none focus:ring-2 focus:ring-purple-600 resize-none leading-relaxed transition-all"
                             required
                           />
                         </div>
@@ -1819,7 +1819,7 @@ export const AdminPanel: React.FC = () => {
       {/* 3. CONFIRMATION DIALOG MODAL */}
       {confirmModal && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 select-none backdrop-blur-sm">
-          <div className="w-full max-w-md p-6 border border-white/10 bg-[#0F0F16] rounded-[24px] space-y-6 shadow-2xl">
+          <div className="w-full max-w-md p-6 border border-white/[0.06] bg-[#0f0f1a] rounded-[24px] space-y-6 shadow-2xl">
             <div className="flex items-center gap-3 text-rose-500">
               <AlertTriangle className="w-6 h-6" />
               <h3 className="text-lg font-bold tracking-tight">CRITICAL ALERT ACTION</h3>
@@ -1832,7 +1832,7 @@ export const AdminPanel: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setConfirmModal(null)}
-                className="px-4 py-2 bg-slate-900 border border-white/10 text-[#D5D7DE] hover:text-white rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer"
+                className="px-4 py-2 bg-slate-900 border border-white/[0.06] text-white hover:text-white rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer"
               >
                 Abort Action
               </button>

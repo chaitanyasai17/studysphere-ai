@@ -14,7 +14,10 @@ import {
   Play,
   ArrowRight,
   BookOpen,
-  Sparkles
+  Sparkles,
+  RefreshCcw,
+  LayoutDashboard,
+  Target
 } from "lucide-react";
 
 interface Question {
@@ -54,7 +57,7 @@ const ProgressRing: React.FC<{ progress: number; size?: number; strokeWidth?: nu
   progress,
   size = 80,
   strokeWidth = 6,
-  color = "stroke-indigo-500"
+  color = "stroke-purple-500"
 }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
@@ -63,7 +66,7 @@ const ProgressRing: React.FC<{ progress: number; size?: number; strokeWidth?: nu
   return (
     <svg width={size} height={size} className="transform -rotate-90 select-none">
       <circle
-        className="stroke-slate-800"
+        className="stroke-white/[0.06]"
         fill="transparent"
         strokeWidth={strokeWidth}
         r={radius}
@@ -71,7 +74,7 @@ const ProgressRing: React.FC<{ progress: number; size?: number; strokeWidth?: nu
         cy={size / 2}
       />
       <circle
-        className={`${color} transition-all duration-500 ease-out`}
+        className={`${color} transition-all duration-1000 ease-out`}
         fill="transparent"
         strokeWidth={strokeWidth}
         strokeDasharray={circumference}
@@ -141,7 +144,10 @@ export const Quiz: React.FC = () => {
       }, 1000);
     } else {
       if (timerRef.current) clearInterval(timerRef.current);
-    };
+    }
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    }
   }, [quizState]);
 
   useEffect(() => {
@@ -243,424 +249,541 @@ export const Quiz: React.FC = () => {
     return `${min}:${sec.toString().padStart(2, "0")}`;
   };
 
+  const pageTransition = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -20 },
+    transition: { duration: 0.3 }
+  };
+
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-7xl mx-auto p-6 md:p-8 space-y-8">
       
       {/* Header Tabs Navigation */}
-      <div className="flex justify-between items-center border-b border-slate-200/50 dark:border-slate-850 pb-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/[0.06] pb-6">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight">Quiz Generator</h1>
-          <p className="text-xs text-slate-500">Configure AI study evaluations.</p>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-white">Quiz Generator</h1>
+            <HelpCircle className="w-5 h-5 text-slate-400" />
+          </div>
+          <p className="text-sm text-slate-400 mt-1">Create personalized quizzes from any topic or document</p>
         </div>
         
         {quizState === "setup" && (
-          <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-0.5 border">
+          <div className="flex bg-[#0f0f1a] rounded-xl p-1 border border-white/[0.06]">
             <button
               onClick={() => setActiveTab("quiz")}
-              className={`px-3 py-1.5 rounded-md text-[10px] font-bold flex items-center gap-1.5 transition-colors ${activeTab === "quiz" ? "bg-white dark:bg-slate-900 text-slate-800 dark:text-white shadow-sm" : "text-slate-500"}`}
+              className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${activeTab === "quiz" ? "bg-[#161625] text-white shadow-sm border border-white/[0.06]" : "text-slate-400 hover:text-slate-200"}`}
             >
-              <Play className="w-3.5 h-3.5" /> Practice
+              <Play className="w-4 h-4" /> Practice
             </button>
             <button
               onClick={() => setActiveTab("history")}
-              className={`px-3 py-1.5 rounded-md text-[10px] font-bold flex items-center gap-1.5 transition-colors ${activeTab === "history" ? "bg-white dark:bg-slate-900 text-slate-800 dark:text-white shadow-sm" : "text-slate-500"}`}
+              className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${activeTab === "history" ? "bg-[#161625] text-white shadow-sm border border-white/[0.06]" : "text-slate-400 hover:text-slate-200"}`}
             >
-              <History className="w-3.5 h-3.5" /> History
+              <History className="w-4 h-4" /> History
             </button>
             <button
               onClick={() => setActiveTab("leaderboard")}
-              className={`px-3 py-1.5 rounded-md text-[10px] font-bold flex items-center gap-1.5 transition-colors ${activeTab === "leaderboard" ? "bg-white dark:bg-slate-900 text-slate-800 dark:text-white shadow-sm" : "text-slate-500"}`}
+              className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${activeTab === "leaderboard" ? "bg-[#161625] text-white shadow-sm border border-white/[0.06]" : "text-slate-400 hover:text-slate-200"}`}
             >
-              <TrendingUp className="w-3.5 h-3.5" /> Leaderboard
+              <TrendingUp className="w-4 h-4" /> Leaderboard
             </button>
           </div>
         )}
       </div>
 
-      {/* SETUP TAB */}
-      {activeTab === "quiz" && quizState === "setup" && (
-        <div className="p-8 rounded-3xl border border-white/5 bg-[#12131A] shadow-xl grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="space-y-6">
-            <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-              <BookOpen className="w-4.5 h-4.5 text-indigo-500" /> Exam Configuration Wizard
-            </h3>
-
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Subject Category</label>
-                <input
-                  type="text"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  placeholder="e.g. Data Structures, Modern History"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                />
+      <AnimatePresence mode="wait">
+        {/* SETUP TAB */}
+        {activeTab === "quiz" && quizState === "setup" && (
+          <motion.div key="setup" {...pageTransition} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-[#161625] border border-white/[0.06] rounded-2xl p-6 lg:p-8 space-y-8 hover:border-purple-500/30 hover:shadow-[0_0_30px_rgba(139,92,246,0.1)] transition-all duration-300">
+              <div className="flex items-center gap-3 border-b border-white/[0.06] pb-4">
+                <div className="p-2 bg-purple-500/10 rounded-lg">
+                  <BookOpen className="w-5 h-5 text-purple-400" />
+                </div>
+                <h3 className="text-lg font-bold text-white">Custom Quiz</h3>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Difficulty Level</label>
-                  <select
-                    value={difficulty}
-                    onChange={(e) => setDifficulty(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                  >
-                    <option value="easy">Easy Scholar</option>
-                    <option value="medium">Medium Master</option>
-                    <option value="hard">Hard Graduate</option>
-                  </select>
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-300">Topic or Subject</label>
+                  <input
+                    type="text"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                    placeholder="e.g. Data Structures, Modern History"
+                    className="w-full px-4 py-2.5 rounded-xl border border-white/[0.06] bg-[#0f0f1a] text-white placeholder:text-slate-500 focus:ring-1 focus:ring-purple-500/50 focus:border-purple-500/50 outline-none transition-all"
+                  />
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Question Types</label>
-                  <select
-                    value={quizType}
-                    onChange={(e) => setQuizType(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                  >
-                    <option value="mcq">Multiple Choice (MCQ)</option>
-                    <option value="tf">True / False</option>
-                  </select>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-300">Difficulty</label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {['easy', 'medium', 'hard'].map((level) => (
+                      <button
+                        key={level}
+                        onClick={() => setDifficulty(level)}
+                        className={`py-2.5 rounded-xl border text-sm font-medium transition-all flex items-center justify-center gap-2 capitalize
+                          ${difficulty === level 
+                            ? 'bg-purple-500/10 border-purple-500/50 text-purple-400' 
+                            : 'bg-[#0f0f1a] border-white/[0.06] text-slate-400 hover:border-white/[0.12] hover:bg-white/[0.02]'}`}
+                      >
+                        <div className={`w-2 h-2 rounded-full ${
+                          level === 'easy' ? 'bg-emerald-500' : 
+                          level === 'medium' ? 'bg-amber-500' : 'bg-rose-500'
+                        }`} />
+                        {level}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-300">Question Types</label>
+                    <div className="relative">
+                      <select
+                        value={quizType}
+                        onChange={(e) => setQuizType(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-white/[0.06] bg-[#0f0f1a] text-white appearance-none focus:ring-1 focus:ring-purple-500/50 focus:border-purple-500/50 outline-none transition-all"
+                      >
+                        <option value="mcq">Multiple Choice</option>
+                        <option value="tf">True / False</option>
+                      </select>
+                      <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-slate-400">
+                        <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-300">Number of Questions</label>
+                    <div className="flex bg-[#0f0f1a] border border-white/[0.06] rounded-xl p-1">
+                      {[5, 10, 15, 20].map((num) => (
+                        <button
+                          key={num}
+                          onClick={() => setCount(num)}
+                          className={`flex-1 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                            count === num
+                              ? 'bg-[#161625] text-white shadow-sm border border-white/[0.06]'
+                              : 'text-slate-400 hover:text-slate-200'
+                          }`}
+                        >
+                          {num}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Number of Questions: {count}</label>
-                <input
-                  type="range"
-                  min="2"
-                  max="10"
-                  value={count}
-                  onChange={(e) => setCount(parseInt(e.target.value))}
-                  className="w-full accent-indigo-650 h-1.5 bg-slate-200 dark:bg-slate-850 rounded-lg cursor-pointer"
-                />
+              <button
+                onClick={handleStartQuiz}
+                disabled={loading || !subject.trim()}
+                className="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-500 hover:from-violet-500 hover:to-purple-400 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 shadow-lg disabled:opacity-50 transition-all duration-300"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Generating Quiz...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-5 h-5" />
+                    <span>Generate Quiz</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Visual card details for quiz */}
+            <div className="bg-[#1a1a2e] border border-purple-500/20 rounded-2xl p-6 lg:p-8 flex flex-col justify-between relative overflow-hidden group">
+              <div className="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-purple-600/20 blur-[80px] group-hover:bg-purple-600/30 transition-all duration-500" />
+              <div className="absolute -bottom-24 -left-24 w-64 h-64 rounded-full bg-cyan-600/20 blur-[80px] group-hover:bg-cyan-600/30 transition-all duration-500" />
+              
+              <div className="space-y-4 z-10 relative">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-semibold uppercase tracking-wider">
+                  <Target className="w-3.5 h-3.5" />
+                  Active Evaluator
+                </div>
+                <h4 className="text-2xl font-bold text-white leading-tight">AI-Powered Assessment Engine</h4>
+                <p className="text-sm text-slate-400 leading-relaxed max-w-sm">
+                  Our AI generates contextually accurate questions based on your input to test your knowledge deeply and prepare you for actual exams.
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 gap-3 mt-8 z-10 relative">
+                <div className="p-4 rounded-xl border border-white/[0.06] bg-[#0a0a12]/50 backdrop-blur-md flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                      <BookOpen className="w-4 h-4 text-blue-400" />
+                    </div>
+                    <span className="text-sm font-medium text-slate-300">MCQ Weight</span>
+                  </div>
+                  <span className="font-bold text-white text-sm">100 pts</span>
+                </div>
+                <div className="p-4 rounded-xl border border-white/[0.06] bg-[#0a0a12]/50 backdrop-blur-md flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                      <CheckCircle className="w-4 h-4 text-emerald-400" />
+                    </div>
+                    <span className="text-sm font-medium text-slate-300">True/False Weight</span>
+                  </div>
+                  <span className="font-bold text-white text-sm">50 pts</span>
+                </div>
+                <div className="p-4 rounded-xl border border-white/[0.06] bg-[#0a0a12]/50 backdrop-blur-md flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                      <Award className="w-4 h-4 text-amber-400" />
+                    </div>
+                    <span className="text-sm font-medium text-slate-300">Passing Marks</span>
+                  </div>
+                  <span className="font-bold text-white text-sm">70% Accuracy</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* PLAYING STATE */}
+        {quizState === "playing" && activeQuiz && (
+          <motion.div key="playing" {...pageTransition} className="max-w-3xl mx-auto space-y-6">
+            
+            {/* Header Progress and Timer */}
+            <div className="bg-[#161625] border border-white/[0.06] rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div className="space-y-2 flex-1 w-full">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-slate-400">
+                    Question {currentQuestionIdx + 1} of {activeQuiz.questions.length}
+                  </span>
+                  <span className="text-sm font-bold text-white">{Math.round(((currentQuestionIdx) / activeQuiz.questions.length) * 100)}%</span>
+                </div>
+                <div className="w-full h-2 bg-[#0f0f1a] rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-violet-600 to-purple-500 transition-all duration-300 ease-out"
+                    style={{ width: `${((currentQuestionIdx) / activeQuiz.questions.length) * 100}%` }}
+                  />
+                </div>
+                <h4 className="text-sm font-semibold text-purple-400 pt-1">{activeQuiz.subject}</h4>
+              </div>
+              <div className="flex items-center gap-2 text-sm font-mono text-white bg-[#0f0f1a] px-4 py-2.5 rounded-xl border border-white/[0.06]">
+                <Clock className="w-4 h-4 text-purple-400" />
+                <span>{formatTimer(timer)}</span>
               </div>
             </div>
 
-            <button
-              onClick={handleStartQuiz}
-              disabled={loading || !subject.trim()}
-              className="w-full py-3 bg-indigo-600 hover:bg-indigo-750 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-lg disabled:opacity-50"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Generating AI Quiz...
-                </>
-              ) : (
-                <>
-                  <Play className="w-4 h-4 fill-white" />
-                  <span>Start Practice Exam</span>
-                </>
-              )}
-            </button>
-          </div>
+            {/* Question Card */}
+            <div className="bg-[#161625] border border-white/[0.06] rounded-2xl p-6 sm:p-8 space-y-8">
+              <h2 className="text-xl sm:text-2xl font-bold text-white leading-relaxed">
+                {activeQuiz.questions[currentQuestionIdx].question}
+              </h2>
 
-          {/* Visual card details for quiz */}
-          <div className="p-6 rounded-2xl bg-indigo-950 text-white flex flex-col justify-between relative overflow-hidden border border-indigo-900">
-            <div className="absolute top-[-20%] right-[-20%] w-48 h-48 rounded-full filter blur-[50px] bg-indigo-500/25 animate-pulse-slow" />
-            
-            <div className="space-y-3 z-10">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-indigo-300">Active Evaluator</span>
-              <h4 className="text-lg font-bold">Scored Leaderboard Analytics</h4>
-              <p className="text-[10px] text-indigo-200/70 leading-relaxed">
-                Completing quizzes logs accuracy rankings which feeds your study dashboard streak analytics and competitive scholar profiles.
-              </p>
-            </div>
-            
-            <div className="p-4 rounded-xl border border-white/5 bg-white/5 backdrop-blur-md space-y-2.5 z-10 text-[10px] text-indigo-200">
-              <div className="flex justify-between"><span>MCQ Weight:</span><span className="font-bold text-white">100 pts</span></div>
-              <div className="flex justify-between"><span>True/False Weight:</span><span className="font-bold text-white">50 pts</span></div>
-              <div className="flex justify-between"><span>Passing Marks:</span><span className="font-bold text-white">70% Accuracy</span></div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* PLAYING STATE */}
-      {quizState === "playing" && activeQuiz && (
-        <div className="p-8 rounded-3xl border border-white/5 bg-[#12131A] shadow-xl space-y-8">
-          
-          {/* Header Progress and Timer */}
-          <div className="flex justify-between items-center border-b pb-4">
-            <div className="space-y-1">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                Question {currentQuestionIdx + 1} of {activeQuiz.questions.length}
-              </span>
-              <h4 className="text-xs font-bold text-slate-600">{activeQuiz.subject}</h4>
-            </div>
-            <div className="flex items-center gap-2 text-xs font-mono text-slate-600 bg-slate-50 dark:bg-slate-950/40 px-3 py-1.5 rounded-xl border">
-              <Clock className="w-4 h-4 text-indigo-500" />
-              <span>{formatTimer(timer)}</span>
-            </div>
-          </div>
-
-          {/* Question and Option lists */}
-          <div className="space-y-6">
-            <h2 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-relaxed">
-              {activeQuiz.questions[currentQuestionIdx].question}
-            </h2>
-
-            <div className="grid grid-cols-1 gap-3">
-              {activeQuiz.questions[currentQuestionIdx].options.map((option) => {
-                const isSelected = selectedAnswers[currentQuestionIdx] === option;
-                return (
-                  <button
-                    key={option}
-                    onClick={() => handleAnswerSelect(option)}
-                    className={`p-4 rounded-xl text-left text-xs font-semibold border transition-all ${
-                      isSelected
-                        ? "bg-indigo-600 text-white border-indigo-650 shadow-md shadow-indigo-650/10"
-                        : "bg-white dark:bg-slate-950 hover:bg-slate-50 dark:hover:bg-slate-900/60 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300"
-                    }`}
-                  >
-                    {option}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Footer navigator */}
-          <div className="flex justify-between items-center border-t pt-6">
-            <span className="text-[10px] text-slate-400">Answer is required to advance.</span>
-            <button
-              onClick={handleNextQuestion}
-              disabled={submitting || !selectedAnswers[currentQuestionIdx]}
-              className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-750 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 disabled:opacity-50"
-            >
-              {submitting ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <>
-                  <span>{currentQuestionIdx === activeQuiz.questions.length - 1 ? "Submit Answers" : "Next Question"}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* RESULTS STATE */}
-      {quizState === "results" && activeQuiz && (
-        <div className="space-y-8">
-          
-          {/* Summary Metric Score cards */}
-          <div className="p-8 rounded-3xl border border-indigo-500/25 bg-indigo-950/20 text-white text-center space-y-6 relative overflow-hidden shadow-xl">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-indigo-500/20 filter blur-[80px]" />
-            
-            {/* lightweight confetti particle shower */}
-            {showConfetti && (
-              <div className="absolute inset-0 pointer-events-none overflow-hidden z-20 flex justify-center">
-                {Array.from({ length: 45 }).map((_, idx) => {
-                  const left = Math.random() * 100;
-                  const delay = Math.random() * 2.5;
-                  const duration = Math.random() * 2 + 2;
-                  const color = ["#8B5CF6", "#A855F7", "#ec4899", "#3b82f6", "#22c55e"][idx % 5];
+              <div className="grid grid-cols-1 gap-3">
+                {activeQuiz.questions[currentQuestionIdx].options.map((option, idx) => {
+                  const isSelected = selectedAnswers[currentQuestionIdx] === option;
                   return (
-                    <div
+                    <button
                       key={idx}
-                      className="absolute w-2 h-2 rounded-sm animate-fall"
-                      style={{
-                        left: `${left}%`,
-                        backgroundColor: color,
-                        animationDelay: `${delay}s`,
-                        animationDuration: `${duration}s`,
-                        transform: `rotate(${Math.random() * 360}deg)`
-                      }}
-                    />
+                      onClick={() => handleAnswerSelect(option)}
+                      className={`p-4 sm:p-5 rounded-xl text-left text-sm sm:text-base font-medium transition-all duration-200 border flex items-center gap-4 group
+                        ${isSelected
+                          ? "bg-purple-500/10 border-purple-500/50 text-white"
+                          : "bg-[#0f0f1a] border-white/[0.06] text-slate-300 hover:border-white/[0.12] hover:bg-white/[0.02]"
+                        }`}
+                    >
+                      <div className={`w-6 h-6 rounded-full border flex items-center justify-center flex-shrink-0 transition-colors
+                        ${isSelected ? 'border-purple-500 bg-purple-500 text-white' : 'border-white/[0.2] group-hover:border-purple-400/50'}
+                      `}>
+                        {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
+                      </div>
+                      {option}
+                    </button>
                   );
                 })}
               </div>
-            )}
 
-            <div className="relative flex items-center justify-center mx-auto my-4 w-28 h-28 z-10">
-              <ProgressRing 
-                progress={scoreDetails.pct} 
-                size={112} 
-                strokeWidth={8} 
-                color={scoreDetails.pct >= 70 ? "stroke-emerald-500" : "stroke-rose-500"} 
-              />
-              <div className="absolute flex flex-col items-center justify-center">
-                <span className="text-2xl font-black">{scoreDetails.pct}%</span>
-                <span className="text-[9px] font-bold uppercase text-slate-400">Accuracy</span>
+              {/* Footer navigator */}
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t border-white/[0.06]">
+                <span className="text-sm text-slate-500">
+                  {selectedAnswers[currentQuestionIdx] ? 'Answer selected.' : 'Please select an answer.'}
+                </span>
+                <button
+                  onClick={handleNextQuestion}
+                  disabled={submitting || !selectedAnswers[currentQuestionIdx]}
+                  className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-violet-600 to-purple-500 hover:from-violet-500 hover:to-purple-400 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50 transition-all"
+                >
+                  {submitting ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <span>{currentQuestionIdx === activeQuiz.questions.length - 1 ? "Submit Quiz" : "Next Question"}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
               </div>
             </div>
+          </motion.div>
+        )}
 
-            <div className="space-y-2 z-10 relative">
-              <h2 className="text-2xl font-extrabold">Practice Exam Complete</h2>
-              <p className="text-xs text-indigo-200/80">Subject: {activeQuiz.subject}</p>
-            </div>
-
-            <div className="grid grid-cols-3 gap-4 max-w-sm mx-auto pt-4 z-10 relative">
-              <div className="p-3 bg-white/5 border border-white/5 rounded-2xl">
-                <span className="text-[10px] text-indigo-300 block">Total Questions</span>
-                <span className="text-lg font-bold block mt-1">{scoreDetails.total}</span>
-              </div>
-              <div className="p-3 bg-white/5 border border-white/5 rounded-2xl">
-                <span className="text-[10px] text-indigo-300 block">Correct Answers</span>
-                <span className="text-lg font-bold block mt-1 text-emerald-400">{scoreDetails.score}</span>
-              </div>
-              <div className="p-3 bg-white/5 border border-white/5 rounded-2xl">
-                <span className="text-[10px] text-indigo-300 block">Accuracy Rate</span>
-                <span className={`text-lg font-bold block mt-1 ${scoreDetails.pct >= 70 ? "text-emerald-400" : "text-rose-450"}`}>{scoreDetails.pct}%</span>
-              </div>
-            </div>
-
-            <div className="pt-4 z-10 relative">
-              <button
-                onClick={() => setQuizState("setup")}
-                className="px-6 py-2.5 bg-white hover:bg-slate-100 text-indigo-950 rounded-xl text-xs font-bold transition-colors cursor-pointer"
-              >
-                Back to Configuration
-              </button>
-            </div>
-          </div>
-
-          {/* Question Detailed review breakdown with explanations */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Question Reviews & Explanations</h3>
+        {/* RESULTS STATE */}
+        {quizState === "results" && activeQuiz && (
+          <motion.div key="results" {...pageTransition} className="space-y-8">
             
-            <div className="flex flex-col gap-4">
-              {activeQuiz.questions.map((q, idx) => {
-                const selected = selectedAnswers[idx];
-                const isCorrect = selected === q.correct_answer;
-                
-                return (
-                  <div key={idx} className="p-6 rounded-2xl border border-white/5 bg-[#12131A] shadow-xl space-y-4">
-                    <div className="flex items-start justify-between gap-4">
-                      <h4 className="text-xs sm:text-sm font-bold leading-relaxed text-slate-850 dark:text-white">
-                        {idx + 1}. {q.question}
-                      </h4>
-                      <div className="flex-shrink-0 mt-0.5">
-                        {isCorrect ? (
-                          <CheckCircle className="w-5 h-5 text-emerald-500" />
-                        ) : (
-                          <XCircle className="w-5 h-5 text-rose-500" />
+            {/* Summary Metric Score cards */}
+            <div className="bg-[#1a1a2e] rounded-3xl border border-purple-500/20 p-8 sm:p-12 text-center relative overflow-hidden shadow-[0_0_40px_rgba(139,92,246,0.1)]">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-purple-600/10 blur-[100px] pointer-events-none" />
+              
+              {/* lightweight confetti particle shower */}
+              {showConfetti && (
+                <div className="absolute inset-0 pointer-events-none overflow-hidden z-20 flex justify-center">
+                  {Array.from({ length: 50 }).map((_, idx) => {
+                    const left = Math.random() * 100;
+                    const delay = Math.random() * 2;
+                    const duration = Math.random() * 2 + 2;
+                    const color = ["#8B5CF6", "#06B6D4", "#ec4899", "#3b82f6", "#10b981"][idx % 5];
+                    return (
+                      <div
+                        key={idx}
+                        className="absolute w-2 h-2 rounded-sm animate-fall"
+                        style={{
+                          left: `${left}%`,
+                          top: '-10px',
+                          backgroundColor: color,
+                          animationDelay: `${delay}s`,
+                          animationDuration: `${duration}s`,
+                          transform: `rotate(${Math.random() * 360}deg)`
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+
+              <div className="relative flex flex-col items-center z-10 space-y-6">
+                <div className="relative flex items-center justify-center w-40 h-40">
+                  <ProgressRing 
+                    progress={scoreDetails.pct} 
+                    size={160} 
+                    strokeWidth={10} 
+                    color={scoreDetails.pct >= 70 ? "stroke-emerald-500" : "stroke-rose-500"} 
+                  />
+                  <div className="absolute flex flex-col items-center justify-center">
+                    <span className="text-4xl font-black text-white">{scoreDetails.pct}%</span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400 mt-1">Accuracy</span>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <h2 className="text-3xl font-bold text-white">
+                    {scoreDetails.pct >= 90 ? 'Outstanding!' : 
+                     scoreDetails.pct >= 70 ? 'Great Job!' : 
+                     'Keep Practicing!'}
+                  </h2>
+                  <p className="text-slate-400 text-sm">You completed the {activeQuiz.subject} quiz.</p>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full max-w-2xl pt-4">
+                  <div className="bg-[#0f0f1a] border border-white/[0.06] rounded-2xl p-4 flex flex-col items-center">
+                    <span className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">Total</span>
+                    <span className="text-2xl font-bold text-white">{scoreDetails.total}</span>
+                  </div>
+                  <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-4 flex flex-col items-center">
+                    <span className="text-xs font-medium text-emerald-400/80 uppercase tracking-wider mb-2">Correct</span>
+                    <span className="text-2xl font-bold text-emerald-400">{scoreDetails.score}</span>
+                  </div>
+                  <div className="bg-rose-500/10 border border-rose-500/20 rounded-2xl p-4 flex flex-col items-center">
+                    <span className="text-xs font-medium text-rose-400/80 uppercase tracking-wider mb-2">Incorrect</span>
+                    <span className="text-2xl font-bold text-rose-400">{scoreDetails.total - scoreDetails.score}</span>
+                  </div>
+                  <div className="bg-purple-500/10 border border-purple-500/20 rounded-2xl p-4 flex flex-col items-center">
+                    <span className="text-xs font-medium text-purple-400/80 uppercase tracking-wider mb-2">Time</span>
+                    <span className="text-2xl font-bold text-purple-400 font-mono">{formatTimer(timer)}</span>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap justify-center gap-4 pt-6">
+                  <button
+                    onClick={() => setQuizState("setup")}
+                    className="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-500 hover:from-violet-500 hover:to-purple-400 text-white rounded-xl text-sm font-semibold transition-all flex items-center gap-2"
+                  >
+                    <RefreshCcw className="w-4 h-4" /> Try Another Quiz
+                  </button>
+                  <button
+                    onClick={() => {
+                      setQuizState("setup");
+                      setActiveTab("history");
+                    }}
+                    className="px-6 py-3 bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.08] text-white rounded-xl text-sm font-semibold transition-all flex items-center gap-2"
+                  >
+                    <History className="w-4 h-4" /> View History
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Question Detailed review breakdown */}
+            <div className="space-y-6">
+              <h3 className="text-xl font-bold text-white">Detailed Review</h3>
+              
+              <div className="space-y-4">
+                {activeQuiz.questions.map((q, idx) => {
+                  const selected = selectedAnswers[idx];
+                  const isCorrect = selected === q.correct_answer;
+                  
+                  return (
+                    <div key={idx} className="bg-[#161625] border border-white/[0.06] rounded-2xl p-6 space-y-5">
+                      <div className="flex items-start justify-between gap-4">
+                        <h4 className="text-base font-medium text-white leading-relaxed">
+                          <span className="text-slate-500 mr-2">{idx + 1}.</span> 
+                          {q.question}
+                        </h4>
+                        <div className={`p-2 rounded-lg flex-shrink-0 ${isCorrect ? 'bg-emerald-500/10' : 'bg-rose-500/10'}`}>
+                          {isCorrect ? (
+                            <CheckCircle className="w-5 h-5 text-emerald-400" />
+                          ) : (
+                            <XCircle className="w-5 h-5 text-rose-400" />
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className={`p-4 rounded-xl border ${isCorrect ? "bg-emerald-500/5 border-emerald-500/20" : "bg-rose-500/5 border-rose-500/20"}`}>
+                          <span className="text-xs font-medium uppercase tracking-wider block mb-2 text-slate-400">Your Answer</span>
+                          <span className={`text-sm font-medium ${isCorrect ? 'text-emerald-400' : 'text-rose-400'}`}>
+                            {selected || "No answer submitted"}
+                          </span>
+                        </div>
+                        {!isCorrect && (
+                          <div className="p-4 rounded-xl border bg-emerald-500/5 border-emerald-500/20">
+                            <span className="text-xs font-medium uppercase tracking-wider block mb-2 text-slate-400">Correct Answer</span>
+                            <span className="text-sm font-medium text-emerald-400">{q.correct_answer}</span>
+                          </div>
                         )}
                       </div>
-                    </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px]">
-                      <div className={`p-2.5 rounded-lg border ${isCorrect ? "bg-emerald-500/5 border-emerald-500/10 text-emerald-600" : "bg-rose-500/5 border-rose-500/10 text-rose-500"}`}>
-                        <span className="block font-bold mb-1">Your Answer:</span>
-                        <span>{selected || "No answer submitted"}</span>
-                      </div>
-                      <div className="p-2.5 rounded-lg border bg-emerald-500/5 border-emerald-500/10 text-emerald-600">
-                        <span className="block font-bold mb-1">Correct Answer:</span>
-                        <span>{q.correct_answer}</span>
+                      <div className="p-4 bg-purple-500/5 rounded-xl border border-purple-500/10">
+                        <div className="flex items-center gap-2 text-purple-400 font-bold text-xs uppercase tracking-wider mb-2">
+                          <Sparkles className="w-4 h-4" /> AI Explanation
+                        </div>
+                        <p className="text-sm text-slate-300 leading-relaxed">
+                          {q.explanation}
+                        </p>
                       </div>
                     </div>
-
-                    <div className="p-3.5 bg-indigo-500/5 dark:bg-indigo-500/5 rounded-xl border border-indigo-500/15 text-[11px] leading-relaxed text-slate-350">
-                      <div className="flex items-center gap-1.5 text-indigo-400 font-black text-[9px] uppercase tracking-wider mb-1">
-                        <Sparkles className="w-3.5 h-3.5 animate-pulse" /> AI Explanation
-                      </div>
-                      {q.explanation}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-        </div>
-      )}
-
-      {/* HISTORY TAB */}
-      {activeTab === "history" && (
-        <div className="p-6 rounded-3xl border border-white/5 bg-[#12131A] shadow-xl space-y-4">
-          <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200">Practice Exam History</h3>
-          
-          <div className="flex flex-col gap-3">
-            {history.length === 0 ? (
-              <div className="text-center py-12 text-xs text-slate-400">
-                No history records found. Study and complete tests first!
+                  );
+                })}
               </div>
-            ) : (
-              history.map((hist) => {
-                const acc = Math.round((hist.score / hist.total_questions) * 100);
-                return (
-                  <div key={hist._id} className="flex items-center justify-between p-4.5 rounded-2xl border border-white/5 bg-[#161720]/40 hover:border-indigo-500/30 transition-all select-none">
-                    <div className="space-y-1">
-                      <h4 className="text-xs font-bold text-white">{hist.subject}</h4>
-                      <div className="flex flex-wrap gap-2 items-center text-[9px] font-mono text-slate-455 uppercase">
-                        <span className={`px-2 py-0.5 rounded border text-[8px] font-extrabold uppercase ${
-                          hist.difficulty === "easy"
-                            ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
-                            : hist.difficulty === "hard"
-                            ? "text-rose-500 bg-rose-500/10 border-rose-500/20"
-                            : "text-amber-500 bg-amber-500/10 border-amber-500/20"
-                        }`}>
-                          {hist.difficulty}
-                        </span>
-                        <span>•</span>
-                        <span className="px-1.5 py-0.5 rounded bg-slate-805">{hist.type.toUpperCase()}</span>
-                        <span>•</span>
-                        <span>{formatTimer(hist.time_taken)} taken</span>
+            </div>
+
+          </motion.div>
+        )}
+
+        {/* HISTORY TAB */}
+        {activeTab === "history" && quizState === "setup" && (
+          <motion.div key="history" {...pageTransition} className="bg-[#161625] border border-white/[0.06] rounded-2xl p-6 sm:p-8 space-y-6">
+            <h3 className="text-lg font-bold text-white">Past Assessments</h3>
+            
+            <div className="space-y-4">
+              {history.length === 0 ? (
+                <div className="text-center py-16 px-4 bg-[#0f0f1a] rounded-2xl border border-white/[0.06]">
+                  <div className="w-16 h-16 bg-white/[0.02] rounded-full flex items-center justify-center mx-auto mb-4">
+                    <History className="w-8 h-8 text-slate-500" />
+                  </div>
+                  <h4 className="text-lg font-medium text-white mb-2">No History Yet</h4>
+                  <p className="text-sm text-slate-400">Take your first quiz to see your performance over time.</p>
+                </div>
+              ) : (
+                history.map((hist) => {
+                  const acc = Math.round((hist.score / hist.total_questions) * 100);
+                  return (
+                    <div key={hist._id} className="flex flex-col sm:flex-row sm:items-center justify-between p-5 rounded-2xl border border-white/[0.06] bg-[#0f0f1a] hover:border-purple-500/30 transition-all gap-4">
+                      <div className="space-y-2">
+                        <h4 className="text-base font-semibold text-white">{hist.subject}</h4>
+                        <div className="flex flex-wrap items-center gap-3">
+                          <span className={`px-2.5 py-1 rounded-md text-xs font-semibold capitalize ${
+                            hist.difficulty === "easy"
+                              ? "text-emerald-400 bg-emerald-500/10 border border-emerald-500/20"
+                              : hist.difficulty === "hard"
+                              ? "text-rose-400 bg-rose-500/10 border border-rose-500/20"
+                              : "text-amber-400 bg-amber-500/10 border border-amber-500/20"
+                          }`}>
+                            {hist.difficulty}
+                          </span>
+                          <span className="text-xs text-slate-500 px-2 py-1 bg-white/[0.05] rounded-md border border-white/[0.05] uppercase tracking-wider">{hist.type}</span>
+                          <span className="text-xs text-slate-400 flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {formatTimer(hist.time_taken)}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4 bg-white/[0.02] p-3 rounded-xl border border-white/[0.05]">
+                        <ProgressRing progress={acc} size={40} strokeWidth={4} color={acc >= 70 ? "stroke-emerald-500" : "stroke-rose-500"} />
+                        <div className="flex flex-col">
+                          <span className={`text-lg font-bold ${acc >= 70 ? "text-emerald-400" : "text-rose-400"}`}>
+                            {acc}%
+                          </span>
+                          <span className="text-xs text-slate-500 font-medium">
+                            {hist.score}/{hist.total_questions}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <ProgressRing progress={acc} size={28} strokeWidth={3} color={acc >= 70 ? "stroke-emerald-500" : "stroke-rose-500"} />
-                      <span className={`text-[11px] font-black font-mono ${acc >= 70 ? "text-emerald-400" : "text-rose-450"}`}>
-                        {hist.score}/{hist.total_questions} ({acc}%)
-                      </span>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-      )}
+                  );
+                })
+              )}
+            </div>
+          </motion.div>
+        )}
 
-      {/* LEADERBOARD TAB */}
-      {activeTab === "leaderboard" && (
-        <div className="p-6 rounded-3xl border border-white/5 bg-[#12131A] shadow-xl space-y-6">
-          <div className="border-b border-white/5 pb-3 flex justify-between items-center select-none">
-            <h3 className="text-xs font-bold text-slate-200">Competitive Scholar Rankings</h3>
-            <span className="text-[10px] text-slate-550 font-bold uppercase tracking-wider">Top 10 Global Scores</span>
-          </div>
+        {/* LEADERBOARD TAB */}
+        {activeTab === "leaderboard" && quizState === "setup" && (
+          <motion.div key="leaderboard" {...pageTransition} className="bg-[#161625] border border-white/[0.06] rounded-2xl p-6 sm:p-8 space-y-8">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/[0.06] pb-4">
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <Award className="w-5 h-5 text-purple-400" /> Global Rankings
+              </h3>
+              <span className="text-xs font-semibold text-purple-400 bg-purple-500/10 px-3 py-1 rounded-full border border-purple-500/20 uppercase tracking-wider">Top Scholars</span>
+            </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="border-b border-white/5 text-slate-450 font-bold uppercase tracking-wider text-[9px] select-none">
-                  <th className="py-2.5">Rank</th>
-                  <th className="py-2.5">Name</th>
-                  <th className="py-2.5 text-center">Quizzes Done</th>
-                  <th className="py-2.5 text-right">Cumulative Points</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5">
-                {leaderboard.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="text-center py-8 text-xs text-slate-450">
-                      No leaderboard scores available.
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse min-w-[500px]">
+                <thead>
+                  <tr className="border-b border-white/[0.06] text-slate-400 text-xs font-semibold uppercase tracking-wider">
+                    <th className="py-4 px-4 w-24">Rank</th>
+                    <th className="py-4 px-4">Student</th>
+                    <th className="py-4 px-4 text-center">Quizzes</th>
+                    <th className="py-4 px-4 text-right">Points</th>
                   </tr>
-                ) : (
-                  leaderboard.map((item, idx) => (
-                    <tr key={idx} className="hover:bg-slate-800/10 transition-colors">
-                      <td className="py-3.5 font-bold">
-                        {idx === 0 && <span className="px-2 py-0.5 rounded-lg bg-amber-500/10 text-amber-500 text-[9px] font-black font-mono">GOLD #1</span>}
-                        {idx === 1 && <span className="px-2 py-0.5 rounded-lg bg-slate-300/10 text-slate-350 text-[9px] font-black font-mono">SILVER #2</span>}
-                        {idx === 2 && <span className="px-2 py-0.5 rounded-lg bg-amber-700/10 text-amber-600 text-[9px] font-black font-mono">BRONZE #3</span>}
-                        {idx > 2 && <span className="text-slate-500 font-mono pl-2">#{idx + 1}</span>}
+                </thead>
+                <tbody className="divide-y divide-white/[0.06]">
+                  {leaderboard.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="text-center py-12 text-sm text-slate-400 bg-[#0f0f1a]/50">
+                        No leaderboard data yet. Be the first to rank!
                       </td>
-                      <td className="py-3.5 font-bold text-slate-200">{item.name}</td>
-                      <td className="py-3.5 text-center text-slate-400 font-mono font-bold">{item.quizzes_taken}</td>
-                      <td className="py-3.5 text-right font-black text-indigo-400 font-mono">{item.total_score} pts</td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
+                  ) : (
+                    leaderboard.map((item, idx) => (
+                      <tr key={idx} className="hover:bg-white/[0.02] transition-colors group">
+                        <td className="py-4 px-4">
+                          {idx === 0 && <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 text-sm font-bold shadow-[0_0_15px_rgba(245,158,11,0.2)]">1</span>}
+                          {idx === 1 && <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-300/20 text-slate-300 border border-slate-300/30 text-sm font-bold">2</span>}
+                          {idx === 2 && <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-amber-700/30 text-amber-600 border border-amber-700/40 text-sm font-bold">3</span>}
+                          {idx > 2 && <span className="inline-flex items-center justify-center w-8 h-8 text-slate-500 text-sm font-bold">{idx + 1}</span>}
+                        </td>
+                        <td className="py-4 px-4 font-semibold text-slate-200 group-hover:text-white transition-colors">{item.name}</td>
+                        <td className="py-4 px-4 text-center text-slate-400 font-mono">{item.quizzes_taken}</td>
+                        <td className="py-4 px-4 text-right font-bold text-purple-400 font-mono">{item.total_score.toLocaleString()}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -8,20 +8,14 @@ import {
   Activity,
   Key,
   Compass,
-  HelpCircle,
-  HelpCircle as QuizIcon,
   MessageSquare,
   BookOpen,
   CheckCircle,
-  AlertTriangle,
   Play,
   Copy,
-  ChevronRight,
   Loader2,
   Lock,
   RefreshCw,
-  Search,
-  BookMarked
 } from "lucide-react";
 
 interface SocAlert {
@@ -50,13 +44,13 @@ export const Cybersecurity: React.FC = () => {
   const [flowLayer, setFlowLayer] = useState(7);
 
   const osiLayers = [
-    { num: 7, name: "Application", protocols: "HTTP, DNS, SMTP, FTP", desc: "User interface and application interactions. Directly handles end-user inputs.", color: "from-indigo-650 to-indigo-500" },
-    { num: 6, name: "Presentation", protocols: "SSL, TLS, JPEG, ASCII", desc: "Data translation, compression, and encryption/decryption validation.", color: "from-violet-600 to-indigo-500" },
-    { num: 5, name: "Session", protocols: "NetBIOS, PPTP, RPC", desc: "Manages session establishment, coordination, and termination between applications.", color: "from-purple-650 to-indigo-500" },
-    { num: 4, name: "Transport", protocols: "TCP, UDP", desc: "Ensures reliable, end-to-end data transfer, flow control, and error recovery.", color: "from-fuchsia-600 to-indigo-500" },
-    { num: 3, name: "Network", protocols: "IP, ICMP, IPSec, Routing", desc: "Handles logical addressing, packet routing, and forwarding across networks.", color: "from-pink-600 to-indigo-500" },
-    { num: 2, name: "Data Link", protocols: "Ethernet, PPP, Switch, MAC", desc: "Provides physical addressing (MAC), link framing, and error detection.", color: "from-rose-600 to-indigo-500" },
-    { num: 1, name: "Physical", protocols: "Cables, Hubs, Bits, DSL", desc: "Transmits raw, unstructured bits over physical medium media.", color: "from-amber-600 to-orange-500" }
+    { num: 7, name: "Application", protocols: "HTTP, DNS, SMTP, FTP", desc: "User interface and application interactions. Directly handles end-user inputs.", color: "from-purple-600 to-purple-400" },
+    { num: 6, name: "Presentation", protocols: "SSL, TLS, JPEG, ASCII", desc: "Data translation, compression, and encryption/decryption validation.", color: "from-violet-600 to-purple-500" },
+    { num: 5, name: "Session", protocols: "NetBIOS, PPTP, RPC", desc: "Manages session establishment, coordination, and termination between applications.", color: "from-blue-600 to-cyan-500" },
+    { num: 4, name: "Transport", protocols: "TCP, UDP", desc: "Ensures reliable, end-to-end data transfer, flow control, and error recovery.", color: "from-cyan-600 to-teal-500" },
+    { num: 3, name: "Network", protocols: "IP, ICMP, IPSec, Routing", desc: "Handles logical addressing, packet routing, and forwarding across networks.", color: "from-emerald-600 to-green-500" },
+    { num: 2, name: "Data Link", protocols: "Ethernet, PPP, Switch, MAC", desc: "Provides physical addressing (MAC), link framing, and error detection.", color: "from-amber-600 to-orange-500" },
+    { num: 1, name: "Physical", protocols: "Cables, Hubs, Bits, DSL", desc: "Transmits raw, unstructured bits over physical medium media.", color: "from-orange-600 to-red-500" }
   ];
 
   // Linux Terminal State
@@ -273,46 +267,62 @@ export const Cybersecurity: React.FC = () => {
     }
   };
 
+  const categories = [
+    { id: "networking", label: "Network Security", icon: <BookOpen className="w-6 h-6" />, color: "text-blue-500", bg: "bg-blue-500/10", border: "border-blue-500/20", desc: "OSI model & packets", difficulty: "Beginner" },
+    { id: "linux", label: "Linux Terminal", icon: <Terminal className="w-6 h-6" />, color: "text-emerald-500", bg: "bg-emerald-500/10", border: "border-emerald-500/20", desc: "CLI skills & forensics", difficulty: "Intermediate" },
+    { id: "crypto", label: "Cryptography Lab", icon: <Key className="w-6 h-6" />, color: "text-purple-500", bg: "bg-purple-500/10", border: "border-purple-500/20", desc: "Ciphers & hashing", difficulty: "Intermediate" },
+    { id: "websec", label: "Web Security", icon: <Lock className="w-6 h-6" />, color: "text-orange-500", bg: "bg-orange-500/10", border: "border-orange-500/20", desc: "SQLi & XSS attacks", difficulty: "Advanced" },
+    { id: "soc", label: "SOC Analysis", icon: <Activity className="w-6 h-6" />, color: "text-rose-500", bg: "bg-rose-500/10", border: "border-rose-500/20", desc: "Threat monitoring", difficulty: "Advanced" },
+    { id: "tutor", label: "Security AI Tutor", icon: <MessageSquare className="w-6 h-6" />, color: "text-cyan-500", bg: "bg-cyan-500/10", border: "border-cyan-500/20", desc: "AI assistant", difficulty: "All Levels" },
+    { id: "roadmap", label: "Career Roadmaps", icon: <Compass className="w-6 h-6" />, color: "text-pink-500", bg: "bg-pink-500/10", border: "border-pink-500/20", desc: "Certifications path", difficulty: "All Levels" }
+  ];
+
   return (
-    <div className="flex-grow p-6 lg:p-8 space-y-8 max-w-6xl mx-auto w-full overflow-y-auto">
-      
-      {/* Header and Section Tabs */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/50 dark:border-slate-800/40 pb-6">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="max-w-7xl mx-auto p-6 sm:p-8 space-y-8"
+    >
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
-            <ShieldAlert className="w-5 h-5 text-indigo-500 animate-pulse" /> Cybersecurity Learning Center
+          <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+            <ShieldAlert className="w-7 h-7 text-purple-500" /> Cybersecurity Lab
           </h2>
-          <p className="text-xs text-slate-450 mt-1">Deepen your defense competencies with interactive networking labs, terminals, and sandboxes.</p>
+          <p className="text-sm text-slate-400 mt-1">Deepen your defense competencies with interactive networking labs, terminals, and sandboxes.</p>
         </div>
       </div>
 
-      {/* Lab Nav Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
-        {[
-          { id: "networking", label: "Networking", icon: <BookOpen className="w-4 h-4" /> },
-          { id: "linux", label: "Linux Term", icon: <Terminal className="w-4 h-4" /> },
-          { id: "crypto", label: "Cryptography", icon: <Key className="w-4 h-4" /> },
-          { id: "websec", label: "Web Security", icon: <Lock className="w-4 h-4" /> },
-          { id: "soc", label: "SOC Dashboard", icon: <Activity className="w-4 h-4" /> },
-          { id: "tutor", label: "AI Tutor", icon: <MessageSquare className="w-4 h-4" /> },
-          { id: "roadmap", label: "Roadmaps", icon: <Compass className="w-4 h-4" /> }
-        ].map((item) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
+        {categories.map((item) => (
           <button
             key={item.id}
             onClick={() => setActiveSection(item.id as any)}
-            className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-[10px] font-bold transition-all focus:outline-none ${
+            className={`flex flex-col items-start gap-3 p-4 rounded-2xl border transition-all duration-300 text-left ${
               activeSection === item.id
-                ? "bg-indigo-600 border-indigo-650 text-white shadow-md shadow-indigo-600/10"
-                : "border-slate-200 dark:border-slate-850 hover:bg-slate-100 dark:hover:bg-slate-900 bg-white dark:bg-slate-900/60 text-slate-600 dark:text-slate-400"
+                ? "bg-[#1a1a2e] border-purple-500/50 shadow-[0_0_20px_rgba(139,92,246,0.15)] scale-[1.02]"
+                : "bg-[#161625] border-white/[0.06] hover:border-purple-500/30 hover:bg-[#1a1a2e]"
             }`}
           >
-            {item.icon}
-            {item.label}
+            <div className={`p-2.5 rounded-xl border ${item.bg} ${item.color} ${item.border}`}>
+              {item.icon}
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-white">{item.label}</h3>
+              <p className="text-[10px] text-slate-400 mt-0.5">{item.desc}</p>
+            </div>
+            <span className={`text-[9px] font-semibold px-2 py-0.5 rounded-md mt-auto border ${
+              item.difficulty === "Beginner" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
+              item.difficulty === "Intermediate" ? "bg-amber-500/10 text-amber-400 border-amber-500/20" :
+              item.difficulty === "Advanced" ? "bg-rose-500/10 text-rose-400 border-rose-500/20" :
+              "bg-purple-500/10 text-purple-400 border-purple-500/20"
+            }`}>
+              {item.difficulty}
+            </span>
           </button>
         ))}
       </div>
 
-      <div className="min-h-[500px]">
+      <div className="min-h-[600px]">
         <AnimatePresence mode="wait">
           
           {/* SECTION 1: Networking Lab */}
@@ -322,11 +332,10 @@ export const Cybersecurity: React.FC = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="grid grid-cols-1 lg:grid-cols-12 gap-8"
+              className="grid grid-cols-1 lg:grid-cols-12 gap-6"
             >
-              {/* Layers List */}
-              <div className="lg:col-span-5 space-y-4">
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">OSI 7-Layer Architecture</h3>
+              <div className="lg:col-span-4 space-y-4">
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider">OSI 7-Layer Architecture</h3>
                 <div className="flex flex-col gap-2">
                   {osiLayers.map((layer) => {
                     const isActive = activeOsiLayer === layer.num;
@@ -334,181 +343,103 @@ export const Cybersecurity: React.FC = () => {
                       <button
                         key={layer.num}
                         onClick={() => setActiveOsiLayer(layer.num)}
-                        className={`p-3 rounded-xl border text-left flex items-center justify-between transition-all focus:outline-none ${
+                        className={`p-3 rounded-xl border text-left flex items-center justify-between transition-all ${
                           isActive
-                            ? "border-indigo-500 bg-indigo-500/5 text-indigo-500"
-                            : "border-slate-200 dark:border-slate-850 hover:bg-slate-100/50 dark:hover:bg-slate-900 bg-white dark:bg-slate-900/60 text-slate-600 dark:text-slate-400"
+                            ? "bg-purple-500/10 border-purple-500/40 text-purple-100"
+                            : "bg-[#161625] border-white/[0.06] hover:bg-[#1a1a2e] text-slate-400 hover:text-slate-200"
                         }`}
                       >
                         <div className="flex items-center gap-3">
-                          <span className="text-[10px] font-bold w-6 h-6 rounded-full bg-slate-200/50 dark:bg-slate-850 flex items-center justify-center">
+                          <span className={`text-xs font-bold w-7 h-7 rounded-lg flex items-center justify-center ${isActive ? "bg-purple-500 text-white" : "bg-[#0f0f1a] text-slate-400"}`}>
                             L{layer.num}
                           </span>
-                          <span className="text-xs font-bold">{layer.name} Layer</span>
+                          <span className="text-sm font-semibold">{layer.name}</span>
                         </div>
-                        <span className="text-[9px] text-slate-400">{layer.protocols.split(",")[0]}</span>
+                        <span className="text-xs">{layer.protocols.split(",")[0]}</span>
                       </button>
                     );
                   })}
                 </div>
               </div>
 
-              {/* Layer Explanation panel */}
-              <div className="lg:col-span-7 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800/40 bg-white dark:bg-slate-900/60 shadow-sm flex flex-col justify-between space-y-6">
+              <div className="lg:col-span-8 bg-[#161625] border border-white/[0.06] rounded-2xl p-6 shadow-sm flex flex-col justify-between space-y-6">
                 {(() => {
                   const current = osiLayers.find(l => l.num === activeOsiLayer)!;
                   return (
                     <>
-                      <div className="space-y-4">
-                        <div className="flex justify-between items-center border-b pb-4">
+                      <div className="space-y-6">
+                        <div className="flex justify-between items-start border-b border-white/[0.06] pb-4">
                           <div>
-                            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Layer {current.num} Definition</span>
-                            <h4 className="text-sm font-bold text-slate-800 dark:text-white mt-1">{current.name} Layer</h4>
+                            <span className="text-xs font-semibold uppercase tracking-wider text-purple-400">Layer {current.num}</span>
+                            <h4 className="text-xl font-bold text-white mt-1">{current.name} Layer</h4>
                           </div>
-                          <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-indigo-500/10 text-indigo-500">
+                          <span className="px-3 py-1 rounded-lg text-xs font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20">
                             OSI Stack
                           </span>
                         </div>
 
-                        <div className="space-y-1">
-                          <span className="text-[10px] font-bold text-slate-400 uppercase">Core Protocols / Standards</span>
-                          <p className="text-xs font-semibold text-slate-700 dark:text-slate-400">{current.protocols}</p>
-                        </div>
-
-                        <div className="space-y-1">
-                          <span className="text-[10px] font-bold text-slate-400 uppercase">Summary Explanation</span>
-                          <p className="text-xs text-slate-550 dark:text-slate-400 leading-relaxed">{current.desc}</p>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="bg-[#0f0f1a] p-4 rounded-xl border border-white/[0.06]">
+                            <span className="text-xs font-bold text-slate-500 uppercase">Core Protocols</span>
+                            <p className="text-sm font-semibold text-white mt-2">{current.protocols}</p>
+                          </div>
+                          <div className="bg-[#0f0f1a] p-4 rounded-xl border border-white/[0.06]">
+                            <span className="text-xs font-bold text-slate-500 uppercase">Description</span>
+                            <p className="text-sm text-slate-300 mt-2">{current.desc}</p>
+                          </div>
                         </div>
                       </div>
 
-                      {/* Packet Flow Visualizer */}
-                      <div className="p-4.5 rounded-2xl bg-[#161720]/40 border border-white/5 space-y-4">
+                      <div className="bg-[#0f0f1a] p-6 rounded-2xl border border-white/[0.06] space-y-6">
                         <div className="flex justify-between items-center select-none">
-                          <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest">OSI Packet Simulation</span>
+                          <span className="text-xs font-bold text-purple-400 uppercase tracking-widest">Packet Simulation</span>
                           <button
                             onClick={startPacketSimulation}
                             disabled={flowState !== "idle" && flowState !== "delivered"}
-                            className="px-3 h-7 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-lg text-[9px] font-black uppercase tracking-wider cursor-pointer transition-all flex items-center gap-1 shadow-md shadow-indigo-600/10"
+                            className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-500 hover:from-violet-500 hover:to-purple-400 disabled:opacity-50 text-white rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer transition-all flex items-center gap-2"
                           >
-                            <Play className="w-2.5 h-2.5" /> Run Simulation
+                            <Play className="w-4 h-4" /> Run Simulation
                           </button>
                         </div>
 
-                        <div className="flex items-center justify-between relative py-2 select-none">
-                          {/* Sender Panel */}
-                          <div className={`w-14 h-14 rounded-xl border flex flex-col items-center justify-center text-[8px] font-bold transition-all ${
+                        <div className="flex items-center justify-between relative py-4 select-none">
+                          <div className={`w-20 h-20 rounded-2xl border flex flex-col items-center justify-center text-xs font-bold transition-all ${
                             flowState === "encapsulating"
-                              ? "bg-indigo-600 border-indigo-500 text-white scale-105"
-                              : "bg-slate-900 border-white/5 text-slate-300"
+                              ? "bg-purple-600 border-purple-400 text-white shadow-[0_0_20px_rgba(139,92,246,0.5)] scale-110"
+                              : "bg-[#161625] border-white/[0.06] text-slate-400"
                           }`}>
                             <span>CLIENT</span>
-                            <span className="text-[7px] font-black text-indigo-400 uppercase mt-0.5">SENDER</span>
+                            <span className="text-[9px] font-black text-purple-400 uppercase mt-1">SENDER</span>
                           </div>
                           
-                          {/* Dotted link line with dynamic animation */}
-                          <div className="flex-grow h-0.5 border-t border-dashed border-white/10 relative mx-4">
+                          <div className="flex-grow h-0.5 border-t-2 border-dashed border-white/20 relative mx-6">
                             {flowState === "transmitting" ? (
                               <motion.div 
                                 animate={{ x: ["0%", "100%"] }}
                                 transition={{ repeat: 3, duration: 0.6, ease: "linear" }}
-                                className="absolute top-[-3.5px] w-2 h-2 rounded-full bg-indigo-500 shadow-lg shadow-indigo-550/50"
+                                className="absolute top-[calc(-50%-4px)] w-3 h-3 rounded-full bg-purple-500 shadow-[0_0_10px_rgba(139,92,246,1)]"
                               />
                             ) : flowState === "delivered" ? (
-                              <div className="absolute left-1/2 -translate-x-1/2 top-[-4px] w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-md shadow-emerald-500/20" />
+                              <div className="absolute left-1/2 -translate-x-1/2 top-[calc(-50%-4px)] w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,1)]" />
                             ) : null}
                           </div>
 
-                          {/* Receiver Panel */}
-                          <div className={`w-14 h-14 rounded-xl border flex flex-col items-center justify-center text-[8px] font-bold transition-all ${
+                          <div className={`w-20 h-20 rounded-2xl border flex flex-col items-center justify-center text-xs font-bold transition-all ${
                             flowState === "decapsulating"
-                              ? "bg-indigo-600 border-indigo-500 text-white scale-105"
+                              ? "bg-purple-600 border-purple-400 text-white shadow-[0_0_20px_rgba(139,92,246,0.5)] scale-110"
                               : flowState === "delivered"
-                              ? "bg-emerald-600/20 border-emerald-500/30 text-emerald-400"
-                              : "bg-slate-900 border-white/5 text-slate-300"
+                              ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-400"
+                              : "bg-[#161625] border-white/[0.06] text-slate-400"
                           }`}>
                             <span>SERVER</span>
-                            <span className="text-[7px] font-black text-indigo-400 uppercase mt-0.5">RECEIVER</span>
+                            <span className="text-[9px] font-black text-purple-400 uppercase mt-1">RECEIVER</span>
                           </div>
                         </div>
 
-                        {/* Interactive Network Topology Map */}
-                        <div className="flex flex-col items-center justify-between border border-white/5 rounded-xl p-4 bg-slate-950/20 space-y-4">
-                          <span className="text-[8px] font-mono text-slate-500 uppercase tracking-widest">Interactive Network Topology Map</span>
-                          <svg className="w-full h-32 max-w-lg" viewBox="0 0 500 120">
-                            {/* Lines / Links */}
-                            <line x1="60" y1="60" x2="180" y2="30" stroke="rgba(255,255,255,0.05)" strokeWidth="2" />
-                            <line x1="60" y1="60" x2="180" y2="90" stroke="rgba(255,255,255,0.05)" strokeWidth="2" />
-                            <line x1="180" y1="30" x2="320" y2="30" stroke="rgba(255,255,255,0.05)" strokeWidth="2" />
-                            <line x1="180" y1="90" x2="320" y2="90" stroke="rgba(255,255,255,0.05)" strokeWidth="2" />
-                            <line x1="320" y1="30" x2="440" y2="60" stroke="rgba(255,255,255,0.05)" strokeWidth="2" />
-                            <line x1="320" y1="90" x2="440" y2="60" stroke="rgba(255,255,255,0.05)" strokeWidth="2" />
-
-                            {/* Active Transmitting Links with Glow */}
-                            {flowState === "transmitting" && (
-                              <>
-                                <motion.line 
-                                  x1="60" y1="60" x2="180" y2="30" 
-                                  stroke="#8B5CF6" strokeWidth="2" 
-                                  strokeDasharray="4 4" 
-                                  animate={{ strokeDashoffset: [0, -20] }} 
-                                  transition={{ repeat: Infinity, duration: 1, ease: "linear" }} 
-                                />
-                                <motion.line 
-                                  x1="180" y1="30" x2="320" y2="30" 
-                                  stroke="#8B5CF6" strokeWidth="2" 
-                                  strokeDasharray="4 4" 
-                                  animate={{ strokeDashoffset: [0, -20] }} 
-                                  transition={{ repeat: Infinity, duration: 1, ease: "linear" }} 
-                                />
-                                <motion.line 
-                                  x1="320" y1="30" x2="440" y2="60" 
-                                  stroke="#8B5CF6" strokeWidth="2" 
-                                  strokeDasharray="4 4" 
-                                  animate={{ strokeDashoffset: [0, -20] }} 
-                                  transition={{ repeat: Infinity, duration: 1, ease: "linear" }} 
-                                />
-                              </>
-                            )}
-
-                            {/* Packet Animating Node Dots */}
-                            {flowState === "transmitting" && (
-                              <motion.circle 
-                                r="4" 
-                                fill="#A855F7" 
-                                animate={{ 
-                                  cx: [60, 180, 320, 440], 
-                                  cy: [60, 30, 30, 60] 
-                                }} 
-                                transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }} 
-                              />
-                            )}
-
-                            {/* Node points */}
-                            <circle cx="60" cy="60" r="10" fill="#1e1b4b" stroke="#8B5CF6" strokeWidth="2" />
-                            <text x="60" y="64" fill="#a78bfa" fontSize="8" textAnchor="middle" fontWeight="bold">Host</text>
-
-                            <circle cx="180" cy="30" r="8" fill="#0f172a" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
-                            <text x="180" y="33" fill="#94a3b8" fontSize="6" textAnchor="middle">Sw1</text>
-
-                            <circle cx="180" cy="90" r="8" fill="#0f172a" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
-                            <text x="180" y="93" fill="#94a3b8" fontSize="6" textAnchor="middle">Sw2</text>
-
-                            <circle cx="320" cy="30" r="8" fill="#0f172a" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
-                            <text x="320" y="33" fill="#94a3b8" fontSize="6" textAnchor="middle">Rt1</text>
-
-                            <circle cx="320" cy="90" r="8" fill="#0f172a" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
-                            <text x="320" y="93" fill="#94a3b8" fontSize="6" textAnchor="middle">Rt2</text>
-
-                            <circle cx="440" cy="60" r="10" fill="#064e3b" stroke="#10B981" strokeWidth="2" />
-                            <text x="440" y="64" fill="#34d399" fontSize="8" textAnchor="middle" fontWeight="bold">Serv</text>
-                          </svg>
-                        </div>
-
-                        {/* Packet construction display */}
-                        <div className="p-3 bg-slate-950/60 rounded-xl border border-white/5 space-y-1.5 font-mono text-[9px] select-text">
-                          <div className="flex justify-between items-center text-[8px] text-slate-550 uppercase font-sans font-bold select-none border-b border-white/5 pb-1">
+                        <div className="p-4 bg-[#161625] rounded-xl border border-white/[0.06] space-y-2 font-mono text-xs">
+                          <div className="flex justify-between items-center text-[10px] text-slate-500 uppercase font-sans font-bold border-b border-white/[0.06] pb-2">
                             <span>Active Frame Data</span>
-                            <span className="text-indigo-400">
+                            <span className="text-purple-400">
                               {flowState === "idle" && "Idle"}
                               {flowState === "encapsulating" && `L${flowLayer} Encapsulating...`}
                               {flowState === "transmitting" && "Transmitting bits..."}
@@ -516,7 +447,7 @@ export const Cybersecurity: React.FC = () => {
                               {flowState === "delivered" && "Delivered!"}
                             </span>
                           </div>
-                          <div className="text-slate-300 truncate font-semibold leading-relaxed">
+                          <div className="text-emerald-400 font-semibold truncate pt-2">
                             {flowState === "idle" && "[Payload Data]"}
                             {flowState === "encapsulating" && (
                               flowLayer === 7 ? "[L7 [Payload]]" :
@@ -555,30 +486,29 @@ export const Cybersecurity: React.FC = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="grid grid-cols-1 lg:grid-cols-12 gap-8"
+              className="grid grid-cols-1 lg:grid-cols-12 gap-6"
             >
-              {/* Exercises Tracker */}
               <div className="lg:col-span-4 space-y-4">
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Completed Exercises</h3>
-                <div className="p-4 rounded-xl border border-slate-200/50 dark:border-slate-850 bg-white dark:bg-slate-900/60 shadow-sm space-y-4">
-                  <p className="text-[10px] text-slate-450">Execute basic terminal tasks locally to trigger achievements.</p>
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider">Completed Exercises</h3>
+                <div className="p-5 rounded-2xl border border-white/[0.06] bg-[#161625] space-y-4">
+                  <p className="text-xs text-slate-400">Execute basic terminal tasks locally to trigger achievements.</p>
                   
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {[
                       { id: "ls", name: "ls (List Directory)" },
                       { id: "cd", name: "cd (Change Directory)" },
                       { id: "cat", name: "cat (Read Files)" },
                       { id: "touch", name: "touch (Create File)" },
-                      { id: "solve_flag", name: "Read Flag (Find Secret Flag)" }
+                      { id: "solve_flag", name: "Read Flag (Find Secret)" }
                     ].map((ex) => {
                       const isDone = completedExercises.includes(ex.id);
                       return (
-                        <div key={ex.id} className="flex items-center justify-between text-xs">
-                          <span className={`${isDone ? "text-emerald-500 font-semibold" : "text-slate-500"}`}>{ex.name}</span>
+                        <div key={ex.id} className="flex items-center justify-between text-sm">
+                          <span className={`${isDone ? "text-emerald-400 font-semibold" : "text-slate-400"}`}>{ex.name}</span>
                           {isDone ? (
-                            <CheckCircle className="w-4 h-4 text-emerald-500" />
+                            <CheckCircle className="w-5 h-5 text-emerald-400" />
                           ) : (
-                            <div className="w-3.5 h-3.5 rounded-full border border-slate-300" />
+                            <div className="w-4 h-4 rounded-full border-2 border-white/[0.1]" />
                           )}
                         </div>
                       );
@@ -587,47 +517,43 @@ export const Cybersecurity: React.FC = () => {
                 </div>
               </div>
 
-              {/* Terminal Simulator Console */}
-              <div className="lg:col-span-8 flex flex-col h-[400px] rounded-2xl border border-white/5 bg-[#09090b] font-mono shadow-2xl overflow-hidden relative">
-                {/* Header bar */}
-                <div className="h-10 bg-[#11121a] border-b border-white/5 px-4 flex items-center justify-between text-[10px] text-slate-500 select-none">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                    <span className="ml-2 font-bold font-mono text-slate-400">student@studysphere-cli: {currentCwd}</span>
+              <div className="lg:col-span-8 flex flex-col h-[500px] rounded-2xl border border-white/[0.06] bg-[#0a0a12] font-mono shadow-2xl overflow-hidden">
+                <div className="h-12 bg-[#0f0f1a] border-b border-white/[0.06] px-4 flex items-center justify-between text-xs text-slate-400 select-none">
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full bg-rose-500" />
+                    <span className="w-3 h-3 rounded-full bg-amber-500" />
+                    <span className="w-3 h-3 rounded-full bg-emerald-500" />
+                    <span className="ml-3 font-bold">student@studysphere: {currentCwd}</span>
                   </div>
                   <span className="font-bold">BASH</span>
                 </div>
 
-                {/* Output log */}
-                <div className="flex-grow p-4 overflow-y-auto text-[10.5px] text-emerald-400 space-y-2.5 scrollbar-thin select-text">
+                <div className="flex-grow p-4 overflow-y-auto text-sm text-emerald-400 space-y-3 scrollbar-thin">
                   {terminalLogs.map((log, index) => (
                     <div key={index} className="space-y-1">
                       {log.command !== "system-init" && (
-                        <div className="flex items-center gap-1.5 text-indigo-400 font-bold select-none">
+                        <div className="flex items-center gap-2 text-purple-400 font-bold select-none">
                           <span>$</span>
-                          <span className="text-slate-300">{log.command}</span>
+                          <span className="text-white">{log.command}</span>
                         </div>
                       )}
-                      <pre className="whitespace-pre-wrap leading-relaxed text-emerald-300/90 font-mono" style={{ textShadow: "0 0 4px rgba(52, 211, 153, 0.15)" }}>{log.output}</pre>
+                      <pre className="whitespace-pre-wrap leading-relaxed text-emerald-300 font-mono">{log.output}</pre>
                     </div>
                   ))}
                   {terminalLoading && (
-                    <div className="text-[10px] text-slate-500 animate-pulse select-none font-mono">Executing system operations...</div>
+                    <div className="text-xs text-slate-500 animate-pulse font-mono">Executing...</div>
                   )}
                   <div ref={terminalEndRef} />
                 </div>
 
-                {/* Input prompt form */}
-                <form onSubmit={handleTerminalSubmit} className="h-10 bg-[#11121a]/60 border-t border-white/5 flex items-center px-4 gap-2 select-none">
-                  <span className="text-indigo-400 font-bold text-[11px] font-mono">$</span>
+                <form onSubmit={handleTerminalSubmit} className="h-12 bg-[#0f0f1a] border-t border-white/[0.06] flex items-center px-4 gap-3">
+                  <span className="text-purple-400 font-bold text-sm font-mono">$</span>
                   <input 
                     type="text" 
                     value={terminalInput}
                     onChange={(e) => setTerminalInput(e.target.value)}
-                    className="flex-grow bg-transparent border-none outline-none font-mono text-[11px] text-slate-100 placeholder-slate-700"
-                    placeholder="Enter bash command (ls, cd, pwd, cat flag.txt)..."
+                    className="flex-grow bg-transparent border-none outline-none font-mono text-sm text-white placeholder-slate-600"
+                    placeholder="Enter command (ls, cd, cat flag.txt)..."
                     disabled={terminalLoading}
                   />
                   <button type="submit" className="hidden" />
@@ -643,17 +569,16 @@ export const Cybersecurity: React.FC = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="grid grid-cols-1 lg:grid-cols-12 gap-8"
+              className="grid grid-cols-1 lg:grid-cols-12 gap-6"
             >
-              {/* Algorithm select list */}
               <div className="lg:col-span-4 space-y-4">
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Cipher Modules</h3>
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider">Cipher Modules</h3>
                 <div className="flex flex-col gap-2">
                   {[
                     { id: "caesar", name: "Caesar Shift Cipher" },
-                    { id: "aes", name: "AES-256 Symmetric Cipher" },
-                    { id: "rsa", name: "RSA Asymmetric Cipher" },
-                    { id: "sha256", name: "SHA-256 Hash Algorithm" },
+                    { id: "aes", name: "AES-256 Symmetric" },
+                    { id: "rsa", name: "RSA Asymmetric" },
+                    { id: "sha256", name: "SHA-256 Hash" },
                     { id: "base64", name: "Base64 Encoder" }
                   ].map((algo) => (
                     <button
@@ -663,10 +588,10 @@ export const Cybersecurity: React.FC = () => {
                         setCryptoResult("");
                         setCryptoExplanation("");
                       }}
-                      className={`p-3 rounded-xl border text-left text-xs font-bold transition-all focus:outline-none ${
+                      className={`p-4 rounded-xl border text-left text-sm font-bold transition-all ${
                         cryptoAlgo === algo.id
-                          ? "border-indigo-500 bg-indigo-500/5 text-indigo-500"
-                          : "border-slate-200 dark:border-slate-850 hover:bg-slate-100/50 dark:hover:bg-slate-900 bg-white dark:bg-slate-900/60 text-slate-600 dark:text-slate-400"
+                          ? "bg-purple-500/10 border-purple-500/40 text-purple-100"
+                          : "bg-[#161625] border-white/[0.06] hover:bg-[#1a1a2e] text-slate-400 hover:text-slate-200"
                       }`}
                     >
                       {algo.name}
@@ -675,56 +600,55 @@ export const Cybersecurity: React.FC = () => {
                 </div>
               </div>
 
-              {/* Encryption form */}
-              <div className="lg:col-span-8 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800/40 bg-white dark:bg-slate-900/60 shadow-sm space-y-6">
-                <div className="flex justify-between items-center border-b pb-4">
-                  <h4 className="text-sm font-bold text-slate-800 dark:text-white capitalize">
-                    {cryptoAlgo} lab playground
+              <div className="lg:col-span-8 p-6 rounded-2xl border border-white/[0.06] bg-[#161625] shadow-sm space-y-6">
+                <div className="flex justify-between items-center border-b border-white/[0.06] pb-4">
+                  <h4 className="text-lg font-bold text-white capitalize">
+                    {cryptoAlgo} Lab
                   </h4>
                   {cryptoAlgo !== "sha256" && (
-                    <div className="flex bg-slate-100 dark:bg-slate-950 p-1 rounded-xl border border-slate-200 dark:border-slate-850">
+                    <div className="flex bg-[#0f0f1a] p-1 rounded-xl border border-white/[0.06]">
                       <button 
                         onClick={() => setCryptoAction("encrypt")}
-                        className={`px-3 py-1 rounded-lg text-[9px] font-bold uppercase transition-all ${
-                          cryptoAction === "encrypt" ? "bg-white dark:bg-slate-900 shadow text-indigo-500" : "text-slate-400"
+                        className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase transition-all ${
+                          cryptoAction === "encrypt" ? "bg-white/[0.1] text-white shadow" : "text-slate-400 hover:text-white"
                         }`}
                       >
-                        Encrypt / Encode
+                        Encrypt
                       </button>
                       <button 
                         onClick={() => setCryptoAction("decrypt")}
-                        className={`px-3 py-1 rounded-lg text-[9px] font-bold uppercase transition-all ${
-                          cryptoAction === "decrypt" ? "bg-white dark:bg-slate-900 shadow text-indigo-500" : "text-slate-400"
+                        className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase transition-all ${
+                          cryptoAction === "decrypt" ? "bg-white/[0.1] text-white shadow" : "text-slate-400 hover:text-white"
                         }`}
                       >
-                        Decrypt / Decode
+                        Decrypt
                       </button>
                     </div>
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase">Input Text</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-400 uppercase">Input Text</label>
                     <textarea 
-                      rows={3}
+                      rows={5}
                       value={cryptoText}
                       onChange={(e) => setCryptoText(e.target.value)}
-                      className="w-full px-4 py-2 text-xs bg-slate-100/50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl outline-none"
-                      placeholder="Enter raw text message to crypt..."
+                      className="w-full px-4 py-3 text-sm bg-[#0f0f1a] border border-white/[0.06] rounded-xl outline-none text-white focus:border-purple-500/50 resize-none"
+                      placeholder="Enter raw text message..."
                     />
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     {["caesar", "aes", "rsa"].includes(cryptoAlgo) && (
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold text-slate-400 uppercase">Cipher Key (Password)</label>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-400 uppercase">Cipher Key</label>
                         <input 
                           type="text" 
                           value={cryptoKey}
                           onChange={(e) => setCryptoKey(e.target.value)}
-                          className="w-full px-4 py-2 text-xs bg-slate-100/50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl outline-none"
-                          placeholder={cryptoAlgo === "caesar" ? "Integer (e.g., 3)" : "Encryption Password"}
+                          className="w-full px-4 py-3 text-sm bg-[#0f0f1a] border border-white/[0.06] rounded-xl outline-none text-white focus:border-purple-500/50"
+                          placeholder={cryptoAlgo === "caesar" ? "Integer (e.g., 3)" : "Password"}
                         />
                       </div>
                     )}
@@ -732,32 +656,33 @@ export const Cybersecurity: React.FC = () => {
                     <button
                       onClick={handleCryptoRun}
                       disabled={cryptoLoading}
-                      className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md"
+                      className="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-500 hover:from-violet-500 hover:to-purple-400 text-white rounded-xl text-sm font-bold shadow-md transition-all flex justify-center items-center gap-2"
                     >
-                      {cryptoLoading ? "Processing..." : "Run Encryption Output"}
+                      {cryptoLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Play className="w-5 h-5" />}
+                      Execute
                     </button>
                   </div>
                 </div>
 
                 {cryptoResult && (
-                  <div className="border-t border-slate-200/50 dark:border-slate-800/40 pt-4 space-y-4">
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase">Result Output Payload</span>
-                      <div className="p-3 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-xl font-mono text-[10px] text-slate-700 dark:text-slate-400 break-all select-all flex items-center justify-between">
+                  <div className="border-t border-white/[0.06] pt-6 space-y-6">
+                    <div className="space-y-2">
+                      <span className="text-xs font-bold text-slate-400 uppercase">Result Output</span>
+                      <div className="p-4 bg-[#0f0f1a] border border-white/[0.06] rounded-xl font-mono text-sm text-emerald-400 break-all flex items-start justify-between gap-4">
                         <span>{cryptoResult}</span>
                         <Copy 
                           onClick={() => {
                             navigator.clipboard.writeText(cryptoResult);
-                            addToast("Copied!", "Output payload copied to clipboard.", "info");
+                            addToast("Copied!", "Output copied to clipboard.", "info");
                           }}
-                          className="w-4 h-4 text-slate-400 hover:text-indigo-500 cursor-pointer flex-shrink-0"
+                          className="w-5 h-5 text-slate-400 hover:text-white cursor-pointer flex-shrink-0"
                         />
                       </div>
                     </div>
 
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase">Cryptographic Logic Explanation</span>
-                      <p className="text-xs text-slate-500">{cryptoExplanation}</p>
+                    <div className="space-y-2">
+                      <span className="text-xs font-bold text-slate-400 uppercase">Explanation</span>
+                      <p className="text-sm text-slate-300 bg-[#0f0f1a] p-4 rounded-xl border border-white/[0.06] leading-relaxed">{cryptoExplanation}</p>
                     </div>
                   </div>
                 )}
@@ -772,24 +697,23 @@ export const Cybersecurity: React.FC = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="grid grid-cols-1 lg:grid-cols-12 gap-8"
+              className="grid grid-cols-1 lg:grid-cols-12 gap-6"
             >
-              {/* Vulnerabilities select grid */}
               <div className="lg:col-span-4 space-y-4">
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">vulnerabilities labs</h3>
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider">Vulnerabilities</h3>
                 <div className="flex flex-col gap-2">
                   <button
                     onClick={() => { setWebsecLab("sqli"); setWebsecOutput(""); setWebsecPayload(""); }}
-                    className={`p-3 rounded-xl border text-left text-xs font-bold transition-all ${
-                      websecLab === "sqli" ? "border-indigo-500 bg-indigo-500/5 text-indigo-500" : "border-slate-200 dark:border-slate-850 text-slate-600"
+                    className={`p-4 rounded-xl border text-left text-sm font-bold transition-all ${
+                      websecLab === "sqli" ? "bg-purple-500/10 border-purple-500/40 text-purple-100" : "bg-[#161625] border-white/[0.06] hover:bg-[#1a1a2e] text-slate-400"
                     }`}
                   >
                     SQL Injection Simulator
                   </button>
                   <button
                     onClick={() => { setWebsecLab("xss"); setWebsecOutput(""); setWebsecPayload(""); }}
-                    className={`p-3 rounded-xl border text-left text-xs font-bold transition-all ${
-                      websecLab === "xss" ? "border-indigo-500 bg-indigo-500/5 text-indigo-500" : "border-slate-200 dark:border-slate-850 text-slate-600"
+                    className={`p-4 rounded-xl border text-left text-sm font-bold transition-all ${
+                      websecLab === "xss" ? "bg-purple-500/10 border-purple-500/40 text-purple-100" : "bg-[#161625] border-white/[0.06] hover:bg-[#1a1a2e] text-slate-400"
                     }`}
                   >
                     Cross-Site Scripting (XSS)
@@ -797,62 +721,58 @@ export const Cybersecurity: React.FC = () => {
                 </div>
               </div>
 
-              {/* Vulnerability playground simulator */}
-              <div className="lg:col-span-8 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800/40 bg-white dark:bg-slate-900/60 shadow-sm space-y-6">
-                <div className="border-b pb-4">
-                  <span className="text-[9px] font-bold text-slate-400 uppercase">Educational Lab</span>
-                  <h4 className="text-sm font-bold text-slate-800 dark:text-white mt-1">
-                    {websecLab === "sqli" ? "Secure Parameterized Queries vs Injections" : "DOM Output Sanitizations"}
+              <div className="lg:col-span-8 p-6 rounded-2xl border border-white/[0.06] bg-[#161625] shadow-sm space-y-6">
+                <div className="border-b border-white/[0.06] pb-4">
+                  <span className="text-xs font-bold text-purple-400 uppercase">Educational Lab</span>
+                  <h4 className="text-xl font-bold text-white mt-1">
+                    {websecLab === "sqli" ? "SQL Injection Prevention" : "DOM Output Sanitization"}
                   </h4>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase">
-                      {websecLab === "sqli" ? "Enter SQL Username Payload" : "Enter HTML/Script Output Payload"}
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-400 uppercase">
+                      {websecLab === "sqli" ? "Username Payload" : "HTML/Script Payload"}
                     </label>
-                    <div className="flex gap-2">
+                    <div className="flex gap-3">
                       <input 
                         type="text" 
                         value={websecPayload}
                         onChange={(e) => setWebsecPayload(e.target.value)}
-                        className="flex-grow px-4 py-2 text-xs bg-slate-100/50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl outline-none"
+                        className="flex-grow px-4 py-3 text-sm bg-[#0f0f1a] border border-white/[0.06] rounded-xl outline-none text-white focus:border-purple-500/50"
                         placeholder={websecLab === "sqli" ? "' OR '1'='1" : "<script>alert('xss')</script>"}
                       />
                       <button
                         onClick={handleWebsecRun}
-                        className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold"
+                        disabled={websecLoading}
+                        className="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-500 hover:from-violet-500 hover:to-purple-400 text-white rounded-xl text-sm font-bold flex items-center justify-center min-w-[120px]"
                       >
-                        Submit
+                        {websecLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Inject"}
                       </button>
                     </div>
                   </div>
 
                   {websecOutput && (
-                    <div className="space-y-4 border-t pt-4">
-                      
-                      {/* Simulation result */}
-                      <div className={`p-4 rounded-xl border text-xs font-semibold ${
+                    <div className="space-y-6 border-t border-white/[0.06] pt-6">
+                      <div className={`p-4 rounded-xl border text-sm font-semibold ${
                         websecSafe 
-                          ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" 
-                          : "bg-rose-500/10 text-rose-500 border-rose-500/20"
+                          ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" 
+                          : "bg-rose-500/10 text-rose-400 border-rose-500/20"
                       }`}>
                         {websecOutput}
                       </div>
 
-                      {/* Code comparison grid */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="p-4 rounded-xl bg-rose-500/5 border border-rose-500/10 space-y-2">
-                          <span className="text-[9px] font-bold text-rose-500 uppercase">VULNERABLE CODE LOGIC</span>
-                          <pre className="text-[9px] font-mono whitespace-pre-wrap text-rose-650 dark:text-rose-450 leading-relaxed bg-slate-950 p-2.5 rounded-lg border border-slate-800">{websecVulnerableSql}</pre>
+                        <div className="p-4 rounded-xl bg-rose-500/5 border border-rose-500/10 space-y-3">
+                          <span className="text-xs font-bold text-rose-500 uppercase">Vulnerable Logic</span>
+                          <pre className="text-xs font-mono whitespace-pre-wrap text-rose-400 leading-relaxed bg-[#0a0a12] p-4 rounded-lg border border-white/[0.06]">{websecVulnerableSql}</pre>
                         </div>
                         
-                        <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/10 space-y-2">
-                          <span className="text-[9px] font-bold text-emerald-500 uppercase">SECURE MITIGATION CODE</span>
-                          <pre className="text-[9px] font-mono whitespace-pre-wrap text-emerald-650 dark:text-emerald-450 leading-relaxed bg-slate-950 p-2.5 rounded-lg border border-slate-800">{websecSecureSql}</pre>
+                        <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/10 space-y-3">
+                          <span className="text-xs font-bold text-emerald-500 uppercase">Secure Mitigation</span>
+                          <pre className="text-xs font-mono whitespace-pre-wrap text-emerald-400 leading-relaxed bg-[#0a0a12] p-4 rounded-lg border border-white/[0.06]">{websecSecureSql}</pre>
                         </div>
                       </div>
-
                     </div>
                   )}
                 </div>
@@ -869,57 +789,55 @@ export const Cybersecurity: React.FC = () => {
               exit={{ opacity: 0, y: -10 }}
               className="space-y-6"
             >
-              {/* Alert Metrics grid */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 {[
                   { label: "Active Threats Monitor", val: "Critical (Red Alert)", color: "text-rose-500" },
                   { label: "Alert status counts", val: `${socAlerts.length} Active incidents`, color: "text-amber-500" },
                   { label: "Intrusion system shield", val: "Operational", color: "text-emerald-500" }
                 ].map((m, idx) => (
-                  <div key={idx} className="p-5 rounded-2xl border border-slate-200/50 dark:border-slate-850 bg-white dark:bg-slate-900/60 shadow-sm flex flex-col justify-between h-24">
-                    <span className="text-[10px] font-bold text-slate-450 uppercase tracking-wider">{m.label}</span>
-                    <span className={`text-sm font-extrabold ${m.color}`}>{m.val}</span>
+                  <div key={idx} className="p-6 rounded-2xl border border-white/[0.06] bg-[#161625] shadow-sm flex flex-col justify-between h-32">
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{m.label}</span>
+                    <span className={`text-lg font-bold ${m.color}`}>{m.val}</span>
                   </div>
                 ))}
               </div>
 
-              {/* Alerts Log list Table */}
-              <div className="p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800/40 bg-white dark:bg-slate-900/60 shadow-sm space-y-4">
-                <div className="flex justify-between items-center border-b pb-3">
-                  <h3 className="text-xs font-bold text-slate-800 dark:text-white uppercase tracking-wider">Firewall Event Intrusion Log</h3>
-                  <button onClick={fetchSocAlerts} className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-500">
-                    <RefreshCw className="w-3.5 h-3.5" />
+              <div className="p-6 rounded-2xl border border-white/[0.06] bg-[#161625] shadow-sm space-y-4">
+                <div className="flex justify-between items-center border-b border-white/[0.06] pb-4">
+                  <h3 className="text-sm font-bold text-white uppercase tracking-wider">Firewall Event Intrusion Log</h3>
+                  <button onClick={fetchSocAlerts} className="p-2 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] text-white transition-all">
+                    <RefreshCw className="w-4 h-4" />
                   </button>
                 </div>
 
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse">
+                  <table className="w-full text-left text-sm border-collapse">
                     <thead>
-                      <tr className="border-b border-slate-200 dark:border-slate-850 text-slate-400 text-[10px] uppercase font-bold">
-                        <th className="py-2.5">Severity</th>
-                        <th className="py-2.5">Signature Alert</th>
-                        <th className="py-2.5">Source IP</th>
-                        <th className="py-2.5">Destination IP</th>
-                        <th className="py-2.5">Time Log</th>
+                      <tr className="border-b border-white/[0.06] text-slate-400 text-xs uppercase font-semibold">
+                        <th className="py-3">Severity</th>
+                        <th className="py-3">Signature Alert</th>
+                        <th className="py-3">Source IP</th>
+                        <th className="py-3">Destination IP</th>
+                        <th className="py-3">Time</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 dark:divide-slate-850 text-slate-700 dark:text-slate-400">
+                    <tbody className="divide-y divide-white/[0.06] text-slate-300">
                       {socAlerts.map((a) => (
-                        <tr key={a.id} className="hover:bg-slate-50 dark:hover:bg-slate-900/40 transition-colors">
-                          <td className="py-3">
-                            <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase ${
-                              a.severity === "critical" ? "bg-rose-500/10 text-rose-500" :
-                              a.severity === "high" ? "bg-orange-500/10 text-orange-500" :
-                              a.severity === "medium" ? "bg-amber-500/10 text-amber-500" :
-                              "bg-slate-500/10 text-slate-500"
+                        <tr key={a.id} className="hover:bg-white/[0.02] transition-colors">
+                          <td className="py-4">
+                            <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase ${
+                              a.severity === "critical" ? "bg-rose-500/10 text-rose-400 border border-rose-500/20" :
+                              a.severity === "high" ? "bg-orange-500/10 text-orange-400 border border-orange-500/20" :
+                              a.severity === "medium" ? "bg-amber-500/10 text-amber-400 border border-amber-500/20" :
+                              "bg-slate-500/10 text-slate-400 border border-slate-500/20"
                             }`}>
                               {a.severity}
                             </span>
                           </td>
-                          <td className="py-3 font-semibold">{a.signature}</td>
-                          <td className="py-3 font-mono text-[10px]">{a.source}</td>
-                          <td className="py-3 font-mono text-[10px]">{a.destination}</td>
-                          <td className="py-3 text-slate-400">{a.time}</td>
+                          <td className="py-4 font-semibold">{a.signature}</td>
+                          <td className="py-4 font-mono text-xs text-purple-300">{a.source}</td>
+                          <td className="py-4 font-mono text-xs text-purple-300">{a.destination}</td>
+                          <td className="py-4 text-slate-500 text-xs">{a.time}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -936,35 +854,33 @@ export const Cybersecurity: React.FC = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="flex flex-col h-[500px] rounded-2xl border border-slate-200/50 dark:border-slate-800/40 bg-white dark:bg-slate-900/60 shadow-sm overflow-hidden"
+              className="flex flex-col h-[600px] rounded-2xl border border-white/[0.06] bg-[#161625] shadow-sm overflow-hidden"
             >
-              {/* Tutor banner info */}
-              <div className="p-4 border-b border-slate-100 dark:border-slate-850 bg-slate-50/50 dark:bg-slate-950/20 flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
-                  <ShieldAlert className="w-5 h-5" />
+              <div className="p-5 border-b border-white/[0.06] bg-[#0f0f1a] flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center border border-purple-500/20">
+                  <ShieldAlert className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-slate-800 dark:text-white">AI Cyber Security Analyst Tutor</h4>
-                  <p className="text-[9px] text-slate-450 mt-0.5">Queries cryptographic details, web vulnerabilities defenses, or Linux terminal setups.</p>
+                  <h4 className="text-base font-bold text-white">AI Cyber Security Analyst Tutor</h4>
+                  <p className="text-xs text-slate-400 mt-1">Queries cryptographic details, web vulnerabilities defenses, or Linux terminal setups.</p>
                 </div>
               </div>
 
-              {/* Chat conversations display */}
-              <div className="flex-grow p-6 overflow-y-auto space-y-4">
+              <div className="flex-grow p-6 overflow-y-auto space-y-6">
                 {tutorChat.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full text-center space-y-3">
-                    <MessageSquare className="w-10 h-10 text-indigo-500/35" />
-                    <p className="text-xs text-slate-450 max-w-sm">Ask me any beginner to advanced questions. Examples: "Explain Diffie-Hellman Key Exchange", or "What is CSRF and how do we prevent it?"</p>
+                  <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
+                    <MessageSquare className="w-12 h-12 text-purple-500/30" />
+                    <p className="text-sm text-slate-400 max-w-md leading-relaxed">Ask me any beginner to advanced questions. Examples: "Explain Diffie-Hellman Key Exchange", or "What is CSRF and how do we prevent it?"</p>
                   </div>
                 ) : (
                   tutorChat.map((msg, index) => {
                     const isModel = msg.role === "model";
                     return (
                       <div key={index} className={`flex ${isModel ? "justify-start" : "justify-end"}`}>
-                        <div className={`p-4 rounded-2xl text-xs max-w-xl leading-relaxed border ${
+                        <div className={`p-4 rounded-2xl text-sm max-w-xl leading-relaxed border ${
                           isModel 
-                            ? "bg-slate-50 dark:bg-slate-950 border-slate-150 dark:border-slate-850 text-slate-700 dark:text-slate-400 rounded-tl-none" 
-                            : "bg-indigo-600 border-indigo-650 text-white rounded-tr-none shadow-sm shadow-indigo-600/10"
+                            ? "bg-[#0f0f1a] border-white/[0.06] text-slate-300 rounded-tl-none" 
+                            : "bg-purple-600 border-purple-500 text-white rounded-tr-none shadow-[0_0_15px_rgba(139,92,246,0.2)]"
                         }`}>
                           <p className="whitespace-pre-wrap">{msg.content}</p>
                         </div>
@@ -974,27 +890,26 @@ export const Cybersecurity: React.FC = () => {
                 )}
                 {tutorLoading && (
                   <div className="flex justify-start">
-                    <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-850 text-slate-450 text-xs rounded-tl-none animate-pulse flex items-center gap-2">
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" /> Thinking...
+                    <div className="p-4 rounded-2xl bg-[#0f0f1a] border border-white/[0.06] text-slate-400 text-sm rounded-tl-none flex items-center gap-3">
+                      <Loader2 className="w-4 h-4 animate-spin text-purple-500" /> Thinking...
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* Prompt box form */}
-              <form onSubmit={handleTutorSubmit} className="p-4 border-t border-slate-100 dark:border-slate-850 flex gap-3">
+              <form onSubmit={handleTutorSubmit} className="p-4 border-t border-white/[0.06] bg-[#0f0f1a] flex gap-3">
                 <input 
                   type="text" 
                   value={tutorMessage}
                   onChange={(e) => setTutorMessage(e.target.value)}
-                  className="flex-grow px-4 py-2.5 text-xs bg-slate-100/50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl outline-none"
+                  className="flex-grow px-4 py-3 text-sm bg-[#161625] border border-white/[0.06] rounded-xl outline-none text-white focus:border-purple-500/50"
                   placeholder="Ask the Cyber AI tutor..."
                   disabled={tutorLoading}
                 />
                 <button 
                   type="submit"
                   disabled={tutorLoading || !tutorMessage.trim()}
-                  className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-600 text-white rounded-xl text-xs font-bold"
+                  className="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-500 hover:from-violet-500 hover:to-purple-400 disabled:opacity-50 text-white rounded-xl text-sm font-bold transition-all"
                 >
                   Ask
                 </button>
@@ -1009,46 +924,47 @@ export const Cybersecurity: React.FC = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="grid grid-cols-1 md:grid-cols-2 gap-8 select-none"
+              className="grid grid-cols-1 md:grid-cols-2 gap-6 select-none"
             >
               {[
-                { title: "SOC Analyst Level 1", desc: "Defend and monitor corporate network systems. Log analysis skills, SIEM platforms, and firewalls configurations.", certs: "CompTIA Security+, CySA+, Cisco CyberOps", skills: ["Log Forensics", "Wireshark", "Threat Intelligence", "Incident Response"], badge: "GOLD CERT" },
-                { title: "Offensive Penetration Tester", desc: "Ethical hacking and systems vulnerability discovery simulations. Buffer overflows, web application bugs, and custom exploits scripts.", certs: "OSCP, eJPT, CEH Practical", skills: ["Nmap", "Metasploit", "Burp Suite", "Privilege Escalation"], badge: "PRO ACCESS" }
+                { title: "SOC Analyst Level 1", desc: "Defend and monitor corporate network systems. Log analysis skills, SIEM platforms, and firewalls configurations.", certs: "CompTIA Security+, CySA+, Cisco CyberOps", skills: ["Log Forensics", "Wireshark", "Threat Intelligence", "Incident Response"], badge: "GOLD CERT", color: "amber" },
+                { title: "Offensive Penetration Tester", desc: "Ethical hacking and systems vulnerability discovery simulations. Buffer overflows, web application bugs, and custom exploits scripts.", certs: "OSCP, eJPT, CEH Practical", skills: ["Nmap", "Metasploit", "Burp Suite", "Privilege Escalation"], badge: "PRO ACCESS", color: "purple" }
               ].map((map, idx) => {
                 const labPercent = Math.round((completedExercises.length / 5) * 100);
                 return (
-                  <div key={idx} className="p-6 rounded-3xl border border-white/5 bg-[#12131A] shadow-xl space-y-4 hover:border-indigo-500/25 transition-all">
-                    <div className="flex justify-between items-center border-b border-white/5 pb-3">
-                      <h4 className="text-xs font-black text-white">{map.title}</h4>
-                      <span className="px-2 py-0.5 rounded-lg bg-indigo-500/10 text-indigo-400 text-[8px] font-black font-mono tracking-wider">{map.badge}</span>
-                    </div>
-                    <p className="text-[11px] text-slate-400 leading-relaxed">{map.desc}</p>
-                    
-                    <div className="space-y-1">
-                      <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wide">Target Certifications</span>
-                      <p className="text-xs font-bold text-indigo-300">{map.certs}</p>
-                    </div>
+                  <div key={idx} className="p-6 rounded-2xl border border-white/[0.06] bg-[#161625] shadow-xl space-y-5 hover:border-purple-500/30 transition-all flex flex-col justify-between">
+                    <div>
+                      <div className="flex justify-between items-center border-b border-white/[0.06] pb-4 mb-4">
+                        <h4 className="text-lg font-bold text-white">{map.title}</h4>
+                        <span className={`px-2.5 py-1 rounded-md bg-${map.color}-500/10 text-${map.color}-400 border border-${map.color}-500/20 text-[10px] font-bold font-mono tracking-wider`}>{map.badge}</span>
+                      </div>
+                      <p className="text-sm text-slate-400 leading-relaxed mb-6">{map.desc}</p>
+                      
+                      <div className="space-y-2 mb-6">
+                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">Target Certifications</span>
+                        <p className="text-sm font-bold text-purple-300">{map.certs}</p>
+                      </div>
 
-                    <div className="space-y-1">
-                      <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wide font-sans">Required Tools & Skills</span>
-                      <div className="flex flex-wrap gap-1.5 pt-1">
-                        {map.skills.map((s) => (
-                          <span key={s} className="text-[8px] font-bold font-mono px-2 py-0.5 bg-[#181922] border border-white/5 text-slate-350 rounded-lg">
-                            {s}
-                          </span>
-                        ))}
+                      <div className="space-y-3">
+                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">Required Tools & Skills</span>
+                        <div className="flex flex-wrap gap-2">
+                          {map.skills.map((s) => (
+                            <span key={s} className="text-[10px] font-bold font-mono px-3 py-1.5 bg-[#0f0f1a] border border-white/[0.06] text-slate-300 rounded-lg">
+                              {s}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
 
-                    {/* Progress tracking */}
-                    <div className="space-y-1.5 pt-2">
-                      <div className="flex justify-between items-center text-[9px] text-slate-500">
+                    <div className="space-y-2 pt-6 mt-6 border-t border-white/[0.06]">
+                      <div className="flex justify-between items-center text-xs text-slate-400">
                         <span>Linux CLI Lab Training Progress</span>
-                        <span className="font-bold font-mono text-slate-300">{labPercent}% Completed</span>
+                        <span className="font-bold font-mono text-white">{labPercent}% Completed</span>
                       </div>
-                      <div className="w-full bg-[#181922] h-1.5 rounded-full overflow-hidden border border-white/5">
+                      <div className="w-full bg-[#0f0f1a] h-2 rounded-full overflow-hidden border border-white/[0.06]">
                         <div 
-                          className="bg-indigo-500 h-full rounded-full transition-all duration-300" 
+                          className="bg-gradient-to-r from-violet-600 to-purple-500 h-full rounded-full transition-all duration-500" 
                           style={{ width: `${labPercent}%` }}
                         />
                       </div>
@@ -1061,7 +977,6 @@ export const Cybersecurity: React.FC = () => {
 
         </AnimatePresence>
       </div>
-
-    </div>
+    </motion.div>
   );
 };

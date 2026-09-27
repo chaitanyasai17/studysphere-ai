@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useNotifications } from "../contexts/NotificationsContext";
-import { Sparkles, Mail, Lock, ArrowRight, Loader2, AlertCircle } from "lucide-react";
+import { Mail, Lock, Loader2, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { motion } from "framer-motion";
 
 export const LoginPage: React.FC = () => {
@@ -14,10 +14,11 @@ export const LoginPage: React.FC = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Check for session expiry message
   const [showSessionExpired, setShowSessionExpired] = useState(searchParams.get("session_expired") === "true");
 
   const clearErrors = () => {
@@ -25,7 +26,6 @@ export const LoginPage: React.FC = () => {
     setShowSessionExpired(false);
   };
 
-  // Clean up the URL parameter so refreshing doesn't show it again
   React.useEffect(() => {
     if (searchParams.get("session_expired") === "true") {
       const url = new URL(window.location.href);
@@ -81,57 +81,33 @@ export const LoginPage: React.FC = () => {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
+      transition={{ duration: 0.5 }}
       className="space-y-6"
     >
-      {/* Centered Logo, Header & Subtitle */}
-      <div className="flex flex-col items-center text-center space-y-4 pb-4 select-none">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-          className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20"
-        >
-          <Sparkles className="w-6 h-6 text-white" />
-        </motion.div>
-        
-        <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-            StudySphere AI
-          </h1>
-          <p className="text-xs font-semibold text-slate-450 dark:text-slate-500 uppercase tracking-widest">
-            Intelligent Learning Platform
-          </p>
-        </div>
+      <div className="space-y-2 text-center sm:text-left">
+        <h1 className="text-2xl font-bold text-white">Welcome Back</h1>
+        <p className="text-sm text-slate-400">Sign in to continue learning</p>
       </div>
 
       {showSessionExpired && (
-        <div className="p-3.5 rounded-2xl border border-amber-500/10 bg-amber-500/5 text-amber-500 text-xs flex items-center gap-2.5">
-          <AlertCircle className="w-4 h-4 flex-shrink-0" />
+        <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/10 text-amber-400 text-sm flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
           <span>Your session has expired. Please sign in again.</span>
         </div>
       )}
 
       {error && (
-        <div className="p-3.5 rounded-2xl border border-rose-500/10 bg-rose-500/5 text-rose-500 text-xs flex items-center gap-2.5 animate-shake">
-          <AlertCircle className="w-4 h-4 flex-shrink-0" />
+        <div className="p-4 rounded-xl border border-red-500/20 bg-red-500/10 text-red-400 text-sm flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
           <span>{error}</span>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Email address field wrapper */}
-        <motion.div 
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.3, delay: 0.2 }}
-          className="space-y-2"
-        >
-          <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-            Email address
-          </label>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-300">Email Address</label>
           <div className="relative">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
             <input
               type="email"
               placeholder="name@university.edu"
@@ -140,77 +116,79 @@ export const LoginPage: React.FC = () => {
                 setEmail(e.target.value);
                 clearErrors();
               }}
-              className="w-full h-14 pl-11 pr-4 rounded-2xl border border-slate-200 dark:border-white/5 bg-white dark:bg-slate-900 text-xs focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all duration-200 placeholder:text-slate-400"
+              className="bg-[#0a0a12] border border-white/[0.06] rounded-xl pl-12 pr-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 outline-none w-full transition-all"
               required
             />
           </div>
-        </motion.div>
+        </div>
 
-        {/* Password field wrapper */}
-        <motion.div 
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.3, delay: 0.3 }}
-          className="space-y-2"
-        >
+        <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-              Password
-            </label>
-            <Link
-              to="/forgot-password"
-              className="text-[11px] font-bold text-indigo-500 hover:text-indigo-650 transition-colors animate-fade-in"
-            >
+            <label className="text-sm font-medium text-slate-300">Password</label>
+            <Link to="/forgot-password" className="text-sm font-medium text-purple-400 hover:text-purple-300 transition-colors">
               Forgot password?
             </Link>
           </div>
           <div className="relative">
-            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="••••••••••••"
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
                 clearErrors();
               }}
-              className="w-full h-14 pl-11 pr-4 rounded-2xl border border-slate-200 dark:border-white/5 bg-white dark:bg-slate-900 text-xs focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all duration-200 placeholder:text-slate-400"
+              className="bg-[#0a0a12] border border-white/[0.06] rounded-xl pl-12 pr-12 py-3 text-sm text-white placeholder:text-slate-500 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 outline-none w-full transition-all"
               required
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+            >
+              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
           </div>
-        </motion.div>
+        </div>
 
-        {/* Action buttons controls */}
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.4 }}
-          whileHover={{ scale: 1.01, y: -2 }}
-          whileTap={{ scale: 0.98 }}
+        <div className="flex items-center">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="w-4 h-4 rounded border-white/[0.1] bg-[#0a0a12] text-purple-500 focus:ring-purple-500/20 focus:ring-offset-0"
+            />
+            <span className="text-sm text-slate-400">Remember me</span>
+          </label>
+        </div>
+
+        <button
           type="submit"
           disabled={loading}
-          className="w-full h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-indigo-650/15 disabled:opacity-50 transition-all hover:shadow-indigo-650/25 active:scale-98 cursor-pointer border border-white/5"
+          className="w-full bg-gradient-to-r from-violet-600 to-purple-500 hover:from-violet-500 hover:to-purple-400 text-white rounded-xl px-6 py-3 font-semibold transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
         >
           {loading ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
+            <Loader2 className="w-5 h-5 animate-spin" />
           ) : (
-            <>
-              <span>Sign In</span>
-              <ArrowRight className="w-4 h-4" />
-            </>
+            <span>Sign In</span>
           )}
-        </motion.button>
+        </button>
       </form>
 
-      <div className="border-t border-slate-200/50 dark:border-slate-850 pt-6 text-center text-xs text-slate-500 select-none">
-        New to StudySphere?{" "}
-        <Link
-          to="/register"
-          state={location.state}
-          className="font-bold text-indigo-500 hover:text-indigo-650 transition-colors"
-        >
-          Create an account
-        </Link>
+      <div className="pt-4 text-center sm:text-left space-y-4">
+        <p className="text-sm text-slate-400">
+          Don't have an account?{" "}
+          <Link to="/register" state={location.state} className="font-semibold text-purple-400 hover:text-purple-300 transition-colors">
+            Register
+          </Link>
+        </p>
+        <div className="pt-4 border-t border-white/[0.06]">
+          <Link to="/admin/login" className="text-xs text-slate-500 hover:text-slate-300 transition-colors flex items-center justify-center sm:justify-start gap-1">
+            Admin Login <span aria-hidden="true">→</span>
+          </Link>
+        </div>
       </div>
     </motion.div>
   );
