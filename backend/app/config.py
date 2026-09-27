@@ -36,7 +36,7 @@ class Config:
     JWT_REFRESH_TOKEN_EXPIRES = 604800  # 7 days
 
     # MongoDB URI
-    MONGODB_URI = os.getenv("MONGODB_URI", "")
+    MONGODB_URI = os.getenv("MONGODB_URI") or os.getenv("DATABASE_URL") or os.getenv("MONGO_URL", "")
     
     # AI Integration
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
@@ -45,14 +45,20 @@ class Config:
     GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-flash-lite-latest")
     
     # Upload folder
-    if os.getenv("VERCEL") == "1":
+    is_serverless = bool(
+        os.getenv("VERCEL")
+        or os.getenv("VERCEL_ENV")
+        or os.getenv("AWS_LAMBDA_FUNCTION_NAME")
+        or os.getenv("LAMBDA_TASK_ROOT")
+    )
+    if is_serverless:
         UPLOAD_FOLDER = "/tmp/uploads"
     else:
         UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "uploads")
     ALLOWED_EXTENSIONS = {"pdf"}
     
     # Logs folder
-    if os.getenv("VERCEL") == "1":
+    if is_serverless:
         LOG_DIR = "/tmp"
     else:
         LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs")

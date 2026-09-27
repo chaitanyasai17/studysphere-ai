@@ -1,10 +1,12 @@
 import os
 import sys
 
-# Ensure backend directory is in the Python search path for Vercel/multi-project deployment
-current_dir = os.path.dirname(os.path.abspath(__file__))
-if current_dir not in sys.path:
-    sys.path.insert(0, current_dir)
+# Ensure backend directory is in sys.path for Vercel Serverless runtime
+root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+backend_dir = os.path.join(root_dir, "backend")
+
+if backend_dir not in sys.path:
+    sys.path.insert(0, backend_dir)
 
 from app import create_app
 
@@ -18,11 +20,11 @@ class VercelPathMiddleware:
     def __call__(self, environ, start_response):
         path = environ.get("PATH_INFO", "")
         
-        # Strip /index.py or /index if Vercel includes function name in path
-        if path.startswith("/index.py"):
-            path = path[len("/index.py"):]
-        elif path.startswith("/index"):
-            path = path[len("/index"):]
+        # Strip /api/index.py or /api/index if Vercel serverless includes function filename in path
+        if path.startswith("/api/index.py"):
+            path = path[len("/api/index.py"):]
+        elif path.startswith("/api/index"):
+            path = path[len("/api/index"):]
             
         # Standardize path for Flask blueprints
         if not path or path == "/":

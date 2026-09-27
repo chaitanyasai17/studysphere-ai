@@ -261,18 +261,128 @@ class SqliteCollection:
         docs = self.find(query)
         return len(docs)
 
+class MongoCollectionWrapper:
+    """Wrapper around PyMongo collection ensuring identical interface with SqliteCollection."""
+    def __init__(self, collection):
+        self.collection = collection
+        self.name = collection.name
+
+    @measure_db_time
+    def find(self, query=None, sort=None):
+        query = query or {}
+        cursor = self.collection.find(query)
+        if sort:
+            cursor = cursor.sort(sort)
+        return list(cursor)
+
+    @measure_db_time
+    def find_one(self, query=None):
+        query = query or {}
+        return self.collection.find_one(query)
+
+    @measure_db_time
+    def insert_one(self, document):
+        doc = dict(document)
+        if "_id" not in doc:
+            doc["_id"] = str(ObjectId())
+        else:
+            doc["_id"] = str(doc["_id"])
+        res = self.collection.insert_one(doc)
+        class InsertResult:
+            def __init__(self, inserted_id):
+                self.inserted_id = str(inserted_id)
+        return InsertResult(res.inserted_id)
+
+    @measure_db_time
+    def insert_many(self, documents):
+        docs = []
+        for d in documents:
+            doc = dict(d)
+            if "_id" not in doc:
+                doc["_id"] = str(ObjectId())
+            else:
+                doc["_id"] = str(doc["_id"])
+            docs.append(doc)
+        res = self.collection.insert_many(docs)
+        class InsertManyResult:
+            def __init__(self, inserted_ids):
+                self.inserted_ids = [str(i) for i in inserted_ids]
+        return InsertManyResult(res.inserted_ids)
+
+    @measure_db_time
+    def update_one(self, query, update, upsert=False):
+        return self.collection.update_one(query, update, upsert=upsert)
+
+    @measure_db_time
+    def update_many(self, query, update, upsert=False):
+        return self.collection.update_many(query, update, upsert=upsert)
+
+    @measure_db_time
+    def delete_one(self, query):
+        return self.collection.delete_one(query)
+
+    @measure_db_time
+    def delete_many(self, query):
+        return self.collection.delete_many(query)
+
+    @measure_db_time
+    def count_documents(self, query=None):
+        query = query or {}
+        return self.collection.count_documents(query)
+
 class DatabaseManager:
-    """Manages connection to SQLite database."""
+    """Manages connection to MongoDB Atlas, falling back to SQLite for local and serverless execution."""
     def __init__(self):
         self.conn = None
-        self.is_mock = False  # Keep property for status interface fallback
-        
-        # SQLite DB path
-        db_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "data")
+        self.mongo_client = None
+        self.mongo_db = None
+        self.is_mongo = False
+        self.is_mock = False
+
+        # 1. Attempt connection to MongoDB if configured via environment variable
+        mongo_uri = (
+            getattr(Config, "MONGODB_URI", None)
+            or os.getenv("MONGODB_URI")
+            or os.getenv("DATABASE_URL")
+            or os.getenv("MONGO_URL")
+        )
+        if mongo_uri and (str(mongo_uri).startswith("mongodb://") or str(mongo_uri).startswith("mongodb+srv://")):
+            try:
+                from pymongo import MongoClient
+                self.mongo_client = MongoClient(mongo_uri, serverSelectionTimeoutMS=4000)
+                # Verify connection with ping
+                self.mongo_client.admin.command("ping")
+                try:
+                    self.mongo_db = self.mongo_client.get_default_database()
+                except Exception:
+                    self.mongo_db = self.mongo_client["studysphere"]
+                self.is_mongo = True
+                logger.info("Successfully connected to remote MongoDB database.")
+                return
+            except Exception as mongo_err:
+                logger.warning(f"MongoDB connection failed ({mongo_err}). Falling back to SQLite storage.")
+                self.is_mongo = False
+
+        # 2. SQLite Database Path (Serverless safe /tmp or local data folder)
+        is_serverless = bool(
+            os.getenv("VERCEL")
+            or os.getenv("VERCEL_ENV")
+            or os.getenv("AWS_LAMBDA_FUNCTION_NAME")
+            or os.getenv("LAMBDA_TASK_ROOT")
+        )
+        if is_serverless:
+            db_dir = "/tmp"
+        else:
+            db_dir = os.path.join(
+                os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+                "data"
+            )
+            
         try:
             os.makedirs(db_dir, exist_ok=True)
         except Exception:
-            pass
+            db_dir = "/tmp"
+            
         self.db_path = os.path.join(db_dir, "studysphere.db")
         
         try:
@@ -281,21 +391,31 @@ class DatabaseManager:
             self._init_db()
             logger.info(f"Successfully connected to SQLite database at {self.db_path}.")
         except Exception as e:
-            logger.critical(f"SQLite initialization failed: {e}")
-            raise DatabaseConnectionError(f"SQLite initialization failed: {e}")
+            logger.warning(f"SQLite file connection failed ({e}). Falling back to in-memory SQLite.")
+            try:
+                self.conn = sqlite3.connect(":memory:", check_same_thread=False)
+                self.conn.row_factory = sqlite3.Row
+                self._init_db()
+                logger.info("Successfully connected to in-memory SQLite database.")
+            except Exception as mem_err:
+                logger.critical(f"Database initialization failed: {mem_err}")
+                raise DatabaseConnectionError(f"Database initialization failed: {mem_err}")
 
     def _init_db(self):
-        with self.conn:
-            self.conn.execute("""
-                CREATE TABLE IF NOT EXISTS documents (
-                    collection TEXT,
-                    id TEXT,
-                    data TEXT,
-                    PRIMARY KEY (collection, id)
-                )
-            """)
+        if self.conn:
+            with self.conn:
+                self.conn.execute("""
+                    CREATE TABLE IF NOT EXISTS documents (
+                        collection TEXT,
+                        id TEXT,
+                        data TEXT,
+                        PRIMARY KEY (collection, id)
+                    )
+                """)
 
     def get_collection(self, name):
+        if self.is_mongo and self.mongo_db is not None:
+            return MongoCollectionWrapper(self.mongo_db[name])
         return SqliteCollection(self, name)
 
 # Global DB Instance
