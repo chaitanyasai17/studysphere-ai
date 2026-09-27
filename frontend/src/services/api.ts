@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const rawApiUrl = (import.meta.env.VITE_API_URL || "").trim();
+const DEFAULT_API_URL = "https://studysphere-ai-zf1a.onrender.com";
+const rawApiUrl = (import.meta.env.VITE_API_URL || (import.meta.env.PROD ? DEFAULT_API_URL : "")).trim();
 const API_URL = rawApiUrl.endsWith("/") ? rawApiUrl.slice(0, -1) : rawApiUrl;
 
 const api = axios.create({

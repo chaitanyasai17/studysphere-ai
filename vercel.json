@@ -4,12 +4,12 @@
   "outputDirectory": "frontend/dist",
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/index.py"
+      "source": "/api/:path*",
+      "destination": "https://studysphere-ai-zf1a.onrender.com/api/:path*"
     },
     {
-      "source": "/uploads/(.*)",
-      "destination": "/api/index.py"
+      "source": "/uploads/:path*",
+      "destination": "https://studysphere-ai-zf1a.onrender.com/uploads/:path*"
     },
     {
       "source": "/(.*)",
