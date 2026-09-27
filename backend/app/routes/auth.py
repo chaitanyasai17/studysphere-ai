@@ -58,8 +58,13 @@ def register():
     verification_token = str(datetime.datetime.utcnow().timestamp())
     hashed_pwd = hash_password(password)
     
-    # Assign role - only admin@studysphere.ai gets admin role, all others get 'user'
-    role = "admin" if email == "admin@studysphere.ai" else "user"
+    # Assign role based on designated admin addresses
+    if email == "superadmin@studysphere.ai":
+        role = "superadmin"
+    elif email == "admin@studysphere.ai":
+        role = "admin"
+    else:
+        role = "user"
     
     user_doc = {
         "email": email,

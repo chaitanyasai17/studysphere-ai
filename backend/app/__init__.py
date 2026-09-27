@@ -27,13 +27,24 @@ def create_app():
     app.json = CustomJSONProvider(app)
     app.config.from_object(Config)
     
-    # Configure CORS - Allow React frontend local client and production addresses
+    # Configure CORS - Explicit production and local origins with credentials support
     allowed_origins = os.environ.get("ALLOWED_ORIGINS", "")
     if allowed_origins and allowed_origins != "*":
         origin_list = [o.strip() for o in allowed_origins.split(",") if o.strip()]
-        CORS(app, resources={r"/*": {"origins": origin_list}}, supports_credentials=True)
     else:
-        CORS(app, resources={r"/*": {"origins": "*"}})
+        origin_list = [
+            "https://studysphere-ai-phi.vercel.app",
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "http://127.0.0.1:5173"
+        ]
+    CORS(
+        app,
+        resources={r"/*": {"origins": origin_list}},
+        supports_credentials=True,
+        allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"]
+    )
     
     # Create upload/logs directories if they do not exist
     try:
@@ -177,7 +188,7 @@ def create_app():
     def page_not_found(e):
         return jsonify({"message": "Requested endpoint not found."}), 404
         
-    # Seed default admin account
+    # Seed default administrator accounts (admin@studysphere.ai and superadmin@studysphere.ai)
     try:
         import datetime
         import bcrypt
@@ -186,36 +197,52 @@ def create_app():
         db = get_db()
         users_col = db.get_collection("users")
         
-        admin_email = "superadmin@studysphere.ai"
-        existing_admin = users_col.find_one({"email": admin_email})
-        if existing_admin:
-            # Enforce superadmin role for the seeded administrator account
-            if existing_admin.get("role") != "superadmin":
-                users_col.update_one({"email": admin_email}, {"$set": {"role": "superadmin"}})
-                app.logger.info("Updated existing admin account role to 'superadmin'.")
-            
-        if not existing_admin:
-            hashed_pw = bcrypt.hashpw("SuperAdmin@123".encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-            admin_user = {
-                "_id": str(ObjectId()),
-                "email": admin_email,
-                "password_hash": hashed_pw,
+        default_admins = [
+            {
+                "email": "admin@studysphere.ai",
+                "password": "Admin@123",
+                "name": "StudySphere Administrator",
+                "role": "admin"
+            },
+            {
+                "email": "superadmin@studysphere.ai",
+                "password": "SuperAdmin@123",
                 "name": "StudySphere Super Administrator",
-                "role": "superadmin",
-                "is_verified": True,
-                "is_suspended": False,
-                "created_at": datetime.datetime.utcnow().isoformat()
+                "role": "superadmin"
             }
-            users_col.insert_one(admin_user)
-            app.logger.info("Seeded default super administrator account successfully.")
+        ]
+        
+        for acc in default_admins:
+            admin_email = acc["email"]
+            existing = users_col.find_one({"email": admin_email})
+            hashed_pw = bcrypt.hashpw(acc["password"].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
             
-        # Demote all other users to 'user' role to prevent legacy admin promotions
-        users_col.update_many(
-            {"email": {"$ne": admin_email}},
-            {"$set": {"role": "user"}}
-        )
-        app.logger.info("Enforced 'user' role for all non-superadmin accounts in database.")
+            if existing:
+                # Update role and credentials to ensure seamless access
+                users_col.update_one(
+                    {"email": admin_email},
+                    {"$set": {
+                        "role": acc["role"],
+                        "password_hash": hashed_pw,
+                        "is_verified": True,
+                        "is_suspended": False
+                    }}
+                )
+                app.logger.info(f"Verified and refreshed credentials for admin: {admin_email} (role: {acc['role']}).")
+            else:
+                admin_user = {
+                    "_id": str(ObjectId()),
+                    "email": admin_email,
+                    "password_hash": hashed_pw,
+                    "name": acc["name"],
+                    "role": acc["role"],
+                    "is_verified": True,
+                    "is_suspended": False,
+                    "created_at": datetime.datetime.utcnow().isoformat()
+                }
+                users_col.insert_one(admin_user)
+                app.logger.info(f"Seeded default admin account successfully: {admin_email} (role: {acc['role']}).")
     except Exception as seed_err:
-        app.logger.warning(f"Could not seed default admin account: {seed_err}")
+        app.logger.warning(f"Could not seed default admin accounts: {seed_err}")
         
     return app
