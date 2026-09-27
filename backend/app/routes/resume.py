@@ -410,9 +410,10 @@ def extract_text_from_file_with_ocr(file_path, filename):
         need_ocr = False
         text = ""
         doc = None
+        # Attempt 1: PyMuPDF (fitz)
         try:
             import fitz
-            logger.info(f"Opening file for embedded text extraction: {file_path}")
+            logger.info(f"Opening file for embedded text extraction with PyMuPDF: {file_path}")
             doc = fitz.open(file_path)
             if doc.is_encrypted:
                 raise ValueError("Unsupported encrypted PDF.")
@@ -424,23 +425,49 @@ def extract_text_from_file_with_ocr(file_path, filename):
             # Close the reader immediately before doing OCR analysis to prevent file locks
             doc.close()
             doc = None
-            logger.info(f"Closing file after embedded text extraction: {file_path}")
-            
-            words_count = len(text.split())
-            sections = ["experience", "education", "skills", "projects", "certifications", "summary", "contact", "employment", "history", "languages"]
-            found_sections = [s for s in sections if s in text.lower()]
-            
-            if words_count < 25 or len(found_sections) < 2:
-                need_ocr = True
+            logger.info(f"Closing file after PyMuPDF embedded text extraction: {file_path}")
         except ValueError as ve:
             raise ve
+        except (ImportError, ModuleNotFoundError) as ie:
+            logger.warning(f"PyMuPDF (fitz) not available, falling back to pypdf: {ie}")
+            text = ""
         except Exception as e:
-            logger.error(f"Failed to parse PDF file: {str(e)}", exc_info=True)
-            raise ValueError(f"Failed to parse PDF file (possibly corrupted): {str(e)}")
+            logger.warning(f"PyMuPDF failed to parse PDF, attempting pypdf fallback: {e}")
+            text = ""
         finally:
             if doc:
-                doc.close()
-                logger.info(f"Closing file in fallback clause: {file_path}")
+                try:
+                    doc.close()
+                except Exception:
+                    pass
+
+        # Attempt 2: pypdf fallback if PyMuPDF was missing or failed
+        if not text:
+            try:
+                from pypdf import PdfReader
+                logger.info(f"Extracting PDF text using pypdf fallback: {file_path}")
+                reader = PdfReader(file_path)
+                if reader.is_encrypted:
+                    raise ValueError("Unsupported encrypted PDF.")
+                pages_text = []
+                for page in reader.pages:
+                    p_text = page.extract_text()
+                    if p_text:
+                        pages_text.append(p_text)
+                text = "\n".join(pages_text).strip()
+                logger.info(f"pypdf extraction completed ({len(text)} characters extracted).")
+            except ValueError as ve:
+                raise ve
+            except Exception as pe:
+                logger.error(f"Both PyMuPDF and pypdf extraction failed: {str(pe)}", exc_info=True)
+                raise ValueError(f"Failed to parse PDF file (possibly corrupted): {str(pe)}")
+            
+        words_count = len(text.split())
+        sections = ["experience", "education", "skills", "projects", "certifications", "summary", "contact", "employment", "history", "languages"]
+        found_sections = [s for s in sections if s in text.lower()]
+        
+        if words_count < 25 or len(found_sections) < 2:
+            need_ocr = True
                 
         if need_ocr:
             logger.warning("PDF contains empty/insufficient text. Attempting OCR Fallbacks...")

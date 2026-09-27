@@ -20,6 +20,8 @@ venv/
 
 # Local databases and user uploads
 backend/logs/
+backend/data/
+*.db
 uploads/
 backend/uploads/
 db_store.json

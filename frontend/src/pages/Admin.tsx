@@ -125,12 +125,22 @@ export const AdminPanel: React.FC = () => {
 
   // Search, Filters & Sorting
   const [userSearch, setUserSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [userRoleFilter, setUserRoleFilter] = useState("");
+  const [userTableLoading, setUserTableLoading] = useState(false);
   const [userStatusFilter, setUserStatusFilter] = useState("");
   const [userSortField, setUserSortField] = useState<keyof UserItem>("name");
   const [userSortOrder, setUserSortOrder] = useState<"asc" | "desc">("asc");
   const [userPage, setUserPage] = useState(1);
   const [usersPerPage] = useState(8);
+
+  // Debounce user search input by 300ms to eliminate UI stuttering & API spam
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(userSearch);
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [userSearch]);
 
   // Selected Content Tab
   const [contentTab, setContentTab] = useState<"pdfs" | "notes" | "quizzes" | "flashcards" | "chats">("pdfs");
@@ -167,7 +177,7 @@ export const AdminPanel: React.FC = () => {
     try {
       const [dashRes, usersRes, logsRes, contentRes, aiRes, configRes] = await Promise.all([
         api.get("/api/admin/dashboard"),
-        api.get(`/api/admin/users?search=${userSearch}&role=${userRoleFilter}`),
+        api.get(`/api/admin/users?search=${encodeURIComponent(userSearch)}&role=${encodeURIComponent(userRoleFilter)}`),
         api.get("/api/admin/security/logs"),
         api.get("/api/admin/content"),
         api.get("/api/admin/ai/monitor"),
@@ -193,9 +203,35 @@ export const AdminPanel: React.FC = () => {
     }
   };
 
+  // Initial portal data load on page mount
   useEffect(() => {
     loadAllPortalData();
-  }, [userSearch, userRoleFilter]);
+  }, []);
+
+  // Dedicated lightweight user query when filters change (never triggers full-screen loading)
+  const isFirstUsersRender = React.useRef(true);
+  useEffect(() => {
+    if (isFirstUsersRender.current) {
+      isFirstUsersRender.current = false;
+      return;
+    }
+    let isCancelled = false;
+    const fetchFilteredUsers = async () => {
+      setUserTableLoading(true);
+      try {
+        const usersRes = await api.get(`/api/admin/users?search=${encodeURIComponent(debouncedSearch)}&role=${encodeURIComponent(userRoleFilter)}`);
+        if (!isCancelled) {
+          setUsers(usersRes.data);
+        }
+      } catch (err) {
+        console.error("Failed to load filtered users", err);
+      } finally {
+        if (!isCancelled) setUserTableLoading(false);
+      }
+    };
+    fetchFilteredUsers();
+    return () => { isCancelled = true; };
+  }, [debouncedSearch, userRoleFilter]);
 
   // Network Simulation updates
   useEffect(() => {
@@ -884,7 +920,11 @@ export const AdminPanel: React.FC = () => {
                   <div className="flex flex-col sm:flex-row justify-between gap-4 p-4 border border-white/5 bg-[#12121A]/50 rounded-[20px]">
                     <div className="flex flex-wrap items-center gap-3">
                       <div className="flex items-center gap-2.5 bg-black/20 border border-white/5 focus-within:border-purple-500/20 rounded-xl px-3.5 py-2 w-72 transition-colors">
-                        <Search className="w-4 h-4 text-[#8E93A1]" />
+                        {userTableLoading ? (
+                          <Loader2 className="w-4 h-4 text-purple-400 animate-spin" />
+                        ) : (
+                          <Search className="w-4 h-4 text-[#8E93A1]" />
+                        )}
                         <input
                           type="text"
                           value={userSearch}
