@@ -32,6 +32,15 @@ def token_required(f):
             db = get_db()
             users_col = db.get_collection("users")
             user = users_col.find_one({"_id": g.user_id})
+            if not user:
+                try:
+                    from bson import ObjectId
+                    if ObjectId.is_valid(str(g.user_id)):
+                        user = users_col.find_one({"_id": ObjectId(str(g.user_id))})
+                except Exception:
+                    pass
+            if not user:
+                user = users_col.find_one({"id": g.user_id})
             
             if not user:
                 logger.warning(f"Auth Middleware: User {g.user_id} not found in database!")
