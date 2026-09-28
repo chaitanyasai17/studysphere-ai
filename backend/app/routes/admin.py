@@ -236,7 +236,7 @@ def admin_reset_password(user_id):
         
     import bcrypt
     hashed = bcrypt.hashpw(new_password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-    users_col.update_one({"_id": user_id}, {"$set": {"password": hashed}})
+    users_col.update_one({"_id": user_id}, {"$set": {"password_hash": hashed, "password": hashed}})
     
     # Audit log
     logs_col = db.get_collection("logs")

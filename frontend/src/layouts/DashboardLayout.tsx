@@ -149,7 +149,8 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
     { name: "Progress Analytics", path: "/analytics", icon: <BarChart3 className="w-4 h-4" /> },
   ];
 
-  if (user?.role === "admin") {
+  const adminRoles = ["superadmin", "admin", "moderator", "support"];
+  if (user && adminRoles.includes(user.role)) {
     navigationItems.push({
       name: "Admin Panel",
       path: "/admin",

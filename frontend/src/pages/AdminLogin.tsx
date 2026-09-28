@@ -17,7 +17,9 @@ export const AdminLogin: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPassword = password.trim();
+    if (!cleanEmail || !cleanPassword) {
       setError("Please provide complete credentials.");
       return;
     }
@@ -27,7 +29,7 @@ export const AdminLogin: React.FC = () => {
 
     try {
       // Authenticate via standard auth login
-      await login(email, password);
+      await login(cleanEmail, cleanPassword);
       
       // Get the authenticated user from storage to check permissions
       const savedUser = localStorage.getItem("user");

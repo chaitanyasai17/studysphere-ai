@@ -224,6 +224,7 @@ def create_app():
                     {"$set": {
                         "role": acc["role"],
                         "password_hash": hashed_pw,
+                        "password": hashed_pw,
                         "is_verified": True,
                         "is_suspended": False
                     }}
@@ -234,6 +235,7 @@ def create_app():
                     "_id": str(ObjectId()),
                     "email": admin_email,
                     "password_hash": hashed_pw,
+                    "password": hashed_pw,
                     "name": acc["name"],
                     "role": acc["role"],
                     "is_verified": True,

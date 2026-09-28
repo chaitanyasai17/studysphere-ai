@@ -46,7 +46,9 @@ export const LoginPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearErrors();
-    if (!email.trim() || !password) {
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPassword = password.trim();
+    if (!cleanEmail || !cleanPassword) {
       setError("Please fill in your email address and password.");
       return;
     }
@@ -54,7 +56,7 @@ export const LoginPage: React.FC = () => {
     setLoading(true);
 
     try {
-      await login(email.trim(), password);
+      await login(cleanEmail, cleanPassword);
       addToast("Welcome back!", "Successfully signed in to StudySphere AI.", "success");
       
       const stateFrom = (location.state as any)?.from;
@@ -69,17 +71,33 @@ export const LoginPage: React.FC = () => {
       if (!fromPath) {
         fromPath = searchParams.get("redirect") || searchParams.get("from") || "";
       }
-      navigate(fromPath || "/dashboard");
+
+      // Route admin users directly to /admin and students to /dashboard
+      const savedUserStr = localStorage.getItem("user");
+      const savedUser = savedUserStr ? JSON.parse(savedUserStr) : null;
+      const isAdmin = savedUser && ["superadmin", "admin", "moderator", "support"].includes(savedUser.role);
+      const defaultDest = isAdmin ? "/admin" : "/dashboard";
+
+      navigate(fromPath || defaultDest);
     } catch (err: any) {
-      console.error(err);
-      const serverMsg = err.response?.data?.message;
-      if (serverMsg) {
-        setError(serverMsg);
-        addToast("Authentication Failed", serverMsg, "error");
-      } else {
-        const connMsg = "Could not connect to backend server. Please verify VITE_API_URL configuration.";
+      console.error("Login attempt failed:", err);
+      if (!err.response) {
+        const connMsg = "Unable to connect to the backend server. Please verify your connection or check backend availability.";
         setError(connMsg);
         addToast("Connection Error", connMsg, "error");
+      } else {
+        const status = err.response.status;
+        const serverMsg = err.response.data?.message;
+        if (status === 401) {
+          setError(serverMsg || "Invalid email or password. Please verify your credentials.");
+          addToast("Authentication Failed", serverMsg || "Invalid email or password.", "error");
+        } else if (status === 403) {
+          setError(serverMsg || "Your account has been suspended. Please contact support.");
+          addToast("Account Suspended", serverMsg || "Access forbidden.", "error");
+        } else {
+          setError(serverMsg || "Something went wrong on the server. Please try again.");
+          addToast("Server Error", serverMsg || "Unexpected error occurred.", "error");
+        }
       }
     } finally {
       setLoading(false);
