@@ -476,6 +476,21 @@ class DatabaseManager:
             return MongoCollectionWrapper(self.mongo_db[name])
         return SqliteCollection(self, name)
 
+    def check_connection(self) -> bool:
+        """Ping the active database to verify health."""
+        try:
+            if self.is_mongo and self.mongo_client is not None:
+                self.mongo_client.admin.command("ping")
+                return True
+            elif self.conn is not None:
+                with self.lock:
+                    self.conn.execute("SELECT 1;").fetchone()
+                return True
+        except Exception as e:
+            logger.error(f"Health check DB ping failed: {e}")
+            return False
+        return False
+
 # Global DB Instance
 db_manager = DatabaseManager()
 

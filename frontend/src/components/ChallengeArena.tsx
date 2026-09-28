@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../contexts/AuthContext";
+import api from "../services/api";
 import {
   Trophy,
   Swords,
@@ -301,20 +302,15 @@ export const ChallengeArena: React.FC = () => {
     setTestLogs([]);
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || "";
-      const res = await fetch(`${apiUrl}/api/coding/execute-public`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          code: userCode,
-          language: selectedLanguage
-        })
+      const res = await api.post("/api/coding/execute-public", {
+        code: userCode,
+        language: selectedLanguage
       });
 
-      const data = await res.json();
+      const data = res.data;
       setCodeRunning(false);
 
-      if (res.ok && data.success !== false) {
+      if (data && data.success !== false) {
         const outText = data.stdout || data.output || "StudySphere";
         const errText = data.stderr || data.error || "";
 

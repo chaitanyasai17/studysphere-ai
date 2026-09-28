@@ -175,8 +175,9 @@ export const Quiz: React.FC = () => {
       setSelectedAnswers({});
       setQuizState("playing");
       addToast("Quiz Ready", `Answering timed quiz: ${subject}`, "success");
-    } catch (e) {
-      addToast("Failed", "AI Quiz generation failed. Verify credentials.", "error");
+    } catch (e: any) {
+      const errMsg = e.response?.data?.message || e.message || "AI Quiz generation failed. Please try again.";
+      addToast("Quiz Failed", errMsg, "error");
     } finally {
       setLoading(false);
     }

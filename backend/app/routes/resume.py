@@ -479,6 +479,7 @@ def extract_text_from_file_with_ocr(file_path, filename):
                 logger.info("Trying Tesseract OCR...")
                 doc = None
                 try:
+                    import fitz
                     doc = fitz.open(file_path)
                     ocr_parts = []
                     for page in doc:
@@ -499,6 +500,7 @@ def extract_text_from_file_with_ocr(file_path, filename):
             try:
                 import easyocr
                 import numpy as np
+                import fitz
                 logger.info("Trying EasyOCR...")
                 reader = easyocr.Reader(['en'])
                 doc = None

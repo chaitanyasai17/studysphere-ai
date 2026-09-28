@@ -110,11 +110,16 @@ def create_app():
         from app.utils.db import get_db
         db = get_db()
         db_type = "mongodb" if getattr(db, "is_mongo", False) else "sqlite"
+        is_conn = db.check_connection() if hasattr(db, "check_connection") else True
+        db_status = "connected" if is_conn else "disconnected"
+        status_code = 200 if is_conn else 503
         return jsonify({
-            "status": "online",
-            "database": db_type,
+            "status": "ok" if is_conn else "degraded",
+            "service": "studysphere-api",
+            "database": db_status,
+            "database_type": db_type,
             "environment": app.config.get("ENV", "production")
-        }), 200
+        }), status_code
 
     # Serve index.html for SPA root and catch-all for SPA deep routing
     @app.route("/", defaults={"path": ""})
