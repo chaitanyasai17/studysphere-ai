@@ -18,7 +18,13 @@ import {
   TrendingUp,
   Cpu,
   Star,
-  Globe
+  Globe,
+  LayoutDashboard,
+  FolderLock,
+  Calendar,
+  BarChart3,
+  Lock,
+  ShieldAlert
 } from "lucide-react";
 
 export const LandingPage: React.FC = () => {
@@ -307,28 +313,36 @@ export const LandingPage: React.FC = () => {
             transition={{ duration: 0.7 }}
             className="relative rounded-2xl border border-white/[0.06] bg-[#161625] shadow-2xl p-2 max-w-5xl mx-auto"
           >
-            {/* Floating Badges */}
-            <div className="absolute -left-12 top-20 bg-[#1a1a2e] border border-white/[0.06] p-4 rounded-xl shadow-xl items-center gap-3 hidden md:flex" style={{ animation: 'float 3s ease-in-out infinite' }}>
-              <div className="bg-purple-500/20 p-2 rounded-lg">
-                <Code className="w-5 h-5 text-purple-400" />
+            {/* Floating Decorative Badges — pointer-events-none ensures they never intercept clicks */}
+            <div 
+              className="absolute -left-6 sm:-left-10 lg:-left-12 top-8 sm:top-10 bg-[#1a1a2e]/95 backdrop-blur-md border border-white/[0.08] p-3 md:p-3.5 rounded-xl shadow-2xl items-center gap-3 hidden md:flex pointer-events-none select-none z-10" 
+              style={{ animation: 'float 3s ease-in-out infinite' }}
+              aria-hidden="true"
+            >
+              <div className="bg-purple-500/20 p-2 rounded-lg pointer-events-none">
+                <Code className="w-5 h-5 text-purple-400 pointer-events-none" />
               </div>
-              <div>
-                <div className="text-xs text-slate-400">Code Compiled</div>
-                <div className="text-sm font-bold text-white">0ms Runtime</div>
-              </div>
-            </div>
-
-            <div className="absolute -right-10 bottom-32 bg-[#1a1a2e] border border-white/[0.06] p-4 rounded-xl shadow-xl items-center gap-3 hidden md:flex" style={{ animation: 'float 4s ease-in-out 1s infinite' }}>
-              <div className="bg-emerald-500/20 p-2 rounded-lg">
-                <CheckCircle className="w-5 h-5 text-emerald-400" />
-              </div>
-              <div>
-                <div className="text-xs text-slate-400">Quiz Score</div>
-                <div className="text-sm font-bold text-white">100% Accuracy</div>
+              <div className="pointer-events-none">
+                <div className="text-xs text-slate-400 pointer-events-none">Code Compiled</div>
+                <div className="text-sm font-bold text-white pointer-events-none">0ms Runtime</div>
               </div>
             </div>
 
-            <div className="rounded-xl border border-white/[0.04] bg-[#0a0a12] overflow-hidden flex flex-col" style={{ height: 'clamp(400px, 55vw, 620px)' }}>
+            <div 
+              className="absolute -right-6 sm:-right-8 lg:-right-10 bottom-24 sm:bottom-28 bg-[#1a1a2e]/95 backdrop-blur-md border border-white/[0.08] p-3 md:p-3.5 rounded-xl shadow-2xl items-center gap-3 hidden md:flex pointer-events-none select-none z-10" 
+              style={{ animation: 'float 4s ease-in-out 1s infinite' }}
+              aria-hidden="true"
+            >
+              <div className="bg-emerald-500/20 p-2 rounded-lg pointer-events-none">
+                <CheckCircle className="w-5 h-5 text-emerald-400 pointer-events-none" />
+              </div>
+              <div className="pointer-events-none">
+                <div className="text-xs text-slate-400 pointer-events-none">Quiz Score</div>
+                <div className="text-sm font-bold text-white pointer-events-none">100% Accuracy</div>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-white/[0.04] bg-[#0a0a12] overflow-hidden flex flex-col relative z-20" style={{ height: 'clamp(460px, 58vw, 640px)' }}>
               {/* Browser Header */}
               <div className="px-4 py-3 border-b border-white/[0.04] bg-[#0f0f1a] flex items-center gap-4 shrink-0">
                 <div className="flex gap-2">
@@ -343,68 +357,96 @@ export const LandingPage: React.FC = () => {
                 </div>
               </div>
               
-              {/* Dashboard Content — Real Mockup */}
+              {/* Dashboard Content — Interactive Mockup */}
               <div className="flex-1 flex min-h-0">
-                {/* Sidebar */}
-                <div className="w-52 lg:w-60 border-r border-white/[0.04] bg-[#0f0f1a] p-3 flex-col gap-0.5 hidden sm:flex shrink-0 overflow-y-auto">
-                  <div className="flex items-center gap-2 px-3 py-2 mb-3">
-                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-600 to-purple-500 flex items-center justify-center">
+                {/* Sidebar Navigation */}
+                <aside 
+                  className="w-56 lg:w-64 border-r border-white/[0.04] bg-[#0c0c16] p-3 flex flex-col hidden sm:flex shrink-0 overflow-y-auto scrollbar-none relative z-20"
+                  aria-label="Interactive preview sidebar"
+                >
+                  {/* Brand Header */}
+                  <Link 
+                    to="/dashboard" 
+                    className="flex items-center gap-2 px-3 py-2 mb-2 rounded-xl hover:bg-white/[0.04] transition-colors cursor-pointer group relative z-30 flex-shrink-0"
+                    title="StudySphere AI Dashboard"
+                  >
+                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-600 to-purple-500 flex items-center justify-center group-hover:scale-105 transition-transform flex-shrink-0">
                       <Sparkles className="w-4 h-4 text-white" />
                     </div>
-                    <span className="text-sm font-bold text-white tracking-tight">StudySphere AI</span>
-                  </div>
-                  {[
-                    { label: "Dashboard", icon: TrendingUp, active: true },
-                    { label: "AI Tutor", icon: MessageSquare },
-                    { label: "Notes", icon: FileText },
-                    { label: "PDF Learning", icon: BookOpen },
-                    { label: "Quiz Generator", icon: HelpCircle },
-                    { label: "Coding", icon: Code },
-                    { label: "Cybersecurity", icon: Shield },
-                    { label: "Resume", icon: FileBadge },
-                  ].map((item) => (
-                    <div
-                      key={item.label}
-                      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                        item.active
-                          ? "bg-purple-500/15 text-purple-300 border border-purple-500/20"
-                          : "text-slate-500 hover:text-slate-300"
-                      }`}
-                    >
-                      <item.icon className="w-4 h-4 shrink-0" />
-                      <span className="truncate">{item.label}</span>
-                    </div>
-                  ))}
-                </div>
+                    <span className="text-sm font-bold text-white tracking-tight truncate">StudySphere AI</span>
+                  </Link>
+
+                  {/* Navigation Links — All 12 items verified clickable */}
+                  <nav className="flex-1 flex flex-col gap-0.5 overflow-y-auto scrollbar-none py-1">
+                    {[
+                      { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
+                      { name: "AI Tutor", path: "/ai", icon: MessageSquare },
+                      { name: "Notes", path: "/notes", icon: FileText },
+                      { name: "PDF Learning", path: "/pdf", icon: BookOpen },
+                      { name: "Quiz Generator", path: "/quiz", icon: HelpCircle },
+                      { name: "Flashcards", path: "/flashcards", icon: FolderLock },
+                      { name: "Planner", path: "/planner", icon: Calendar },
+                      { name: "Coding Practice", path: "/coding", icon: Code },
+                      { name: "Cybersecurity Lab", path: "/cybersecurity", icon: ShieldAlert },
+                      { name: "Resume Assistant", path: "/resume", icon: FileBadge },
+                      { name: "Progress Analytics", path: "/analytics", icon: BarChart3 },
+                      { name: "Admin Panel", path: "/admin", icon: Lock },
+                    ].map((item, idx) => {
+                      const isActive = idx === 0; // Dashboard is active in the preview
+                      return (
+                        <Link
+                          key={item.name}
+                          to={item.path}
+                          className={`flex items-center gap-2.5 px-3 py-1.5 lg:py-2 rounded-xl text-xs font-medium transition-all duration-200 cursor-pointer relative z-30 group ${
+                            isActive
+                              ? "bg-purple-500/15 text-white border-l-2 border-purple-500 font-semibold"
+                              : "text-slate-400 hover:text-white hover:bg-white/[0.04] border-l-2 border-transparent"
+                          }`}
+                          title={`Navigate to ${item.name}`}
+                        >
+                          <div className={`flex-shrink-0 group-hover:scale-110 transition-transform duration-200 ${isActive ? "text-purple-400" : ""}`}>
+                            <item.icon className="w-4 h-4" />
+                          </div>
+                          <span className="truncate whitespace-nowrap">{item.name}</span>
+                        </Link>
+                      );
+                    })}
+                  </nav>
+                </aside>
 
                 {/* Main Content Area */}
-                <div className="flex-1 p-4 md:p-6 bg-[#0a0a12] flex flex-col gap-4 overflow-y-auto min-w-0">
+                <main className="flex-1 p-4 md:p-6 bg-[#0a0a12] flex flex-col gap-4 overflow-y-auto min-w-0">
                   {/* Header */}
                   <div className="flex justify-between items-start gap-4">
                     <div>
                       <h3 className="text-base md:text-lg font-bold text-white">Welcome back, Chaitanya! 👋</h3>
                       <p className="text-xs text-slate-500 mt-0.5">Your learning progress at a glance</p>
                     </div>
-                    <div className="shrink-0 px-3 py-1.5 bg-gradient-to-r from-violet-600/20 to-purple-500/20 border border-purple-500/20 rounded-lg text-xs font-medium text-purple-300 hidden md:block">
+                    <Link 
+                      to="/dashboard"
+                      className="shrink-0 px-3 py-1.5 bg-gradient-to-r from-violet-600/20 to-purple-500/20 border border-purple-500/20 hover:border-purple-500/40 rounded-lg text-xs font-medium text-purple-300 hidden md:block cursor-pointer transition-colors"
+                      title="Pro Plan Status"
+                    >
                       Pro Plan
-                    </div>
+                    </Link>
                   </div>
                   
-                  {/* Stats Cards */}
+                  {/* Stats Cards — Clickable to respective modules */}
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                     {[
-                      { value: "12", label: "Topics Completed", color: "text-purple-400", bg: "bg-purple-500/10" },
-                      { value: "48", label: "Quizzes Taken", color: "text-blue-400", bg: "bg-blue-500/10" },
-                      { value: "6", label: "Projects Built", color: "text-emerald-400", bg: "bg-emerald-500/10" },
-                      { value: "3", label: "Certificates", color: "text-amber-400", bg: "bg-amber-500/10" },
+                      { value: "12", label: "Topics Completed", color: "text-purple-400", bg: "bg-purple-500/10", path: "/analytics" },
+                      { value: "48", label: "Quizzes Taken", color: "text-blue-400", bg: "bg-blue-500/10", path: "/quiz" },
+                      { value: "6", label: "Projects Built", color: "text-emerald-400", bg: "bg-emerald-500/10", path: "/coding" },
+                      { value: "3", label: "Certificates", color: "text-amber-400", bg: "bg-amber-500/10", path: "/dashboard" },
                     ].map((stat) => (
-                      <div
+                      <Link
                         key={stat.label}
-                        className="bg-[#161625] border border-white/[0.04] rounded-xl p-3 md:p-4"
+                        to={stat.path}
+                        className="bg-[#161625] border border-white/[0.04] hover:border-purple-500/30 rounded-xl p-3 md:p-4 cursor-pointer transition-all hover:scale-[1.02] block"
                       >
                         <div className={`text-xl md:text-2xl font-bold ${stat.color}`}>{stat.value}</div>
                         <div className="text-[10px] md:text-xs text-slate-500 mt-1">{stat.label}</div>
-                      </div>
+                      </Link>
                     ))}
                   </div>
 
@@ -412,30 +454,48 @@ export const LandingPage: React.FC = () => {
                   <div className="flex-1 flex flex-col lg:flex-row gap-3 min-h-0">
                     {/* Continue Learning */}
                     <div className="flex-1 bg-[#161625] border border-white/[0.04] rounded-xl p-4 flex flex-col min-w-0">
-                      <h4 className="text-xs font-semibold text-white mb-3">Continue Learning</h4>
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="text-xs font-semibold text-white">Continue Learning</h4>
+                        <Link to="/courses" className="text-[10px] text-purple-400 hover:text-purple-300 transition-colors">View all</Link>
+                      </div>
                       <div className="space-y-3 flex-1">
                         {[
-                          { name: "Data Structures & Algorithms", pct: 65, color: "bg-purple-500" },
-                          { name: "Machine Learning Fundamentals", pct: 40, color: "bg-blue-500" },
-                          { name: "Web Development with React", pct: 82, color: "bg-emerald-500" },
+                          { name: "Data Structures & Algorithms", pct: 65, color: "bg-purple-500", path: "/coding" },
+                          { name: "Machine Learning Fundamentals", pct: 40, color: "bg-blue-500", path: "/ai" },
+                          { name: "Web Development with React", pct: 82, color: "bg-emerald-500", path: "/notes" },
                         ].map((course) => (
-                          <div key={course.name}>
+                          <Link 
+                            key={course.name}
+                            to={course.path}
+                            className="block group cursor-pointer"
+                          >
                             <div className="flex justify-between items-center mb-1">
-                              <span className="text-[10px] md:text-xs text-slate-300 truncate mr-2">{course.name}</span>
+                              <span className="text-[10px] md:text-xs text-slate-300 group-hover:text-purple-300 transition-colors truncate mr-2">{course.name}</span>
                               <span className="text-[10px] text-slate-500 shrink-0">{course.pct}%</span>
                             </div>
                             <div className="h-1.5 bg-white/[0.05] rounded-full overflow-hidden">
                               <div className={`h-full ${course.color} rounded-full`} style={{ width: `${course.pct}%` }} />
                             </div>
-                          </div>
+                          </Link>
                         ))}
                       </div>
                       {/* Quick Access */}
                       <div className="mt-3 pt-3 border-t border-white/[0.04]">
                         <div className="text-[10px] text-slate-500 mb-2">Quick Access</div>
                         <div className="flex flex-wrap gap-1.5">
-                          {["AI Tutor", "Upload PDF", "Generate Quiz", "Coding"].map((q) => (
-                            <span key={q} className="px-2 py-1 bg-white/[0.04] border border-white/[0.04] rounded-md text-[10px] text-slate-400">{q}</span>
+                          {[
+                            { label: "AI Tutor", path: "/ai" },
+                            { label: "Upload PDF", path: "/pdf" },
+                            { label: "Generate Quiz", path: "/quiz" },
+                            { label: "Coding", path: "/coding" }
+                          ].map((q) => (
+                            <Link 
+                              key={q.label} 
+                              to={q.path}
+                              className="px-2 py-1 bg-white/[0.04] border border-white/[0.04] hover:bg-purple-500/10 hover:border-purple-500/30 hover:text-white rounded-md text-[10px] text-slate-400 transition-all cursor-pointer"
+                            >
+                              {q.label}
+                            </Link>
                           ))}
                         </div>
                       </div>
@@ -443,35 +503,46 @@ export const LandingPage: React.FC = () => {
 
                     {/* Today's Goals */}
                     <div className="w-full lg:w-56 xl:w-64 bg-[#161625] border border-white/[0.04] rounded-xl p-4 flex flex-col shrink-0">
-                      <h4 className="text-xs font-semibold text-white mb-3">Today's Goals</h4>
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="text-xs font-semibold text-white">Today's Goals</h4>
+                        <Link to="/planner" className="text-[10px] text-purple-400 hover:text-purple-300 transition-colors">Planner</Link>
+                      </div>
                       <div className="space-y-2 flex-1">
                         {[
-                          { task: "Complete AI Notes", done: true },
-                          { task: "Take DSA Quiz", done: true },
-                          { task: "Practice Coding", done: false },
-                          { task: "Read Cybersecurity Article", done: false },
+                          { task: "Complete AI Notes", done: true, path: "/notes" },
+                          { task: "Take DSA Quiz", done: true, path: "/quiz" },
+                          { task: "Practice Coding", done: false, path: "/coding" },
+                          { task: "Read Cybersecurity Article", done: false, path: "/cybersecurity" },
                         ].map((goal) => (
-                          <div key={goal.task} className="flex items-center gap-2">
-                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${goal.done ? "bg-emerald-500/20 border-emerald-500" : "border-slate-600"}`}>
+                          <Link 
+                            key={goal.task}
+                            to={goal.path}
+                            className="flex items-center gap-2 group cursor-pointer"
+                          >
+                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${goal.done ? "bg-emerald-500/20 border-emerald-500" : "border-slate-600 group-hover:border-purple-400"}`}>
                               {goal.done && <CheckCircle className="w-3 h-3 text-emerald-400" />}
                             </div>
-                            <span className={`text-[10px] md:text-xs ${goal.done ? "text-slate-500 line-through" : "text-slate-300"}`}>{goal.task}</span>
-                          </div>
+                            <span className={`text-[10px] md:text-xs transition-colors ${goal.done ? "text-slate-500 line-through" : "text-slate-300 group-hover:text-white"}`}>{goal.task}</span>
+                          </Link>
                         ))}
                       </div>
                       {/* XP Badge */}
-                      <div className="mt-3 pt-3 border-t border-white/[0.04] flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/20 flex items-center justify-center">
+                      <Link 
+                        to="/analytics"
+                        className="mt-3 pt-3 border-t border-white/[0.04] flex items-center gap-2 group cursor-pointer hover:bg-white/[0.02] rounded-lg transition-colors p-1"
+                        title="View XP Analytics"
+                      >
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/20 flex items-center justify-center group-hover:scale-105 transition-transform flex-shrink-0">
                           <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
                         </div>
                         <div>
-                          <div className="text-xs font-bold text-white">1,250 XP</div>
-                          <div className="text-[10px] text-slate-500">Level 8</div>
+                          <div className="text-xs font-bold text-white group-hover:text-amber-300 transition-colors">1,250 XP</div>
+                          <div className="text-[10px] text-slate-500">Level 8 • Scholar</div>
                         </div>
-                      </div>
+                      </Link>
                     </div>
                   </div>
-                </div>
+                </main>
               </div>
             </div>
           </motion.div>
