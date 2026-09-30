@@ -33,6 +33,7 @@ interface AuthContextType {
   updateUserVerification: () => void;
   updateUser: (data: Partial<User>) => void;
   syncStats: (xp: number, coins: number, dailyChallengeClaimed?: boolean) => void;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
@@ -63,6 +64,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Expose computed authentication state
   const isAuthenticated = user !== null;
 
+  const refreshUser = async () => {
+    try {
+      const res = await api.get("/api/auth/me");
+      const userData = res.data?.user;
+      if (userData) {
+        setUser(userData);
+        localStorage.setItem("user", JSON.stringify(userData));
+      }
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("user");
+        setUser(null);
+        setExpiresAt(null);
+      }
+      // For network errors (no response), keep localStorage user as offline fallback
+    }
+  };
+
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
     const token = localStorage.getItem("accessToken");
@@ -77,6 +98,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     
     setLoading(false);
+
+    if (token) {
+      refreshUser();
+    }
   }, []);
 
   // Broadcast and storage event synchronization listeners
@@ -311,6 +336,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         updateUserVerification,
         updateUser,
         syncStats,
+        refreshUser,
       }}
     >
       {children}

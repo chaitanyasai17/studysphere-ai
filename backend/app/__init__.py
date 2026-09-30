@@ -193,7 +193,10 @@ def create_app():
     def page_not_found(e):
         return jsonify({"message": "Requested endpoint not found."}), 404
         
-    # Seed default administrator accounts (admin@studysphere.ai and superadmin@studysphere.ai)
+    # Seed default administrator accounts ONLY if they don't exist yet.
+    # IMPORTANT: We do NOT overwrite existing admin credentials on startup.
+    # The previous bug was: re-hashing passwords on every cold start, which
+    # invalidated any password set via registration, reset, or admin panel.
     try:
         import datetime
         import bcrypt
@@ -220,22 +223,27 @@ def create_app():
         for acc in default_admins:
             admin_email = acc["email"]
             existing = users_col.find_one({"email": admin_email})
-            hashed_pw = bcrypt.hashpw(acc["password"].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
             
             if existing:
-                # Update role and credentials to ensure seamless access
-                users_col.update_one(
-                    {"email": admin_email},
-                    {"$set": {
-                        "role": acc["role"],
-                        "password_hash": hashed_pw,
-                        "password": hashed_pw,
-                        "is_verified": True,
-                        "is_suspended": False
-                    }}
-                )
-                app.logger.info(f"Verified and refreshed credentials for admin: {admin_email} (role: {acc['role']}).")
+                # Admin already exists — only fix role/verified/suspended if needed,
+                # but NEVER touch the password hash (preserve whatever was set)
+                update_needed = {}
+                if existing.get("role") != acc["role"]:
+                    update_needed["role"] = acc["role"]
+                if not existing.get("is_verified"):
+                    update_needed["is_verified"] = True
+                if existing.get("is_suspended"):
+                    update_needed["is_suspended"] = False
+                    
+                if update_needed:
+                    users_col.update_one({"email": admin_email}, {"$set": update_needed})
+                    app.logger.info(f"Updated admin metadata for {admin_email}: {list(update_needed.keys())}")
+                else:
+                    app.logger.info(f"Admin account already exists and is valid: {admin_email}")
             else:
+                # Admin does not exist — create with default credentials
+                hashed_pw = bcrypt.hashpw(acc["password"].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+                now_iso = datetime.datetime.utcnow().isoformat()
                 admin_user = {
                     "_id": str(ObjectId()),
                     "email": admin_email,
@@ -245,10 +253,12 @@ def create_app():
                     "role": acc["role"],
                     "is_verified": True,
                     "is_suspended": False,
-                    "created_at": datetime.datetime.utcnow().isoformat()
+                    "created_at": now_iso,
+                    "updated_at": now_iso,
+                    "last_login": None
                 }
                 users_col.insert_one(admin_user)
-                app.logger.info(f"Seeded default admin account successfully: {admin_email} (role: {acc['role']}).")
+                app.logger.info(f"Seeded default admin account: {admin_email} (role: {acc['role']})")
     except Exception as seed_err:
         app.logger.warning(f"Could not seed default admin accounts: {seed_err}")
         
