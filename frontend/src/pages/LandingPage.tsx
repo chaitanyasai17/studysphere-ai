@@ -315,42 +315,11 @@ export const LandingPage: React.FC = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            className="relative rounded-2xl border border-purple-500/20 bg-[#161625]/90 backdrop-blur-xl shadow-[0_0_60px_-15px_rgba(139,92,246,0.25),0_25px_50px_-12px_rgba(0,0,0,0.9)] p-2 max-w-5xl mx-auto"
+            className="relative rounded-2xl border border-purple-500/25 bg-[#161625]/90 backdrop-blur-xl shadow-[0_0_60px_-15px_rgba(139,92,246,0.3),0_25px_50px_-12px_rgba(0,0,0,0.9)] p-2 max-w-5xl mx-auto"
           >
-            {/* Floating Decorative Badges — z-30 ensures fully visible outside/over frame, pointer-events-none ensures never blocking clicks */}
-            <div 
-              className="absolute -left-3 sm:-left-6 lg:-left-8 top-10 sm:top-12 bg-[#141426]/95 backdrop-blur-xl border border-purple-500/35 px-3.5 py-2.5 rounded-2xl shadow-[0_15px_35px_rgba(0,0,0,0.8),0_0_25px_rgba(147,51,234,0.3)] items-center gap-3 hidden md:flex pointer-events-none select-none z-30" 
-              style={{ animation: 'float 3s ease-in-out infinite' }}
-              aria-hidden="true"
-            >
-              <div className="w-8 h-8 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center shrink-0">
-                <Code className="w-4 h-4 text-purple-300" />
-              </div>
-              <div>
-                <div className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Code Compiled</div>
-                <div className="text-xs font-extrabold text-white flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  0ms Runtime
-                </div>
-              </div>
-            </div>
-
-            <div 
-              className="absolute -right-3 sm:-right-6 lg:-right-8 bottom-16 sm:bottom-20 bg-[#141426]/95 backdrop-blur-xl border border-emerald-500/35 px-3.5 py-2.5 rounded-2xl shadow-[0_15px_35px_rgba(0,0,0,0.8),0_0_25px_rgba(16,185,129,0.3)] items-center gap-3 hidden md:flex pointer-events-none select-none z-30" 
-              style={{ animation: 'float 4s ease-in-out 1s infinite' }}
-              aria-hidden="true"
-            >
-              <div className="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0">
-                <CheckCircle className="w-4 h-4 text-emerald-300" />
-              </div>
-              <div>
-                <div className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Quiz Score</div>
-                <div className="text-xs font-extrabold text-white flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  100% Accuracy
-                </div>
-              </div>
-            </div>
+            {/* Ambient Background Glows */}
+            <div className="absolute -top-12 -left-12 w-64 h-64 bg-violet-600/15 rounded-full blur-3xl pointer-events-none animate-pulse" />
+            <div className="absolute -bottom-12 -right-12 w-64 h-64 bg-purple-600/15 rounded-full blur-3xl pointer-events-none animate-pulse" style={{ animationDelay: '1.5s' }} />
 
             {/* Browser Window Mockup Frame */}
             <div className="rounded-xl border border-white/[0.06] bg-[#0a0a14] overflow-hidden flex flex-col relative z-20" style={{ height: 'clamp(460px, 58vw, 620px)' }}>
@@ -364,7 +333,10 @@ export const LandingPage: React.FC = () => {
                 <div className="px-6 sm:px-12 md:px-24 py-1 rounded-lg bg-[#141424] border border-white/[0.06] text-[11px] text-slate-400 font-mono flex items-center gap-2">
                   <Lock className="w-3 h-3 text-emerald-400 shrink-0" />
                   <span className="truncate">https://app.studysphere.ai</span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 ml-1" />
+                  <span className="relative flex h-2 w-2 shrink-0 ml-1">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
                 </div>
                 <div className="w-10" />
               </div>
