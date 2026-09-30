@@ -330,7 +330,7 @@ export const AITutor: React.FC = () => {
     return codeParts.map((codePart, codeIdx) => {
       if (codeIdx % 2 === 1) {
         return (
-          <code key={codeIdx} className="px-1.5 py-0.5 rounded bg-[#0f0f1a] text-purple-400 font-mono text-sm border border-white/[0.06]">
+          <code key={codeIdx} className="px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-300 font-mono text-xs border border-purple-500/20">
             {codePart}
           </code>
         );
@@ -340,12 +340,12 @@ export const AITutor: React.FC = () => {
       return boldParts.map((boldPart, boldIdx) => {
         if (boldIdx % 2 === 1) {
           return (
-            <strong key={boldIdx} className="font-bold text-white">
+            <strong key={boldIdx} className="font-semibold text-white">
               {renderCitations(boldPart)}
             </strong>
           );
         }
-        return renderCitations(boldPart);
+        return <span key={boldIdx} className="text-slate-100">{renderCitations(boldPart)}</span>;
       });
     });
   };
@@ -418,7 +418,7 @@ export const AITutor: React.FC = () => {
                 <Copy className="w-3.5 h-3.5" /> Copy Code
               </button>
             </div>
-            <pre className="p-4 overflow-x-auto text-sm font-mono text-slate-300 leading-relaxed bg-[#0a0a12]">
+            <pre className="p-4 overflow-x-auto text-sm font-mono text-slate-200 leading-relaxed bg-[#0a0a12]">
               <code>{highlightCode(code)}</code>
             </pre>
           </div>
@@ -430,18 +430,25 @@ export const AITutor: React.FC = () => {
         <div key={i} className="space-y-3">
           {lines.map((line, idx) => {
             if (line.startsWith("### ")) {
-              return <h4 key={idx} className="text-sm font-bold text-white mt-4 mb-2 tracking-wide">{line.replace("### ", "")}</h4>;
+              return <h4 key={idx} className="text-sm font-bold text-white mt-4 mb-2 tracking-wide">{renderInlineTokens(line.replace("### ", ""))}</h4>;
             }
             if (line.startsWith("## ")) {
-              return <h3 key={idx} className="text-base font-bold text-white mt-5 mb-2 pb-1">{line.replace("## ", "")}</h3>;
+              return <h3 key={idx} className="text-base font-bold text-white mt-5 mb-2 pb-1 border-b border-white/[0.06]">{renderInlineTokens(line.replace("## ", ""))}</h3>;
             }
             if (line.startsWith("# ")) {
-              return <h2 key={idx} className="text-lg font-bold text-white mt-6 mb-3 pb-2">{line.replace("# ", "")}</h2>;
+              return <h2 key={idx} className="text-lg font-bold text-white mt-6 mb-3 pb-2 border-b border-white/[0.08]">{renderInlineTokens(line.replace("# ", ""))}</h2>;
+            }
+            if (line.startsWith("> ")) {
+              return (
+                <blockquote key={idx} className="border-l-2 border-purple-500/50 pl-3 my-2 text-slate-300 italic text-sm">
+                  {renderInlineTokens(line.replace(/^>\s*/, ""))}
+                </blockquote>
+              );
             }
             if (line.startsWith("- ") || line.startsWith("* ")) {
               const cleanLine = line.replace(/^[-*]\s+/, "");
               return (
-                <ul key={idx} className="list-disc pl-6 text-sm text-slate-300 space-y-1">
+                <ul key={idx} className="list-disc pl-6 text-sm text-slate-100 space-y-1">
                   <li>{renderInlineTokens(cleanLine)}</li>
                 </ul>
               );
@@ -450,14 +457,14 @@ export const AITutor: React.FC = () => {
               const cleanLine = line.replace(/^\d+\.\s+/, "");
               const num = line.match(/^\d+/)?.[0] || "1";
               return (
-                <ol key={idx} className="list-decimal pl-6 text-sm text-slate-300 space-y-1">
+                <ol key={idx} className="list-decimal pl-6 text-sm text-slate-100 space-y-1">
                   <li value={parseInt(num)}>{renderInlineTokens(cleanLine)}</li>
                 </ol>
               );
             }
             
             return line.trim() ? (
-              <p key={idx} className="text-sm leading-relaxed text-slate-300">{renderInlineTokens(line)}</p>
+              <p key={idx} className="text-sm leading-relaxed text-slate-100">{renderInlineTokens(line)}</p>
             ) : <div key={idx} className="h-2" />;
           })}
         </div>
@@ -848,7 +855,7 @@ export const AITutor: React.FC = () => {
                       : "bg-purple-500/20 border border-purple-500/20 text-white rounded-tr-sm"
                   }`}>
                     {/* Render message formatting */}
-                    <div className="text-sm leading-relaxed break-words text-slate-200">
+                    <div className="text-sm leading-relaxed break-words text-slate-100">
                       {isAssistant ? renderMarkdown(m.content) : <p className="whitespace-pre-wrap">{m.content}</p>}
                     </div>
 

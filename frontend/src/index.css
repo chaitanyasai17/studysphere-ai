@@ -30,17 +30,6 @@
   --color-indigo-700: #6d28d9;
   --color-indigo-800: #5b21b6;
   --color-indigo-900: #4c1d95;
-
-  --color-slate-50: #0a0a12;
-  --color-slate-100: #0f0f1a;
-  --color-slate-200: #161625;
-  --color-slate-300: #1a1a2e;
-  --color-slate-400: #64748B;
-  --color-slate-500: #94A3B8;
-  --color-slate-600: #CBD5E1;
-  --color-slate-700: #E2E8F0;
-  --color-slate-800: #F1F5F9;
-  --color-slate-900: #FFFFFF;
 }
 
 @layer base {
