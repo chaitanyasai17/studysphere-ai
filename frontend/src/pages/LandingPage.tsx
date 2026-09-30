@@ -24,7 +24,11 @@ import {
   Calendar,
   BarChart3,
   Lock,
-  ShieldAlert
+  ShieldAlert,
+  Check,
+  Award,
+  Zap,
+  Flame
 } from "lucide-react";
 
 export const LandingPage: React.FC = () => {
@@ -311,69 +315,77 @@ export const LandingPage: React.FC = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            className="relative rounded-2xl border border-white/[0.06] bg-[#161625] shadow-2xl p-2 max-w-5xl mx-auto"
+            className="relative rounded-2xl border border-purple-500/20 bg-[#161625]/90 backdrop-blur-xl shadow-[0_0_60px_-15px_rgba(139,92,246,0.25),0_25px_50px_-12px_rgba(0,0,0,0.9)] p-2 max-w-5xl mx-auto"
           >
-            {/* Floating Decorative Badges — pointer-events-none ensures they never intercept clicks */}
+            {/* Floating Decorative Badges — z-30 ensures fully visible outside/over frame, pointer-events-none ensures never blocking clicks */}
             <div 
-              className="absolute -left-6 sm:-left-10 lg:-left-12 top-8 sm:top-10 bg-[#1a1a2e]/95 backdrop-blur-md border border-white/[0.08] p-3 md:p-3.5 rounded-xl shadow-2xl items-center gap-3 hidden md:flex pointer-events-none select-none z-10" 
+              className="absolute -left-3 sm:-left-6 lg:-left-8 top-10 sm:top-12 bg-[#141426]/95 backdrop-blur-xl border border-purple-500/35 px-3.5 py-2.5 rounded-2xl shadow-[0_15px_35px_rgba(0,0,0,0.8),0_0_25px_rgba(147,51,234,0.3)] items-center gap-3 hidden md:flex pointer-events-none select-none z-30" 
               style={{ animation: 'float 3s ease-in-out infinite' }}
               aria-hidden="true"
             >
-              <div className="bg-purple-500/20 p-2 rounded-lg pointer-events-none">
-                <Code className="w-5 h-5 text-purple-400 pointer-events-none" />
+              <div className="w-8 h-8 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center shrink-0">
+                <Code className="w-4 h-4 text-purple-300" />
               </div>
-              <div className="pointer-events-none">
-                <div className="text-xs text-slate-400 pointer-events-none">Code Compiled</div>
-                <div className="text-sm font-bold text-white pointer-events-none">0ms Runtime</div>
+              <div>
+                <div className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Code Compiled</div>
+                <div className="text-xs font-extrabold text-white flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  0ms Runtime
+                </div>
               </div>
             </div>
 
             <div 
-              className="absolute -right-6 sm:-right-8 lg:-right-10 bottom-24 sm:bottom-28 bg-[#1a1a2e]/95 backdrop-blur-md border border-white/[0.08] p-3 md:p-3.5 rounded-xl shadow-2xl items-center gap-3 hidden md:flex pointer-events-none select-none z-10" 
+              className="absolute -right-3 sm:-right-6 lg:-right-8 bottom-16 sm:bottom-20 bg-[#141426]/95 backdrop-blur-xl border border-emerald-500/35 px-3.5 py-2.5 rounded-2xl shadow-[0_15px_35px_rgba(0,0,0,0.8),0_0_25px_rgba(16,185,129,0.3)] items-center gap-3 hidden md:flex pointer-events-none select-none z-30" 
               style={{ animation: 'float 4s ease-in-out 1s infinite' }}
               aria-hidden="true"
             >
-              <div className="bg-emerald-500/20 p-2 rounded-lg pointer-events-none">
-                <CheckCircle className="w-5 h-5 text-emerald-400 pointer-events-none" />
+              <div className="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                <CheckCircle className="w-4 h-4 text-emerald-300" />
               </div>
-              <div className="pointer-events-none">
-                <div className="text-xs text-slate-400 pointer-events-none">Quiz Score</div>
-                <div className="text-sm font-bold text-white pointer-events-none">100% Accuracy</div>
+              <div>
+                <div className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Quiz Score</div>
+                <div className="text-xs font-extrabold text-white flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  100% Accuracy
+                </div>
               </div>
             </div>
 
-            <div className="rounded-xl border border-white/[0.04] bg-[#0a0a12] overflow-hidden flex flex-col relative z-20" style={{ height: 'clamp(460px, 58vw, 640px)' }}>
+            {/* Browser Window Mockup Frame */}
+            <div className="rounded-xl border border-white/[0.06] bg-[#0a0a14] overflow-hidden flex flex-col relative z-20" style={{ height: 'clamp(460px, 58vw, 620px)' }}>
               {/* Browser Header */}
-              <div className="px-4 py-3 border-b border-white/[0.04] bg-[#0f0f1a] flex items-center gap-4 shrink-0">
-                <div className="flex gap-2">
-                  <span className="w-3 h-3 rounded-full bg-rose-500/80" />
-                  <span className="w-3 h-3 rounded-full bg-amber-500/80" />
-                  <span className="w-3 h-3 rounded-full bg-emerald-500/80" />
+              <div className="px-4 py-2.5 border-b border-white/[0.06] bg-[#0e0e1a] flex items-center justify-between shrink-0">
+                <div className="flex gap-2 items-center">
+                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500/90 shadow-sm shadow-rose-500/50" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500/90 shadow-sm shadow-amber-500/50" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/90 shadow-sm shadow-emerald-500/50" />
                 </div>
-                <div className="flex-1 flex justify-center">
-                  <div className="px-8 sm:px-16 md:px-32 py-1.5 rounded-md bg-[#161625] border border-white/[0.04] text-xs text-slate-500 font-mono flex items-center gap-2">
-                    <Globe className="w-3 h-3" /> app.studysphere.ai
-                  </div>
+                <div className="px-6 sm:px-12 md:px-24 py-1 rounded-lg bg-[#141424] border border-white/[0.06] text-[11px] text-slate-400 font-mono flex items-center gap-2">
+                  <Lock className="w-3 h-3 text-emerald-400 shrink-0" />
+                  <span className="truncate">https://app.studysphere.ai</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 ml-1" />
                 </div>
+                <div className="w-10" />
               </div>
               
               {/* Dashboard Content — Interactive Mockup */}
               <div className="flex-1 flex min-h-0">
                 {/* Sidebar Navigation */}
                 <aside 
-                  className="w-56 lg:w-64 border-r border-white/[0.04] bg-[#0c0c16] p-3 flex flex-col hidden sm:flex shrink-0 overflow-y-auto scrollbar-none relative z-20"
+                  className="w-48 lg:w-52 border-r border-white/[0.06] bg-[#0c0c16] p-2.5 flex flex-col hidden sm:flex shrink-0 overflow-y-auto scrollbar-none relative z-20"
                   aria-label="Interactive preview sidebar"
                 >
                   {/* Brand Header */}
                   <Link 
                     to="/dashboard" 
-                    className="flex items-center gap-2 px-3 py-2 mb-2 rounded-xl hover:bg-white/[0.04] transition-colors cursor-pointer group relative z-30 flex-shrink-0"
+                    className="flex items-center gap-2 px-2.5 py-1.5 mb-2 rounded-xl hover:bg-white/[0.04] transition-colors cursor-pointer group relative z-30 flex-shrink-0"
                     title="StudySphere AI Dashboard"
                   >
-                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-600 to-purple-500 flex items-center justify-center group-hover:scale-105 transition-transform flex-shrink-0">
-                      <Sparkles className="w-4 h-4 text-white" />
+                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 flex items-center justify-center group-hover:scale-105 transition-transform flex-shrink-0 shadow-[0_0_12px_rgba(168,85,247,0.4)]">
+                      <Sparkles className="w-3.5 h-3.5 text-white" />
                     </div>
-                    <span className="text-sm font-bold text-white tracking-tight truncate">StudySphere AI</span>
+                    <span className="text-xs font-bold text-white tracking-tight truncate">StudySphere AI</span>
                   </Link>
 
                   {/* Navigation Links — All 12 items verified clickable */}
@@ -397,15 +409,15 @@ export const LandingPage: React.FC = () => {
                         <Link
                           key={item.name}
                           to={item.path}
-                          className={`flex items-center gap-2.5 px-3 py-1.5 lg:py-2 rounded-xl text-xs font-medium transition-all duration-200 cursor-pointer relative z-30 group ${
+                          className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all duration-200 cursor-pointer relative z-30 group ${
                             isActive
-                              ? "bg-purple-500/15 text-white border-l-2 border-purple-500 font-semibold"
+                              ? "bg-purple-500/20 text-white border-l-2 border-purple-400 font-semibold shadow-[0_0_10px_rgba(168,85,247,0.15)]"
                               : "text-slate-400 hover:text-white hover:bg-white/[0.04] border-l-2 border-transparent"
                           }`}
                           title={`Navigate to ${item.name}`}
                         >
-                          <div className={`flex-shrink-0 group-hover:scale-110 transition-transform duration-200 ${isActive ? "text-purple-400" : ""}`}>
-                            <item.icon className="w-4 h-4" />
+                          <div className={`flex-shrink-0 group-hover:scale-110 transition-transform duration-200 ${isActive ? "text-purple-300" : ""}`}>
+                            <item.icon className="w-3.5 h-3.5" />
                           </div>
                           <span className="truncate whitespace-nowrap">{item.name}</span>
                         </Link>
@@ -415,37 +427,49 @@ export const LandingPage: React.FC = () => {
                 </aside>
 
                 {/* Main Content Area */}
-                <main className="flex-1 p-4 md:p-6 bg-[#0a0a12] flex flex-col gap-4 overflow-y-auto min-w-0">
-                  {/* Header */}
-                  <div className="flex justify-between items-start gap-4">
+                <main className="flex-1 p-3.5 md:p-4 lg:p-5 bg-[#0a0a14] flex flex-col gap-3.5 overflow-y-auto min-w-0">
+                  {/* Header Row */}
+                  <div className="flex justify-between items-center gap-4">
                     <div>
-                      <h3 className="text-base md:text-lg font-bold text-white">Welcome back, Chaitanya! 👋</h3>
-                      <p className="text-xs text-slate-500 mt-0.5">Your learning progress at a glance</p>
+                      <h3 className="text-sm md:text-base font-bold text-white tracking-tight">Welcome back, Chaitanya! 👋</h3>
+                      <p className="text-[11px] text-slate-400 mt-0.5">Your intelligent learning dashboard</p>
                     </div>
-                    <Link 
-                      to="/dashboard"
-                      className="shrink-0 px-3 py-1.5 bg-gradient-to-r from-violet-600/20 to-purple-500/20 border border-purple-500/20 hover:border-purple-500/40 rounded-lg text-xs font-medium text-purple-300 hidden md:block cursor-pointer transition-colors"
-                      title="Pro Plan Status"
-                    >
-                      Pro Plan
-                    </Link>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/10 border border-amber-500/25 rounded-lg text-[10px] font-semibold text-amber-300">
+                        <Flame className="w-3 h-3 text-amber-400" />
+                        <span>14-day streak</span>
+                      </div>
+                      <Link 
+                        to="/dashboard"
+                        className="px-2.5 py-1 bg-gradient-to-r from-violet-600/30 via-purple-600/30 to-fuchsia-600/30 border border-purple-500/30 hover:border-purple-500/60 rounded-lg text-[10px] font-semibold text-purple-200 transition-colors shadow-sm cursor-pointer"
+                        title="Pro Plan Status"
+                      >
+                        Pro Plan
+                      </Link>
+                    </div>
                   </div>
                   
-                  {/* Stats Cards — Clickable to respective modules */}
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                  {/* Stats Cards Row */}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
                     {[
-                      { value: "12", label: "Topics Completed", color: "text-purple-400", bg: "bg-purple-500/10", path: "/analytics" },
-                      { value: "48", label: "Quizzes Taken", color: "text-blue-400", bg: "bg-blue-500/10", path: "/quiz" },
-                      { value: "6", label: "Projects Built", color: "text-emerald-400", bg: "bg-emerald-500/10", path: "/coding" },
-                      { value: "3", label: "Certificates", color: "text-amber-400", bg: "bg-amber-500/10", path: "/dashboard" },
+                      { value: "12", label: "Topics Completed", color: "text-purple-300", bg: "bg-purple-500/15 border-purple-500/30", icon: BookOpen, badge: "+3 this wk", path: "/analytics" },
+                      { value: "48", label: "Quizzes Taken", color: "text-blue-300", bg: "bg-blue-500/15 border-blue-500/30", icon: HelpCircle, badge: "94% avg", path: "/quiz" },
+                      { value: "6", label: "Projects Built", color: "text-emerald-300", bg: "bg-emerald-500/15 border-emerald-500/30", icon: Code, badge: "2 active", path: "/coding" },
+                      { value: "3", label: "Certificates", color: "text-amber-300", bg: "bg-amber-500/15 border-amber-500/30", icon: Award, badge: "Verified", path: "/dashboard" },
                     ].map((stat) => (
                       <Link
                         key={stat.label}
                         to={stat.path}
-                        className="bg-[#161625] border border-white/[0.04] hover:border-purple-500/30 rounded-xl p-3 md:p-4 cursor-pointer transition-all hover:scale-[1.02] block"
+                        className="bg-[#121220] border border-white/[0.06] hover:border-purple-500/40 rounded-xl p-3 cursor-pointer transition-all hover:scale-[1.02] hover:bg-[#161628] block shadow-sm"
                       >
-                        <div className={`text-xl md:text-2xl font-bold ${stat.color}`}>{stat.value}</div>
-                        <div className="text-[10px] md:text-xs text-slate-500 mt-1">{stat.label}</div>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className={`w-7 h-7 rounded-lg border flex items-center justify-center ${stat.bg}`}>
+                            <stat.icon className={`w-3.5 h-3.5 ${stat.color}`} />
+                          </div>
+                          <span className="text-[9px] font-bold text-slate-300 bg-white/[0.06] px-1.5 py-0.5 rounded-full">{stat.badge}</span>
+                        </div>
+                        <div className={`text-xl lg:text-2xl font-black ${stat.color}`}>{stat.value}</div>
+                        <div className="text-[10px] text-slate-400 font-medium mt-0.5">{stat.label}</div>
                       </Link>
                     ))}
                   </div>
@@ -453,48 +477,63 @@ export const LandingPage: React.FC = () => {
                   {/* Bottom Row — Continue Learning + Today's Goals */}
                   <div className="flex-1 flex flex-col lg:flex-row gap-3 min-h-0">
                     {/* Continue Learning */}
-                    <div className="flex-1 bg-[#161625] border border-white/[0.04] rounded-xl p-4 flex flex-col min-w-0">
-                      <div className="flex items-center justify-between mb-3">
-                        <h4 className="text-xs font-semibold text-white">Continue Learning</h4>
-                        <Link to="/courses" className="text-[10px] text-purple-400 hover:text-purple-300 transition-colors">View all</Link>
-                      </div>
-                      <div className="space-y-3 flex-1">
-                        {[
-                          { name: "Data Structures & Algorithms", pct: 65, color: "bg-purple-500", path: "/coding" },
-                          { name: "Machine Learning Fundamentals", pct: 40, color: "bg-blue-500", path: "/ai" },
-                          { name: "Web Development with React", pct: 82, color: "bg-emerald-500", path: "/notes" },
-                        ].map((course) => (
-                          <Link 
-                            key={course.name}
-                            to={course.path}
-                            className="block group cursor-pointer"
-                          >
-                            <div className="flex justify-between items-center mb-1">
-                              <span className="text-[10px] md:text-xs text-slate-300 group-hover:text-purple-300 transition-colors truncate mr-2">{course.name}</span>
-                              <span className="text-[10px] text-slate-500 shrink-0">{course.pct}%</span>
-                            </div>
-                            <div className="h-1.5 bg-white/[0.05] rounded-full overflow-hidden">
-                              <div className={`h-full ${course.color} rounded-full`} style={{ width: `${course.pct}%` }} />
-                            </div>
-                          </Link>
-                        ))}
-                      </div>
-                      {/* Quick Access */}
-                      <div className="mt-3 pt-3 border-t border-white/[0.04]">
-                        <div className="text-[10px] text-slate-500 mb-2">Quick Access</div>
-                        <div className="flex flex-wrap gap-1.5">
+                    <div className="flex-1 bg-[#121220] border border-white/[0.06] rounded-xl p-3.5 flex flex-col justify-between min-w-0">
+                      <div>
+                        <div className="flex items-center justify-between mb-2.5">
+                          <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+                            <Zap className="w-3.5 h-3.5 text-purple-400" />
+                            Continue Learning
+                          </h4>
+                          <Link to="/coding" className="text-[10px] font-semibold text-purple-400 hover:text-purple-300 transition-colors">View all →</Link>
+                        </div>
+                        <div className="space-y-2">
                           {[
-                            { label: "AI Tutor", path: "/ai" },
-                            { label: "Upload PDF", path: "/pdf" },
-                            { label: "Generate Quiz", path: "/quiz" },
-                            { label: "Coding", path: "/coding" }
+                            { name: "Data Structures & Algorithms", topic: "Module 4: Graph Traversals", pct: 65, color: "bg-gradient-to-r from-violet-500 to-purple-500", icon: Code, iconBg: "bg-purple-500/15 text-purple-400", path: "/coding" },
+                            { name: "Machine Learning Fundamentals", topic: "Neural Networks & Backprop", pct: 40, color: "bg-gradient-to-r from-blue-500 to-cyan-500", icon: Cpu, iconBg: "bg-blue-500/15 text-blue-400", path: "/ai" },
+                            { name: "Web Development with React", topic: "State Management & Hooks", pct: 82, color: "bg-gradient-to-r from-emerald-500 to-teal-500", icon: Globe, iconBg: "bg-emerald-500/15 text-emerald-400", path: "/notes" },
+                          ].map((course) => (
+                            <Link 
+                              key={course.name}
+                              to={course.path}
+                              className="block p-2 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.04] transition-all group cursor-pointer"
+                            >
+                              <div className="flex justify-between items-center mb-1.5">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <div className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 ${course.iconBg}`}>
+                                    <course.icon className="w-3 h-3" />
+                                  </div>
+                                  <div className="min-w-0">
+                                    <div className="text-xs font-semibold text-white group-hover:text-purple-300 transition-colors truncate">{course.name}</div>
+                                    <div className="text-[9px] text-slate-400 truncate">{course.topic}</div>
+                                  </div>
+                                </div>
+                                <span className="text-xs font-bold text-slate-200 shrink-0 ml-2">{course.pct}%</span>
+                              </div>
+                              <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+                                <div className={`h-full ${course.color} rounded-full`} style={{ width: `${course.pct}%` }} />
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Quick Tools Action Chips */}
+                      <div className="mt-3 pt-2.5 border-t border-white/[0.06]">
+                        <div className="text-[10px] font-semibold text-slate-400 mb-1.5">Quick Tools</div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                          {[
+                            { label: "AI Tutor", path: "/ai", icon: MessageSquare, color: "text-purple-400" },
+                            { label: "Upload PDF", path: "/pdf", icon: BookOpen, color: "text-blue-400" },
+                            { label: "Instant Quiz", path: "/quiz", icon: HelpCircle, color: "text-pink-400" },
+                            { label: "Code Arena", path: "/coding", icon: Code, color: "text-cyan-400" }
                           ].map((q) => (
                             <Link 
                               key={q.label} 
                               to={q.path}
-                              className="px-2 py-1 bg-white/[0.04] border border-white/[0.04] hover:bg-purple-500/10 hover:border-purple-500/30 hover:text-white rounded-md text-[10px] text-slate-400 transition-all cursor-pointer"
+                              className="px-2 py-1.5 bg-white/[0.03] border border-white/[0.06] hover:bg-purple-500/10 hover:border-purple-500/30 rounded-lg text-[10px] font-semibold text-slate-300 hover:text-white transition-all cursor-pointer flex items-center gap-1.5 justify-center"
                             >
-                              {q.label}
+                              <q.icon className={`w-3 h-3 ${q.color}`} />
+                              <span className="truncate">{q.label}</span>
                             </Link>
                           ))}
                         </div>
@@ -502,43 +541,55 @@ export const LandingPage: React.FC = () => {
                     </div>
 
                     {/* Today's Goals */}
-                    <div className="w-full lg:w-56 xl:w-64 bg-[#161625] border border-white/[0.04] rounded-xl p-4 flex flex-col shrink-0">
-                      <div className="flex items-center justify-between mb-3">
-                        <h4 className="text-xs font-semibold text-white">Today's Goals</h4>
-                        <Link to="/planner" className="text-[10px] text-purple-400 hover:text-purple-300 transition-colors">Planner</Link>
+                    <div className="w-full lg:w-56 xl:w-60 bg-[#121220] border border-white/[0.06] rounded-xl p-3.5 flex flex-col justify-between shrink-0">
+                      <div>
+                        <div className="flex items-center justify-between mb-2.5">
+                          <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+                            <Check className="w-3.5 h-3.5 text-emerald-400" />
+                            Today's Goals
+                          </h4>
+                          <Link to="/planner" className="text-[10px] font-semibold text-purple-400 hover:text-purple-300 transition-colors">Planner →</Link>
+                        </div>
+                        <div className="space-y-1.5">
+                          {[
+                            { task: "Complete AI Notes", done: true, time: "15m", path: "/notes" },
+                            { task: "Take DSA Quiz", done: true, time: "20m", path: "/quiz" },
+                            { task: "Practice Coding", done: false, time: "30m", path: "/coding" },
+                            { task: "Read Cyber Article", done: false, time: "10m", path: "/cybersecurity" },
+                          ].map((goal) => (
+                            <Link 
+                              key={goal.task}
+                              to={goal.path}
+                              className="flex items-center justify-between p-1.5 rounded-lg hover:bg-white/[0.04] transition-colors group cursor-pointer"
+                            >
+                              <div className="flex items-center gap-2 min-w-0">
+                                <div className={`w-4 h-4 rounded-md flex items-center justify-center shrink-0 transition-colors ${goal.done ? "bg-emerald-500 text-black shadow-sm shadow-emerald-500/50" : "border border-slate-600 group-hover:border-purple-400"}`}>
+                                  {goal.done && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                                </div>
+                                <span className={`text-xs ${goal.done ? "text-slate-400 line-through" : "text-white font-medium group-hover:text-purple-200"} truncate`}>{goal.task}</span>
+                              </div>
+                              <span className="text-[9px] text-slate-500 font-mono shrink-0 ml-1.5">{goal.time}</span>
+                            </Link>
+                          ))}
+                        </div>
                       </div>
-                      <div className="space-y-2 flex-1">
-                        {[
-                          { task: "Complete AI Notes", done: true, path: "/notes" },
-                          { task: "Take DSA Quiz", done: true, path: "/quiz" },
-                          { task: "Practice Coding", done: false, path: "/coding" },
-                          { task: "Read Cybersecurity Article", done: false, path: "/cybersecurity" },
-                        ].map((goal) => (
-                          <Link 
-                            key={goal.task}
-                            to={goal.path}
-                            className="flex items-center gap-2 group cursor-pointer"
-                          >
-                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${goal.done ? "bg-emerald-500/20 border-emerald-500" : "border-slate-600 group-hover:border-purple-400"}`}>
-                              {goal.done && <CheckCircle className="w-3 h-3 text-emerald-400" />}
-                            </div>
-                            <span className={`text-[10px] md:text-xs transition-colors ${goal.done ? "text-slate-500 line-through" : "text-slate-300 group-hover:text-white"}`}>{goal.task}</span>
-                          </Link>
-                        ))}
-                      </div>
-                      {/* XP Badge */}
+
+                      {/* XP Progress Card */}
                       <Link 
                         to="/analytics"
-                        className="mt-3 pt-3 border-t border-white/[0.04] flex items-center gap-2 group cursor-pointer hover:bg-white/[0.02] rounded-lg transition-colors p-1"
+                        className="mt-3 pt-2.5 border-t border-white/[0.06] flex items-center justify-between group cursor-pointer hover:bg-white/[0.02] rounded-lg transition-colors p-1"
                         title="View XP Analytics"
                       >
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/20 flex items-center justify-center group-hover:scale-105 transition-transform flex-shrink-0">
-                          <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-md shadow-amber-500/20 group-hover:scale-105 transition-transform flex-shrink-0">
+                            <Star className="w-4 h-4 text-white fill-white" />
+                          </div>
+                          <div>
+                            <div className="text-xs font-black text-white group-hover:text-amber-300 transition-colors">1,250 XP</div>
+                            <div className="text-[10px] text-amber-400/90 font-medium">Level 8 • Scholar</div>
+                          </div>
                         </div>
-                        <div>
-                          <div className="text-xs font-bold text-white group-hover:text-amber-300 transition-colors">1,250 XP</div>
-                          <div className="text-[10px] text-slate-500">Level 8 • Scholar</div>
-                        </div>
+                        <span className="text-[9px] font-bold text-purple-300 bg-purple-500/20 px-2 py-0.5 rounded-full shrink-0">+150 XP</span>
                       </Link>
                     </div>
                   </div>
