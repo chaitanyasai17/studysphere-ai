@@ -369,6 +369,15 @@ def upload_pdf():
             "created_at": datetime.datetime.utcnow().isoformat(),
             "ai_analysis": None
         }
+
+        # Persist base64 in DB for documents under 8MB to prevent ephemeral container data loss
+        if file_size <= 8 * 1024 * 1024:
+            try:
+                import base64
+                with open(file_path, "rb") as pf:
+                    pdf_doc["pdf_base64"] = base64.b64encode(pf.read()).decode("utf-8")
+            except Exception as b64_err:
+                logger.warning(f"Could not cache pdf_base64 in DB: {b64_err}")
         
         res = pdfs_col.insert_one(pdf_doc)
         pdf_id = str(res.inserted_id)
@@ -452,7 +461,56 @@ def get_pdf(pdf_id):
                 thread.start()
         
     pdfs_col.update_one({"_id": pdf_id}, {"$set": {"last_opened": datetime.datetime.utcnow().isoformat()}})
+    if "pdf_base64" in pdf:
+        pdf.pop("pdf_base64")
     return jsonify(pdf), 200
+
+@pdf_bp.route("/<pdf_id>/file", methods=["GET"])
+@token_required
+def get_pdf_file(pdf_id):
+    db = get_db()
+    pdfs_col = db.get_collection("pdfs")
+    pdf = pdfs_col.find_one({"_id": pdf_id, "user_id": g.user_id})
+    if not pdf:
+        return jsonify({"message": "PDF not found."}), 404
+        
+    file_path = pdf.get("file_path")
+    if file_path and os.path.exists(file_path):
+        from flask import send_file
+        return send_file(
+            file_path,
+            mimetype="application/pdf",
+            as_attachment=False,
+            download_name=pdf.get("filename", "document.pdf")
+        )
+        
+    # Check if base64 stored in DB
+    if pdf.get("pdf_base64"):
+        import base64
+        import io
+        from flask import send_file
+        try:
+            pdf_bytes = base64.b64decode(pdf["pdf_base64"])
+            if file_path:
+                try:
+                    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                    with open(file_path, "wb") as pf:
+                        pf.write(pdf_bytes)
+                except Exception:
+                    pass
+            return send_file(
+                io.BytesIO(pdf_bytes),
+                mimetype="application/pdf",
+                as_attachment=False,
+                download_name=pdf.get("filename", "document.pdf")
+            )
+        except Exception as dec_err:
+            logger.error(f"Error decoding pdf_base64 for {pdf_id}: {dec_err}")
+            
+    return jsonify({
+        "error": "FILE_EXPIRED",
+        "message": "Physical file expired from ephemeral storage."
+    }), 404
 
 @pdf_bp.route("/<pdf_id>", methods=["DELETE"])
 @token_required

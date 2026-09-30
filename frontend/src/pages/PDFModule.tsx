@@ -59,6 +59,9 @@ interface PDFItem {
   highlights?: any[];
 }
 
+// In-memory cache for loaded/uploaded PDF ArrayBuffers to guarantee instant rendering and offline resilience
+const pdfDataCache = new Map<string, ArrayBuffer>();
+
 export const PDFModule: React.FC = () => {
   const { addToast } = useNotifications();
   const [pdfs, setPdfs] = useState<PDFItem[]>([]);
@@ -77,6 +80,7 @@ export const PDFModule: React.FC = () => {
   const [zoomLevel, setZoomLevel] = useState(1.15);
   const [rotation, setRotation] = useState(0);
   const [pdfLoading, setPdfLoading] = useState(false);
+  const [pdfLoadError, setPdfLoadError] = useState<string | null>(null);
   const [currentPageNum, setCurrentPageNum] = useState(1);
   const [pageCount, setPageCount] = useState(1);
   
@@ -189,25 +193,35 @@ export const PDFModule: React.FC = () => {
     };
   }, [offlineSyncQueue]);
 
-  // Load PDF.js script dynamically
-  const loadPdfLibrary = () => {
+  // Load PDF.js script dynamically and configure same-origin blob worker
+  const loadPdfLibrary = async () => {
+    if ((window as any).pdfjsLib) {
+      return (window as any).pdfjsLib;
+    }
     return new Promise((resolve, reject) => {
-      if ((window as any).pdfjsLib) {
-        resolve((window as any).pdfjsLib);
-        return;
-      }
       const script = document.createElement("script");
       script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js";
-      script.onload = () => {
-        const workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js";
-        try {
-          (window as any).pdfjsLib.GlobalWorkerOptions.workerSrc = `data:text/javascript;base64,${btoa('importScripts("' + workerSrc + '");')}`;
-        } catch (e) {
-          (window as any).pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
+      script.onload = async () => {
+        const pdfjs = (window as any).pdfjsLib;
+        if (pdfjs) {
+          const workerUrl = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js";
+          try {
+            // Fetch worker code as Blob to avoid cross-origin Web Worker restrictions in modern browsers
+            const res = await fetch(workerUrl);
+            if (res.ok) {
+              const text = await res.text();
+              const blob = new Blob([text], { type: "application/javascript" });
+              pdfjs.GlobalWorkerOptions.workerSrc = URL.createObjectURL(blob);
+            } else {
+              pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
+            }
+          } catch {
+            pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
+          }
         }
-        resolve((window as any).pdfjsLib);
+        resolve(pdfjs);
       };
-      script.onerror = () => reject(new Error("Failed to load PDF.js libraries."));
+      script.onerror = () => reject(new Error("Failed to load PDF.js libraries from CDN."));
       document.head.appendChild(script);
     });
   };
@@ -337,30 +351,77 @@ export const PDFModule: React.FC = () => {
       const cheatSheet = analysis.study_tools?.cheat_sheet || "";
       setNoteContent(cheatSheet || `### Revision Notes: ${pdfItem.title}\n\nKey takeaways:\n- Summarize major concepts here.`);
       
-      const fileBasename = pdfItem.file_path.split(/[\\/]/).pop();
-      if (fileBasename) {
-        loadPdfDocument(fileBasename, pdfItem.reading_progress?.last_page || 1);
-      }
+      const fileBasename = pdfItem.file_path ? pdfItem.file_path.split(/[\\/]/).pop() : "";
+      loadPdfDocument(fileBasename || "", pdfItem.reading_progress?.last_page || 1, pdfItem._id);
     } catch (e) {
       addToast("Error", "Could not load document analysis.", "error");
     }
   };
 
-  const loadPdfDocument = async (fileBasename: string, initialPage: number) => {
+  const loadPdfDocument = async (fileBasename: string, initialPage: number, pdfId?: string) => {
     setPdfLoading(true);
     setPdfDoc(null);
+    setPdfLoadError(null);
     try {
       const pdfjsLib = await loadPdfLibrary() as any;
-      const baseUrl = api.defaults.baseURL;
-      const pdfUrl = `${baseUrl}/uploads/${fileBasename}`;
-      
-      const loadingTask = pdfjsLib.getDocument(pdfUrl);
+      let arrayBuffer: ArrayBuffer | null = null;
+
+      // 1. Check in-memory cache first (instant local render)
+      if (pdfId && pdfDataCache.has(pdfId)) {
+        arrayBuffer = pdfDataCache.get(pdfId)!;
+      } else if (fileBasename && pdfDataCache.has(fileBasename)) {
+        arrayBuffer = pdfDataCache.get(fileBasename)!;
+      }
+
+      // 2. Fetch using authenticated API client
+      if (!arrayBuffer) {
+        if (pdfId) {
+          try {
+            const res = await api.get(`/api/pdf/${pdfId}/file`, { responseType: "arraybuffer" });
+            if (res.data && res.data.byteLength > 0) {
+              arrayBuffer = res.data;
+            }
+          } catch (e) {
+            // fallback to /uploads
+          }
+        }
+
+        if (!arrayBuffer && fileBasename) {
+          try {
+            const res = await api.get(`/uploads/${fileBasename}`, { responseType: "arraybuffer" });
+            if (res.data && res.data.byteLength > 0) {
+              arrayBuffer = res.data;
+            }
+          } catch (e) {
+            // direct fetch failed
+          }
+        }
+      }
+
+      if (!arrayBuffer || arrayBuffer.byteLength === 0) {
+        throw new Error("Physical PDF file not found on server.");
+      }
+
+      if (pdfId) {
+        pdfDataCache.set(pdfId, arrayBuffer);
+      }
+
+      // Load using in-memory ArrayBuffer (no CORS or range request issues)
+      const loadingTask = pdfjsLib.getDocument({
+        data: new Uint8Array(arrayBuffer),
+        cMapUrl: "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/cmaps/",
+        cMapPacked: true,
+      });
+
       const doc = await loadingTask.promise;
       setPdfDoc(doc);
+      setPageCount(doc.numPages || pageCount);
       setCurrentPageNum(initialPage);
-    } catch (err) {
-      console.error("PDF.js doc loading error:", err);
-      addToast("Viewer Error", "Failed to render PDF using PDF.js.", "error");
+      setPdfLoadError(null);
+    } catch (err: any) {
+      console.warn("PDF.js doc loading notice:", err);
+      setPdfDoc(null);
+      setPdfLoadError(err?.message || "PDF pages unavailable");
     } finally {
       setPdfLoading(false);
     }
@@ -474,22 +535,27 @@ export const PDFModule: React.FC = () => {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("file", file);
-
-    setUploading(true);
-    addToast("Uploading File", "Processing text, extracting pages, and generating RAG index...", "info");
-
     try {
+      const fileBuffer = await file.arrayBuffer();
+      pdfDataCache.set(file.name, fileBuffer);
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      setUploading(true);
+      addToast("Uploading File", "Processing text, extracting pages, and generating RAG index...", "info");
+
       const res = await api.post("/api/pdf/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" }
       });
       addToast("Upload Successful", `Indexing: ${file.name}`, "success");
-      setActivePdfId(res.data._id);
-      setSelectedPdfIds([res.data._id]);
-      setPdfDoc(null);
+      const newPdfId = res.data._id;
+      pdfDataCache.set(newPdfId, fileBuffer);
+      setActivePdfId(newPdfId);
+      setSelectedPdfIds([newPdfId]);
       setAiAnalysis(null);
-      startPollingJobStatus(res.data._id);
+      loadPdfDocument(file.name, 1, newPdfId);
+      startPollingJobStatus(newPdfId);
     } catch (err: any) {
       addToast("Upload Failed", err.response?.data?.message || "Could not process PDF document.", "error");
     } finally {
@@ -1384,8 +1450,85 @@ export const PDFModule: React.FC = () => {
                     />
                   );
                 })
+              ) : pdfLoading ? (
+                <div className="flex flex-col items-center justify-center py-20 text-slate-400 gap-3 my-auto">
+                  <Loader2 className="w-8 h-8 text-purple-400 animate-spin" />
+                  <span className="text-sm font-medium">Rendering textbook pages...</span>
+                </div>
               ) : (
-                <div className="text-center py-12 text-slate-500">Loading textbook pages...</div>
+                <div className="flex flex-col items-center justify-center py-16 px-6 max-w-lg mx-auto text-center space-y-5 animate-fade-in my-auto">
+                  <div className="w-16 h-16 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 shadow-[0_0_25px_rgba(139,92,246,0.15)]">
+                    <BookOpen className="w-8 h-8" />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-base font-bold text-white tracking-wide">
+                      {activePdf?.title || "Textbook"} Analysis Ready
+                    </h3>
+                    <p className="text-xs text-slate-400 leading-relaxed">
+                      Original PDF page stream is unavailable from server storage. All AI study tools, summary, quizzes, and notes remain fully available on the right.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                    <label className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-semibold shadow-lg shadow-purple-500/25 flex items-center gap-2 cursor-pointer transition-all">
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>Attach PDF to View Pages</span>
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        className="hidden"
+                        onChange={async (e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            const file = e.target.files[0];
+                            const buffer = await file.arrayBuffer();
+                            if (activePdfId) {
+                              pdfDataCache.set(activePdfId, buffer);
+                            }
+                            pdfDataCache.set(file.name, buffer);
+                            loadPdfDocument(file.name, 1, activePdfId || undefined);
+                            addToast("PDF Attached", "Rendering visual pages...", "success");
+                          }
+                        }}
+                      />
+                    </label>
+
+                    <button
+                      onClick={() => setActiveRightTab("notes")}
+                      className="px-4 py-2.5 rounded-xl bg-[#0f0f1a] hover:bg-white/[0.05] border border-white/[0.08] text-slate-300 hover:text-white text-xs font-medium flex items-center gap-2 transition-all cursor-pointer"
+                    >
+                      <FileText className="w-3.5 h-3.5 text-purple-400" />
+                      <span>Read Notes</span>
+                    </button>
+
+                    <button
+                      onClick={() => setActiveRightTab("quiz")}
+                      className="px-4 py-2.5 rounded-xl bg-[#0f0f1a] hover:bg-white/[0.05] border border-white/[0.08] text-slate-300 hover:text-white text-xs font-medium flex items-center gap-2 transition-all cursor-pointer"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Take Quiz</span>
+                    </button>
+                  </div>
+
+                  {(activePdf?.extracted_text || activePdf?.summary) && (
+                    <div className="w-full text-left mt-4 p-4 rounded-2xl bg-[#0f0f1a] border border-white/[0.06] space-y-2 max-h-56 overflow-y-auto">
+                      <div className="flex items-center justify-between text-[11px] font-semibold text-slate-300 border-b border-white/[0.06] pb-2">
+                        <span className="flex items-center gap-1.5"><FileCheck className="w-3.5 h-3.5 text-purple-400" /> Extracted Document Text</span>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(activePdf?.extracted_text || activePdf?.summary || "");
+                            addToast("Copied", "Text copied to clipboard.", "success");
+                          }}
+                          className="text-slate-400 hover:text-white text-[10px] flex items-center gap-1 cursor-pointer"
+                        >
+                          <Copy className="w-3 h-3" /> Copy
+                        </button>
+                      </div>
+                      <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-wrap font-mono text-[11px]">
+                        {activePdf?.extracted_text || activePdf?.summary}
+                      </p>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
 
@@ -2533,8 +2676,10 @@ const PDFPageNode: React.FC<{
         if (!isCancelled) {
           setIsRendered(true);
         }
-      } catch (err) {
-        console.error("Renderer error on page", pageNum, err);
+      } catch (err: any) {
+        if (err?.name !== "RenderingCancelledException") {
+          console.error("Renderer error on page", pageNum, err);
+        }
       }
     };
 
