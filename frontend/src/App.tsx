@@ -165,6 +165,30 @@ export const App: React.FC = () => {
                       </LandingLayout>
                     }
                   />
+                  <Route
+                    path="/blog"
+                    element={
+                      <LandingLayout>
+                        <LandingPage defaultSection="blog" />
+                      </LandingLayout>
+                    }
+                  />
+                  <Route
+                    path="/pricing"
+                    element={
+                      <LandingLayout>
+                        <LandingPage defaultSection="pricing" />
+                      </LandingLayout>
+                    }
+                  />
+                  <Route
+                    path="/about"
+                    element={
+                      <LandingLayout>
+                        <LandingPage defaultSection="about" />
+                      </LandingLayout>
+                    }
+                  />
 
                   {/* Authentication routes */}
                   <Route
