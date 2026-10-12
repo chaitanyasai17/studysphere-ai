@@ -1,132 +1,167 @@
-# StudySphere AI — Production Deployment Guide
+# StudySphere AI — Production Deployment & Architecture Guide
 
 ## 1. System Architecture Overview
 
-StudySphere AI is architected as a high-performance, decoupled full-stack platform:
+StudySphere AI is architected as a decoupled, production-grade full-stack learning platform:
 
-- **Frontend**: React 18 + TypeScript + Vite + Tailwind CSS + Framer Motion. Deployed on **Vercel**.
-- **Backend**: Python Flask REST API with Blueprints, JWT Authentication, and Gemini AI integration. Deployed on **Render** (or Railway / AWS / VPS) using `gunicorn`.
-- **Database**:
-  - **Production (Multi-Instance)**: MongoDB Atlas (via `MONGODB_URI` connection string).
-  - **Single-Instance / Local**: High-concurrency SQLite with WAL mode (`studysphere.db`).
-- **Reverse Proxy & Routing**:
-  - `frontend/vercel.json` provides an automatic rewrite fallback proxying `/api/*` to the deployed backend.
-  - `frontend/src/services/api.ts` handles centralized production API resolution with automatic token attachment and 401 token refresh.
-
----
-
-## 2. Environment Variables
-
-### Backend (`backend/.env` or Render/Railway Dashboard)
-
-| Variable | Description | Example / Default |
-| :--- | :--- | :--- |
-| `PORT` | Port the Flask server listens on | `5000` (assigned automatically by host) |
-| `FLASK_ENV` | Environment mode | `production` |
-| `SECRET_KEY` | Flask session & cryptographic key | `<secure-hex-string>` |
-| `JWT_SECRET` | Secret key for JWT access tokens | `<secure-jwt-secret>` |
-| `JWT_REFRESH_SECRET` | Secret key for JWT refresh tokens | `<secure-refresh-secret>` |
-| `MONGODB_URI` | MongoDB connection string (Atlas) | `mongodb+srv://user:pass@cluster.mongodb.net/studysphere` |
-| `GEMINI_API_KEY` | Google Gemini AI API key | `AIzaSy...` |
-| `GEMINI_MODEL` | Gemini model variant | `gemini-flash-lite-latest` |
-| `OPENAI_API_KEY` | OpenAI API key (optional fallback) | `sk-...` |
-| `FRONTEND_URL` | Frontend origin for CORS policy | `https://studysphere-ai-phi.vercel.app` |
-| `CORS_ORIGINS` | Comma-separated allowed origins | `https://studysphere-ai-phi.vercel.app,http://localhost:5173` |
-| `ADMIN_EMAIL` | Default administrator account email | `admin@studysphere.ai` |
-| `ADMIN_PASSWORD` | Default administrator password | `Admin@123` |
-
-### Frontend (`frontend/.env.production` or Vercel Dashboard)
-
-| Variable | Description | Example |
-| :--- | :--- | :--- |
-| `VITE_API_URL` | Backend API base URL | `https://studysphere-ai-zf1a.onrender.com` |
+- **Frontend**: React 18 + TypeScript + Vite + Tailwind CSS + Framer Motion. Deployed on **Vercel** (`https://studysphere-ai-phi.vercel.app`).
+- **Backend**: Python Flask REST API with Blueprints, JWT Authentication (HS256 access & refresh tokens), Bcrypt password hashing, and Gemini AI integration. Designed for deployment on **Render** (or Railway / AWS / VPS / Docker) via `gunicorn`.
+- **Database Persistence**:
+  - **Multi-Instance / Production**: MongoDB Atlas cluster (configured via `MONGODB_URI`). Shared by all frontend sessions, server restarts, and instances.
+  - **Single-Instance / Local**: Persistent SQLite with WAL mode (`backend/data/studysphere.db`).
+- **API Resolution & Reverse Proxy**:
+  - `frontend/src/services/api.ts` dynamically normalizes `VITE_API_URL` (stripping trailing slashes and redundant `/api` prefixes).
+  - When `VITE_API_URL` is set to your deployed backend URL (e.g. `https://studysphere-ai-backend.onrender.com`), requests route directly with CORS credentials.
+  - When `VITE_API_URL` is left blank in production, requests route to same-origin `/api/*` and are proxied by `vercel.json`.
 
 ---
 
-## 3. Backend Deployment (Render / Railway)
+## 2. Root Cause Analysis of Previous Connection Errors
 
-### On Render:
-1. **New Web Service** -> Connect your GitHub repository.
-2. Configure settings:
-   - **Name**: `studysphere-ai-api`
+1. **Dead Backend URL**: The frontend previously had `https://studysphere-ai-zf1a.onrender.com` hardcoded in `frontend/.env.production`, `vercel.json`, and `api.ts`. Because this Render service did not exist or was deleted, Render returned HTTP 404 (`Not Found`) for all API requests.
+2. **Missing Deployed Backend**: The Vercel frontend was deployed, but no corresponding live backend was reachable at the configured URL.
+3. **URL Normalization**: If `VITE_API_URL` ended with `/api/`, requests to `/api/auth/login` resulted in malformed `/api/api/auth/login` requests.
+4. **Ephemeral Serverless Storage**: When running in serverless environments without `MONGODB_URI`, SQLite fell back to `/tmp`, wiping user accounts across cold starts.
+
+---
+
+## 3. Backend Deployment Guide (Render / Railway)
+
+### Option A: 1-Click Deployment on Render via `render.yaml`
+1. Go to **Render Dashboard** -> **Blueprints** -> **New Blueprint Instance**.
+2. Connect your GitHub repository: `chaitanyasai17/studysphere-ai`.
+3. Render reads `render.yaml` automatically and configures:
+   - **Service Name**: `studysphere-ai-backend`
    - **Root Directory**: `backend`
-   - **Environment**: `Python 3`
    - **Build Command**: `pip install -r requirements.txt`
    - **Start Command**: `gunicorn "app:create_app()" -b 0.0.0.0:$PORT -w 2 --threads 4 --timeout 120`
-3. Add environment variables listed in the Backend table above.
-4. **Deploy**: Render will build the wheel files and start the Gunicorn workers.
+   - **Health Check Path**: `/api/health`
+4. Set your sensitive environment variables in the Render Dashboard (see Section 4).
 
-### Database Setup & Admin Seeding:
-Once your backend is deployed:
-1. Run the admin seed script via Render Shell or locally connected to your MongoDB instance:
-   ```bash
-   python backend/scripts/seed_admin.py --email admin@studysphere.ai --password "Admin@123" --role admin
-   ```
-2. Verify output confirms:
-   ```
-   [OK] Verification SUCCESS: Password for 'admin@studysphere.ai' verified against stored hash.
-   ```
+### Option B: Manual Web Service on Render
+1. Click **New +** -> **Web Service**.
+2. Connect your repository: `chaitanyasai17/studysphere-ai`.
+3. Configure settings:
+   - **Name**: `studysphere-ai-backend`
+   - **Region**: Oregon (or closest to your users)
+   - **Branch**: `main`
+   - **Root Directory**: `backend`
+   - **Runtime**: `Python 3`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn "app:create_app()" -b 0.0.0.0:$PORT -w 2 --threads 4 --timeout 120`
+4. Add the environment variables listed in Section 4.
+5. Click **Create Web Service**.
+6. Once deployed, note your service URL: `https://<your-service-name>.onrender.com`.
 
 ---
 
-## 4. Frontend Deployment (Vercel)
+## 4. Environment Variables Configuration
 
-1. **Import Project** on Vercel from your GitHub repository.
-2. In Project Settings:
-   - **Framework Preset**: Vite
-   - **Root Directory**: `frontend`
-   - **Build Command**: `npm run build`
-   - **Output Directory**: `dist`
-   - **Install Command**: `npm install`
-3. Add Environment Variable:
-   - `VITE_API_URL`: `https://<your-backend-app>.onrender.com`
-4. Click **Deploy**.
+### Backend Service (Render / Railway / Docker)
+
+| Variable | Description | Recommended Value |
+| :--- | :--- | :--- |
+| `FLASK_ENV` | Environment mode | `production` |
+| `SECRET_KEY` | Flask cryptographic session key | `<random-32-byte-hex-string>` |
+| `JWT_SECRET` | Secret key for JWT access tokens | `<random-32-byte-hex-string>` |
+| `JWT_REFRESH_SECRET` | Secret key for JWT refresh tokens | `<random-32-byte-hex-string>` |
+| `MONGODB_URI` | MongoDB Atlas connection string | `mongodb+srv://<user>:<password>@cluster0.mongodb.net/studysphere?retryWrites=true&w=majority` |
+| `FRONTEND_URL` | Primary production frontend origin | `https://studysphere-ai-phi.vercel.app` |
+| `CORS_ORIGINS` | Allowed frontend origins (comma-separated) | `https://studysphere-ai-phi.vercel.app,http://localhost:5173,http://localhost:3000` |
+| `GEMINI_API_KEY` | Google Gemini API key for AI features | `AIzaSy...` |
+| `GEMINI_MODEL` | Gemini AI model variant | `gemini-flash-lite-latest` |
+| `OPENAI_API_KEY` | OpenAI API key (optional fallback) | `sk-...` |
+
+> [!IMPORTANT]
+> **Persistent Database Requirement**: To guarantee registered users and admin records never disappear across restarts, configure a free MongoDB Atlas M0 cluster and set `MONGODB_URI`. If running without `MONGODB_URI`, ensure the backend host has a persistent disk mounted for SQLite.
+
+### Frontend Service (Vercel Project Settings)
+
+| Variable | Description | Example Value |
+| :--- | :--- | :--- |
+| `VITE_API_URL` | Live backend base URL (without `/api` suffix) | `https://<your-backend-app>.onrender.com` |
+
+> [!IMPORTANT]
+> **Vite Build-Time Embedding**: Vite embeds environment variables into the static JavaScript bundle **at build time**. After adding or changing `VITE_API_URL` in the Vercel Dashboard, you **must trigger a redeploy** (Vercel -> Deployments -> Redeploy) for the changes to take effect in the browser.
 
 ---
 
 ## 5. Verification & Health Check Endpoints
 
-### 1. API Health Check
+### 1. Backend Health Check
 ```bash
-curl -s https://studysphere-ai-zf1a.onrender.com/api/health
+curl -s https://<your-backend-app>.onrender.com/api/health
 ```
 **Expected Response (HTTP 200)**:
 ```json
 {
-  "status": "ok",
-  "service": "studysphere-api",
   "database": "connected",
   "database_type": "mongodb",
-  "environment": "production"
+  "environment": "production",
+  "service": "studysphere-api",
+  "status": "ok"
 }
 ```
 
-### 2. Admin Authentication Verification
+### 2. User Registration Flow
 ```bash
-curl -X POST https://studysphere-ai-zf1a.onrender.com/api/auth/login \
+curl -X POST https://<your-backend-app>.onrender.com/api/auth/register \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@studysphere.ai","password":"Admin@123"}'
+  -d '{"name":"Verification Student","email":"student_test@studysphere.ai","password":"Password@123"}'
+```
+**Expected Response (HTTP 201)**:
+```json
+{
+  "message": "Registration successful! Verification token generated.",
+  "role": "student",
+  "success": true,
+  "user_id": "<user-id>",
+  "verification_token": "<token>"
+}
+```
+
+### 3. User Login Flow
+```bash
+curl -X POST https://<your-backend-app>.onrender.com/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"student_test@studysphere.ai","password":"Password@123"}'
 ```
 **Expected Response (HTTP 200)**:
 ```json
 {
   "access_token": "eyJhbGciOi...",
+  "refresh_token": "eyJhbGciOi...",
   "user": {
-    "email": "admin@studysphere.ai",
-    "name": "StudySphere Administrator",
-    "role": "admin"
+    "email": "student_test@studysphere.ai",
+    "name": "Verification Student",
+    "role": "student"
   }
 }
 ```
 
+### 4. Administrator Authentication
+```bash
+curl -X POST https://<your-backend-app>.onrender.com/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@studysphere.ai","password":"Admin@123"}'
+```
+
+### 5. Protected Admin Users API
+```bash
+curl -X GET https://<your-backend-app>.onrender.com/api/admin/users \
+  -H "Authorization: Bearer <access_token>"
+```
+**Expected Response**: Array of actual database users with roles, verification states, and creation timestamps.
+
 ---
 
-## 6. Troubleshooting Common Issues
+## 6. Default Administrative Accounts
 
-### Cold Starts on Free Tier Hosts
-Render free tier spins down idle services after 15 minutes. Initial requests may take 30–50 seconds to wake the service. The frontend handles this by keeping authentication state persistent and retrying requests gracefully.
+Upon initial backend startup, the system seeds the following default administrative accounts if they do not already exist in the database:
 
-### "Invalid email or password!"
-- Run `python backend/scripts/seed_admin.py` to reset the hash for `admin@studysphere.ai`.
-- Verify the backend database matches: if `MONGODB_URI` is configured, credentials must reside in MongoDB. If running without `MONGODB_URI`, ensure `backend/data/studysphere.db` is persistent.
-- Password check is whitespace-resilient (both exact and trimmed passwords are authenticated).
+| Email | Default Password | Role |
+| :--- | :--- | :--- |
+| `admin@studysphere.ai` | `Admin@123` | `admin` |
+| `superadmin@studysphere.ai` | `SuperAdmin@123` | `superadmin` |
+
+Passphrases are hashed using Bcrypt with per-user cryptographic salts. Existing passwords are never overwritten on server cold starts.

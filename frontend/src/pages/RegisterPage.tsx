@@ -4,6 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useNotifications } from "../contexts/NotificationsContext";
 import { User, Mail, Lock, Loader2, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { motion } from "framer-motion";
+import { getApiErrorMessage } from "../services/api";
 
 export const RegisterPage: React.FC = () => {
   const { register } = useAuth();
@@ -64,16 +65,10 @@ export const RegisterPage: React.FC = () => {
         navigate("/login", { state: location.state });
       }
     } catch (err: any) {
-      console.error(err);
-      const serverMsg = err.response?.data?.message;
-      if (serverMsg) {
-        setError(serverMsg);
-        addToast("Registration Failed", serverMsg, "error");
-      } else {
-        const connMsg = "Could not connect to backend server. Please verify VITE_API_URL configuration.";
-        setError(connMsg);
-        addToast("Connection Error", connMsg, "error");
-      }
+      console.error("Registration error:", err);
+      const errorMsg = getApiErrorMessage(err, "Registration failed. Please verify your details.");
+      setError(errorMsg);
+      addToast("Registration Failed", errorMsg, "error");
     } finally {
       setLoading(false);
     }

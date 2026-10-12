@@ -13,6 +13,7 @@ import {
   ArrowRight 
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { getApiErrorMessage } from "../services/api";
 
 export const LoginPage: React.FC = () => {
   const { login } = useAuth();
@@ -81,24 +82,13 @@ export const LoginPage: React.FC = () => {
       navigate(fromPath || defaultDest);
     } catch (err: any) {
       console.error("Login attempt failed:", err);
-      if (!err.response) {
-        const connMsg = "Unable to connect to the backend server. Please verify your connection or check backend availability.";
-        setError(connMsg);
-        addToast("Connection Error", connMsg, "error");
-      } else {
-        const status = err.response.status;
-        const serverMsg = err.response.data?.message;
-        if (status === 401) {
-          setError(serverMsg || "Invalid email or password. Please verify your credentials.");
-          addToast("Authentication Failed", serverMsg || "Invalid email or password.", "error");
-        } else if (status === 403) {
-          setError(serverMsg || "Your account has been suspended. Please contact support.");
-          addToast("Account Suspended", serverMsg || "Access forbidden.", "error");
-        } else {
-          setError(serverMsg || "Something went wrong on the server. Please try again.");
-          addToast("Server Error", serverMsg || "Unexpected error occurred.", "error");
-        }
-      }
+      const errorMsg = getApiErrorMessage(err, "Invalid email or password.");
+      setError(errorMsg);
+      addToast(
+        err.response?.status === 401 ? "Authentication Failed" : "Sign In Error",
+        errorMsg,
+        "error"
+      );
     } finally {
       setLoading(false);
     }

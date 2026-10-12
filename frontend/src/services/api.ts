@@ -1,8 +1,64 @@
 import axios from "axios";
 
-const DEFAULT_API_URL = "https://studysphere-ai-zf1a.onrender.com";
-const rawApiUrl = (import.meta.env.VITE_API_URL || (import.meta.env.PROD ? DEFAULT_API_URL : "")).trim();
-const API_URL = rawApiUrl.endsWith("/") ? rawApiUrl.slice(0, -1) : rawApiUrl;
+// Resolve API base URL:
+// 1. Read VITE_API_URL environment variable if provided
+// 2. Normalize by trimming whitespace, trailing slashes, and trailing '/api'
+// 3. In production, if VITE_API_URL is not set, default to "" (relative URL, using current domain or proxy)
+// 4. In local development, if VITE_API_URL is not set, default to "http://localhost:5000"
+const resolveApiBaseUrl = (): string => {
+  const envUrl = (import.meta.env.VITE_API_URL || "").trim();
+  if (!envUrl) {
+    return import.meta.env.DEV ? "http://localhost:5000" : "";
+  }
+  let cleanUrl = envUrl.endsWith("/") ? envUrl.slice(0, -1) : envUrl;
+  if (cleanUrl.endsWith("/api")) {
+    cleanUrl = cleanUrl.slice(0, -4);
+  }
+  return cleanUrl;
+};
+
+export const API_URL = resolveApiBaseUrl();
+
+/**
+ * Format user-facing error messages by distinguishing between
+ * network/CORS failures, HTTP status codes, and server response messages.
+ */
+export const getApiErrorMessage = (error: any, defaultMessage: string = "An unexpected error occurred."): string => {
+  if (error?.response?.data?.message) {
+    return error.response.data.message;
+  }
+  if (error?.response?.data?.error) {
+    return error.response.data.error;
+  }
+  if (error?.response?.status) {
+    switch (error.response.status) {
+      case 400:
+        return "Invalid request. Please verify the entered information.";
+      case 401:
+        return "Invalid email or password.";
+      case 403:
+        return "Access denied. Your account may be restricted or suspended.";
+      case 404:
+        return "The requested account or API endpoint was not found.";
+      case 409:
+        return "An account with this email address already exists.";
+      case 429:
+        return "Too many attempts. Please wait a moment and try again.";
+      case 500:
+      case 502:
+      case 503:
+      case 504:
+        return "Backend server error. The service is temporarily unavailable.";
+      default:
+        return `Server returned error (${error.response.status}).`;
+    }
+  }
+  if (error?.code === "ERR_NETWORK" || error?.message === "Network Error" || !error?.response) {
+    const host = API_URL || (typeof window !== "undefined" ? window.location.origin : "server");
+    return `Could not connect to backend server at ${host}. Please verify backend deployment and CORS settings.`;
+  }
+  return error?.message || defaultMessage;
+};
 
 const api = axios.create({
   baseURL: API_URL,

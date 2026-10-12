@@ -28,12 +28,27 @@ def create_app():
     app.config.from_object(Config)
     
     # Configure CORS - Explicit production and local origins with credentials support
-    allowed_origins = os.environ.get("ALLOWED_ORIGINS", "")
-    if allowed_origins and allowed_origins != "*":
-        origin_list = [o.strip() for o in allowed_origins.split(",") if o.strip()]
+    cors_env = (
+        os.environ.get("CORS_ORIGINS")
+        or os.environ.get("ALLOWED_ORIGINS")
+        or os.environ.get("FRONTEND_URL")
+        or ""
+    )
+    if cors_env and cors_env.strip() != "*":
+        origin_list = [o.strip() for o in cors_env.split(",") if o.strip()]
+        # Always ensure primary production and localhost origins are permitted
+        for base_origin in [
+            "https://studysphere-ai-phi.vercel.app",
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "http://127.0.0.1:5173"
+        ]:
+            if base_origin not in origin_list:
+                origin_list.append(base_origin)
     else:
         origin_list = [
             "https://studysphere-ai-phi.vercel.app",
+            r"^https:\/\/.*\.vercel\.app$",
             "http://localhost:5173",
             "http://localhost:3000",
             "http://127.0.0.1:5173"
@@ -42,7 +57,7 @@ def create_app():
         app,
         resources={r"/*": {"origins": origin_list}},
         supports_credentials=True,
-        allow_headers=["Content-Type", "Authorization", "X-Requested-With", "Range"],
+        allow_headers=["Content-Type", "Authorization", "X-Requested-With", "Range", "Accept"],
         expose_headers=["Content-Range", "Accept-Ranges", "Content-Length"],
         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"]
     )

@@ -4,6 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useNotifications } from "../contexts/NotificationsContext";
 import { Mail, Lock, ShieldAlert, Loader2, Shield } from "lucide-react";
 import { motion } from "framer-motion";
+import { getApiErrorMessage } from "../services/api";
 
 export const AdminLogin: React.FC = () => {
   const { login } = useAuth();
@@ -52,24 +53,13 @@ export const AdminLogin: React.FC = () => {
       addToast("Portal Accessed", "Welcome to the Enterprise Admin Console.", "success");
       navigate("/admin");
     } catch (err: any) {
-      if (!err.response) {
-        const networkMsg = "Could not connect to backend server. Please verify your connection or check backend availability.";
-        setError(networkMsg);
-        addToast("Connection Error", networkMsg, "error");
-      } else {
-        const status = err.response.status;
-        const serverMsg = err.response.data?.message;
-        if (status === 401) {
-          setError(serverMsg || "Invalid administrator email or password.");
-          addToast("Authentication Failed", serverMsg || "Invalid credentials.", "error");
-        } else if (status === 403) {
-          setError(serverMsg || "Access forbidden: Account suspended or unauthorized.");
-          addToast("Access Denied", serverMsg || "Unauthorized.", "error");
-        } else {
-          setError(serverMsg || `Server error (${status}). Please try again later.`);
-          addToast("Server Error", serverMsg || "An unexpected server error occurred.", "error");
-        }
-      }
+      const errorMsg = getApiErrorMessage(err, "Invalid administrator email or password.");
+      setError(errorMsg);
+      addToast(
+        err.response?.status === 401 ? "Authentication Failed" : "Access Error",
+        errorMsg,
+        "error"
+      );
     } finally {
       setLoading(false);
     }
